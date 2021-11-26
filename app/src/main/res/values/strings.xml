@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Blitter</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="button_login">Login</string>
+    <string name="button_sign_up">No account? Go to Sign up</string>
 </resources>
