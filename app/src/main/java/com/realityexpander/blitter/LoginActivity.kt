@@ -1,6 +1,8 @@
 package com.realityexpander.blitter
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -8,7 +10,6 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
-import androidx.core.widget.addTextChangedListener
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.realityexpander.blitter.databinding.ActivityLoginBinding
@@ -20,6 +21,11 @@ class LoginActivity : AppCompatActivity() {
 
     private val firebaseAuth = FirebaseAuth.getInstance()
     private lateinit var bind: ActivityLoginBinding
+
+    companion object {
+        fun newIntent(context: Context) = Intent(context, LoginActivity::class.java)
+    }
+
 
     // Check for user already logged in
     private val firebaseAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
@@ -50,15 +56,12 @@ class LoginActivity : AppCompatActivity() {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                 // do nothing
             }
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 til.isErrorEnabled = false
             }
-
             override fun afterTextChanged(s: Editable?) {
                 // do nothing
             }
-
         })
     }
 

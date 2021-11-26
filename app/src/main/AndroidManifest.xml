@@ -11,7 +11,10 @@
             android:theme="@style/Theme.Blitter">
         <activity
                 android:name=".HomeActivity"
-                android:exported="false" />
+                android:exported="false"
+                android:screenOrientation="portrait"
+                android:theme="@style/Theme.Blitter.NoActionBar"
+                android:windowSoftInputMode="adjustResize" />
         <activity
                 android:name=".LoginActivity"
                 android:exported="true"
