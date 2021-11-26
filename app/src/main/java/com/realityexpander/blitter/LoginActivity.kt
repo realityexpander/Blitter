@@ -20,6 +20,8 @@ class LoginActivity : AppCompatActivity() {
 
     private val firebaseAuth = FirebaseAuth.getInstance()
     private lateinit var bind: ActivityLoginBinding
+
+    // Check for user already logged in
     private val firebaseAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
         val user = firebaseAuth.currentUser?.uid
         user?.let {
@@ -31,14 +33,15 @@ class LoginActivity : AppCompatActivity() {
     @SuppressLint("ClickableViewAccessibility") // suppress the "no perform click" on the loginProgressLayout
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val bind = ActivityLoginBinding.inflate(layoutInflater)
+        bind = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(bind.root)
 
         setTextChangeListener(bind.emailET, bind.emailTIL)
         setTextChangeListener(bind.passwordET, bind.passwordTIL)
 
-        // When the login progress hides the login screen, eat the click events with this.
+        // After pressing Login button, progress obscures the login screen, this will eat the tap events:
         bind.loginProgressLayout.setOnTouchListener { v, event ->
-            true // this will block the events
+            true // this will block any tap events
         }
     }
 
@@ -63,12 +66,12 @@ class LoginActivity : AppCompatActivity() {
         var proceed = true
 
         if(bind.emailET.text.isNullOrEmpty()) {
-            bind.emailTIL.error = "Email is required"
+            bind.emailTIL.error = "Email is required."
             bind.emailTIL.isErrorEnabled = true
             proceed = false
         }
         if(bind.passwordET.text.isNullOrEmpty()) {
-            bind.passwordTIL.error = "Password is required"
+            bind.passwordTIL.error = "Password is required."
             bind.passwordTIL.isErrorEnabled = true
             proceed = false
         }
