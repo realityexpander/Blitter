@@ -36,7 +36,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility") // suppress the "no perform click" on the loginProgressLayout
+    @SuppressLint("ClickableViewAccessibility") // suppress warning for the "no perform click" on the loginProgressLayout event capture
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bind = ActivityLoginBinding.inflate(layoutInflater)
@@ -84,7 +84,9 @@ class LoginActivity : AppCompatActivity() {
                 .addOnCompleteListener { task ->
                     if(!task.isSuccessful) {
                         bind.loginProgressLayout.visibility = View.GONE
-                        Toast.makeText(this@LoginActivity, "Login error: ${task.exception?.localizedMessage}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@LoginActivity,
+                            "Login error: ${task.exception?.localizedMessage}",
+                            Toast.LENGTH_SHORT).show()
                     }
                 }
                 .addOnFailureListener { e ->
