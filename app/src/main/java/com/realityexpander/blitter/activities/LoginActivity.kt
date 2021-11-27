@@ -23,7 +23,6 @@ class LoginActivity : AppCompatActivity() {
         fun newIntent(context: Context) = Intent(context, LoginActivity::class.java)
     }
 
-
     // Check for user already logged in
     private val firebaseAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
         val user = firebaseAuth.currentUser?.uid
@@ -42,7 +41,7 @@ class LoginActivity : AppCompatActivity() {
         ActivityUtil.setTextChangeListener(bind.emailET, bind.emailTIL)
         ActivityUtil.setTextChangeListener(bind.passwordET, bind.passwordTIL)
 
-        // After pressing Login button, progress obscures the login screen, this will eat the tap events:
+        // After pressing Login button, loginProgressLayout obscures the login screen, this will eat the tap events:
         bind.loginProgressLayout.setOnTouchListener { v, event ->
             true // this will block any tap events
         }

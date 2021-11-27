@@ -6,17 +6,144 @@
         android:layout_height="match_parent"
         tools:context=".activities.HomeActivity">
 
-    <Button
-            android:id="@+id/logoutButton"
+
+    <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
             android:layout_width="0dp"
-            android:layout_height="@dimen/standard_height"
-            android:layout_marginStart="55dp"
-            android:layout_marginEnd="55dp"
-            android:text="Log out"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_2x"
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal"
+            app:cardElevation="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:onClick="onLogout"/>
+            app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/grid_1x"
+                app:cardCornerRadius="@dimen/standard_corner_radius">
+
+            <ImageView
+                    android:id="@+id/logo"
+                    android:layout_width="@dimen/standard_image"
+                    android:layout_height="@dimen/standard_image"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/default_user" />
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+                android:id="@+id/titleBar"
+                style="@style/Heading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/standard_image"
+                android:paddingStart="@dimen/grid_3x"
+                android:paddingEnd="@dimen/grid_1x"
+                android:text="@string/home_screen_title_text" />
+
+        <androidx.cardview.widget.CardView
+                android:id="@+id/searchBar"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="60dp"
+                android:layout_marginLeft="60dp"
+                app:cardCornerRadius="@dimen/standard_corner_radius">
+
+            <EditText
+                    android:id="@+id/search"
+                    android:layout_width="@dimen/standard_width"
+                    android:layout_height="@dimen/search_height"
+                    android:background="@color/material_on_primary_disabled"
+                    android:drawableEnd="@android:drawable/ic_menu_search"
+                    android:hint="@string/hint_search"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:paddingStart="@dimen/grid_2x"
+                    android:paddingEnd="@dimen/grid_2x"
+                    android:textColor="@color/material_on_surface_emphasis_high_type"
+                    android:textColorHint="@color/material_on_surface_emphasis_medium" />
+        </androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>
+
+    <!--app:tabIndicator="@null" removes the line below the selector-->
+    <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/standard_height"
+            android:layout_marginBottom="@dimen/grid_2x"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:tabIndicator="@null">
+
+        <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:icon="@drawable/selector_home" />
+
+        <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:icon="@drawable/selector_search" />
+
+        <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:icon="@drawable/selector_myactivity" />
+    </com.google.android.material.tabs.TabLayout>
+
+    <!--appbar_scrolling_view_behavior allows smooth scrolling between screens-->
+    <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:layout_marginBottom="@dimen/grid_2x"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            app:layout_constraintBottom_toTopOf="@id/tabs"
+            app:layout_constraintTop_toBottomOf="@id/cardView" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_3x"
+            android:contentDescription="@string/content_description_write_blit"
+            android:src="@drawable/feather"
+            app:layout_constraintBottom_toTopOf="@id/tabs"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/feather" />
+
+    <LinearLayout
+            android:id="@+id/homeProgressLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/transparent_grey"
+            android:elevation="5dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+        <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <!--    <Button-->
+    <!--            android:id="@+id/logoutButton"-->
+    <!--            android:layout_width="0dp"-->
+    <!--            android:layout_height="@dimen/standard_height"-->
+    <!--            android:layout_marginStart="55dp"-->
+    <!--            android:layout_marginEnd="55dp"-->
+    <!--            android:onClick="onLogout"-->
+    <!--            android:text="Log out"-->
+    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--            app:layout_constraintEnd_toEndOf="parent"-->
+    <!--            app:layout_constraintStart_toStartOf="parent"-->
+    <!--            app:layout_constraintTop_toTopOf="parent" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
