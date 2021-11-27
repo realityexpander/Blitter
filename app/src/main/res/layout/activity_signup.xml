@@ -4,7 +4,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".activities.LoginActivity">
+        tools:context=".activities.SignupActivity">
 
     <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -15,6 +15,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+            <!--logo-->
             <ImageView
                     android:id="@+id/imageView"
                     android:layout_width="match_parent"
@@ -23,11 +24,31 @@
                     android:layout_margin="@dimen/grid_2x"
                     android:src="@drawable/title" />
 
+            <!--username-->
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/usernameTIL"
+                    android:layout_width="@dimen/standard_width"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/imageView"
+                    android:layout_centerHorizontal="true"
+                    android:layout_margin="@dimen/grid_2x">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/usernameET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/hint_username"
+                        android:inputType="textEmailAddress">
+
+                </com.google.android.material.textfield.TextInputEditText>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!--email-->
             <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/emailTIL"
                     android:layout_width="@dimen/standard_width"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/imageView"
+                    android:layout_below="@id/usernameTIL"
                     android:layout_centerHorizontal="true"
                     android:layout_margin="@dimen/grid_2x">
 
@@ -41,6 +62,7 @@
                 </com.google.android.material.textfield.TextInputEditText>
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!--password-->
             <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/passwordTIL"
                     android:layout_width="@dimen/standard_width"
@@ -60,15 +82,15 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
-                    android:id="@+id/buttonLogin"
+                    android:id="@+id/buttonSignup"
                     style="@style/StandardButton"
                     android:layout_width="@dimen/standard_width"
                     android:layout_height="@dimen/standard_height"
                     android:layout_below="@id/passwordTIL"
                     android:layout_centerHorizontal="true"
                     android:layout_margin="@dimen/grid_2x"
-                    android:onClick="onLogin"
-                    android:text="@string/button_login"
+                    android:onClick="onSignup"
+                    android:text="@string/button_signup"
                     app:backgroundTint="@null" />
 
             <TextView
@@ -76,18 +98,18 @@
                     style="@style/LinkText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/buttonLogin"
+                    android:layout_below="@id/buttonSignup"
                     android:layout_centerHorizontal="true"
                     android:layout_margin="@dimen/grid_2x"
                     android:clickable="true"
-                    android:onClick="goToSignUp"
-                    android:text="@string/button_sign_up_link_text" />
+                    android:onClick="goToLogin"
+                    android:text="@string/button_login_link_text" />
 
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
-            android:id="@+id/loginProgressLayout"
+            android:id="@+id/signupProgressLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/transparent_grey"

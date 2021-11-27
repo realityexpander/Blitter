@@ -1,18 +1,15 @@
-package com.realityexpander.blitter
+package com.realityexpander.blitter.activities
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
-import android.widget.EditText
 import android.widget.Toast
-import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.realityexpander.blitter.databinding.ActivityLoginBinding
+import com.realityexpander.blitter.util.ActivityUtil
 
 // Firebase dashboard
 // https://console.firebase.google.com/u/3/project/blitter-7f038/storage/blitter-7f038.appspot.com/rules
@@ -42,27 +39,13 @@ class LoginActivity : AppCompatActivity() {
         bind = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(bind.root)
 
-        setTextChangeListener(bind.emailET, bind.emailTIL)
-        setTextChangeListener(bind.passwordET, bind.passwordTIL)
+        ActivityUtil.setTextChangeListener(bind.emailET, bind.emailTIL)
+        ActivityUtil.setTextChangeListener(bind.passwordET, bind.passwordTIL)
 
         // After pressing Login button, progress obscures the login screen, this will eat the tap events:
         bind.loginProgressLayout.setOnTouchListener { v, event ->
             true // this will block any tap events
         }
-    }
-
-    private fun setTextChangeListener(et: EditText, til: TextInputLayout) {
-        et.addTextChangedListener( object: TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // do nothing
-            }
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                til.isErrorEnabled = false
-            }
-            override fun afterTextChanged(s: Editable?) {
-                // do nothing
-            }
-        })
     }
 
     fun onLogin(v: View) {
@@ -97,7 +80,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun goToSignUp(v: View) {
-
+        startActivity(SignupActivity.newIntent(this))
+        finish()
     }
 
     override fun onStart() {

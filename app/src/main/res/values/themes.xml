@@ -28,7 +28,7 @@
     </style>
 
     <style name="LinkText">
-        <item name="android:textColor">@color/blue</item>
+        <item name="android:textColor">@color/design_default_color_on_primary</item>
     </style>
 
 </resources>

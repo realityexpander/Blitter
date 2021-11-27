@@ -1,4 +1,4 @@
-package com.realityexpander.blitter
+package com.realityexpander.blitter.activities
 
 import android.content.Context
 import android.content.Intent

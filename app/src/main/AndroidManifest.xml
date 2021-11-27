@@ -10,13 +10,19 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.Blitter">
         <activity
-                android:name=".HomeActivity"
+                android:name=".activities.SignupActivity"
                 android:exported="false"
                 android:screenOrientation="portrait"
                 android:theme="@style/Theme.Blitter.NoActionBar"
                 android:windowSoftInputMode="adjustResize" />
         <activity
-                android:name=".LoginActivity"
+                android:name=".activities.HomeActivity"
+                android:exported="false"
+                android:screenOrientation="portrait"
+                android:theme="@style/Theme.Blitter.NoActionBar"
+                android:windowSoftInputMode="adjustResize" />
+        <activity
+                android:name=".activities.LoginActivity"
                 android:exported="true"
                 android:screenOrientation="portrait"
                 android:theme="@style/Theme.Blitter.NoActionBar"
