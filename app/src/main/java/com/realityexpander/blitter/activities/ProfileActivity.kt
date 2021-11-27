@@ -1,5 +1,6 @@
 package com.realityexpander.blitter.activities
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +26,7 @@ class ProfileActivity : AppCompatActivity() {
         fun newIntent(context: Context) = Intent(context, ProfileActivity::class.java)
     }
 
+    @SuppressLint("ClickableViewAccessibility") // for the no-op profileProgressLayout.setOnTouchListener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bind = ActivityProfileBinding.inflate(layoutInflater)
@@ -66,12 +68,12 @@ class ProfileActivity : AppCompatActivity() {
         map[DATA_USERS_EMAIL] = email
         map[DATA_USERS_UPDATED_TIMESTAMP] = System.currentTimeMillis()
 
-        // Update the Firebase Authentication
+        // Update the Firebase Authentication email
         firebaseAuth.currentUser!!.updateEmail(email)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
 
-                    // Update Firebase database
+                    // Update Firebase database user info
                     firebaseDB.collection(DATA_USERS_COLLECTION).document(userId!!).update(map)
                         .addOnSuccessListener {
                             Toast.makeText(this, "Update successful", Toast.LENGTH_SHORT).show()
@@ -80,7 +82,7 @@ class ProfileActivity : AppCompatActivity() {
                         }
                         .addOnFailureListener { e->
                             e.printStackTrace()
-                            Toast.makeText(this, "Update failed, please try again.", Toast.LENGTH_LONG).show()
+                            Toast.makeText(this, "Update failed, please try again. ${e.localizedMessage}", Toast.LENGTH_LONG).show()
                             bind.profileProgressLayout.visibility = View.GONE
                         }
                 }
