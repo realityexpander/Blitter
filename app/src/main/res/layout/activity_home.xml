@@ -29,6 +29,7 @@
                     android:id="@+id/logo"
                     android:layout_width="@dimen/standard_image"
                     android:layout_height="@dimen/standard_image"
+                    android:foreground="?attr/selectableItemBackground"
                     android:scaleType="centerCrop"
                     android:src="@drawable/default_user" />
 
@@ -96,7 +97,6 @@
     </com.google.android.material.tabs.TabLayout>
 
     <!--appbar_scrolling_view_behavior allows smooth scrolling between screens-->
-<!--    <androidx.viewpager.widget.ViewPager-->
     <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
@@ -131,7 +131,6 @@
         <ProgressBar
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
-
     </LinearLayout>
 
     <!--    <Button-->

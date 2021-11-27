@@ -54,12 +54,11 @@ class HomeActivity : AppCompatActivity() {
 
        // // example to Rename the tabs
        // bind.tabLayout.getTabAt(TabLayoutItem.HOME.ordinal)!!.text = "Home"
-    }
 
-    fun onLogout(v: View) {
-        firebaseAuth.signOut()
-        startActivity(LoginActivity.newIntent(this))
-        finish()
+        // Nav to profile activity
+        bind.logo.setOnClickListener { view ->
+            startActivity(ProfileActivity.newIntent(this))
+        }
     }
 
     inner class SectionPageAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {

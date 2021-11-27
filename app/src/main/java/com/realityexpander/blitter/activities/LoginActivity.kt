@@ -20,6 +20,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var bind: ActivityLoginBinding
 
     companion object {
+        // navigate to this activity
         fun newIntent(context: Context) = Intent(context, LoginActivity::class.java)
     }
 

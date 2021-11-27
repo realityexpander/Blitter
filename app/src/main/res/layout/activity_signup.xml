@@ -88,9 +88,12 @@
                     android:layout_height="@dimen/standard_height"
                     android:layout_below="@id/passwordTIL"
                     android:layout_centerHorizontal="true"
-                    android:layout_margin="@dimen/grid_2x"
+                    android:layout_marginStart="@dimen/grid_2x"
+                    android:layout_marginTop="@dimen/grid_2x"
+                    android:layout_marginEnd="@dimen/grid_2x"
+                    android:layout_marginBottom="@dimen/grid_2x"
                     android:onClick="onSignup"
-                    android:text="@string/button_signup"
+                    android:text="@string/button_sign_up"
                     app:backgroundTint="@null" />
 
             <TextView
