@@ -26,6 +26,7 @@ class HomeActivity : AppCompatActivity() {
         bind = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(bind.root)
 
+        // Rename the tabs
         val tabView: TabLayout = bind.tabLayout
         tabView.getTabAt(TAB.HOME.index)!!.text = "Home"
     }
