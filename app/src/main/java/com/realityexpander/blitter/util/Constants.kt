@@ -12,6 +12,6 @@ const val DATA_USERS_UPDATED_TIMESTAMP = "updatedTimestamp"
 
 
 // Firebase Storage
-const val DATA_PROFILE_IMAGES = "DATA_PROFILE_IMAGES" // name of the collection
+const val DATA_PROFILE_IMAGES_STORAGE = "DATA_PROFILE_IMAGES" // name of the storage location
 
 val REQUEST_CODE_PHOTO = 1001
