@@ -46,19 +46,17 @@ class ProfileActivity : AppCompatActivity() {
         bind.profileProgressLayout.setOnTouchListener{ v, event -> true}
 
         // Setup photo picker (new way)
-        val resultPhotoLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument() /*.TakePicturePreview()*/ /*GetContent()*/ ) { uri ->
-//            if (uri != null) {
-//                Glide.with(this)
-//                    .load(uri)
-//                    .into(bind.profileImageIv)
-//
-//                storeImage(uri)
-//            }
+        val resultPhotoLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+            if (uri != null) {
+                Glide.with(this)
+                    .load(uri)
+                    .into(bind.profileImageIv)
+
+                storeProfileImage(uri)
+            }
         }
         bind.profileImageIv.setOnClickListener {
-//            resultPhotoLauncher.launch("image/*") // GetContent()
             resultPhotoLauncher.launch(arrayOf("image/*")) // OpenDocument
-//            resultPhotoLauncher.launch(null) // TakePicturePreview
         }
 
 //        // Setup photo picker (deprecated way)
@@ -133,16 +131,16 @@ class ProfileActivity : AppCompatActivity() {
             }
     }
 
-    // Retrieve the image uri from the gallery photo picker
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if(resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_PHOTO) {
-            storeImage(data?.data)
-        }
-    }
+//    // Retrieve the image uri from the gallery photo picker (deprecated way)
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if(resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_PHOTO) {
+//            storeProfileImage(data?.data)
+//        }
+//    }
 
     // Save the profile image to the firebase Storage
-    private fun storeImage(profileImageUri: Uri?) {
+    private fun storeProfileImage(profileImageUri: Uri?) {
 
         // show failure message
         fun onUploadFailure(e: Exception) {
@@ -176,7 +174,7 @@ class ProfileActivity : AppCompatActivity() {
                                 .document(userId)
                                 .update(map)
                                 .addOnSuccessListener {
-                                    bind.profileImageIv.loadUrl(profileImageUrl, R.drawable.default_user)
+                                    // bind.profileImageIv.loadUrl(profileImageUrl, R.drawable.default_user) // we optimistically loaded the profile image after it was picked
 
                                     Toast.makeText(this, "Profile image update successful", Toast.LENGTH_SHORT).show()
                                     bind.profileProgressLayout.visibility = View.GONE
