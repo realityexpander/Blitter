@@ -1,5 +1,6 @@
 package com.realityexpander.blitter.activities
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -45,6 +46,7 @@ class HomeActivity : AppCompatActivity() {
         fun newIntent(context: Context) = Intent(context, HomeActivity::class.java)
     }
 
+    @SuppressLint("ClickableViewAccessibility") // for progress event eater
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bind = ActivityHomeBinding.inflate(layoutInflater)
@@ -137,7 +139,23 @@ class HomeActivity : AppCompatActivity() {
         // Nav to new page when bottom tab item is selected
         onTabSelectedListener = object: TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
-                tab?.position?.let { bind.viewPager.setCurrentItem(it, true) }
+                tab?.position?.let { position ->
+                    bind.viewPager.setCurrentItem(position, true)
+
+                    when(TabLayoutItem.values()[position]) {
+                        TabLayoutItem.HOME -> {
+                            bind.searchBar.visibility = View.INVISIBLE
+                            bind.titleBar.text = "Home"
+                        }
+                        TabLayoutItem.SEARCH -> {
+                            bind.searchBar.visibility = View.VISIBLE
+                        }
+                        TabLayoutItem.MYACTIVITY -> {
+                            bind.searchBar.visibility = View.INVISIBLE
+                            bind.titleBar.text = "My Activity"
+                        }
+                    }
+                }
             }
             override fun onTabUnselected(tab: TabLayout.Tab?) {
                 // do nothing

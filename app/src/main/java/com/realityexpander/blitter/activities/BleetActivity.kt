@@ -12,6 +12,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.realityexpander.blitter.databinding.ActivityBleetBinding
@@ -24,9 +25,11 @@ class BleetActivity : AppCompatActivity() {
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val firebaseDB = FirebaseFirestore.getInstance()
     private val firebaseStorage = FirebaseStorage.getInstance().reference
+
     private var userId = FirebaseAuth.getInstance().currentUser?.uid
     private var userName: String? = null
     private var bleetImageUri: Uri? = null // from the android system
+
     private lateinit var resultPhotoLauncher: ActivityResultLauncher<Array<out String>>
 
     companion object {
@@ -49,12 +52,12 @@ class BleetActivity : AppCompatActivity() {
         bind = ActivityBleetBinding.inflate(layoutInflater)
         setContentView(bind.root)
 
-        // Set progress obscurity view
+        // Set progress event eater
         bind.bleetProgressLayout.setOnTouchListener { _, _ ->
             true // this will block any tap events
         }
 
-        // Get Parameters for Bleetin'
+        // Get passed-in Parameters for Bleetin'
         if (intent.hasExtra(PARAM_USER_ID) && intent.hasExtra(PARAM_USER_NAME)) {
             userId = intent.getStringExtra(PARAM_USER_ID)
             userName = intent.getStringExtra(PARAM_USER_NAME)
@@ -65,7 +68,7 @@ class BleetActivity : AppCompatActivity() {
             finish()
         }
 
-        // Setup photo picker
+        // Setup photo picker (must be setup before onResume/onStart)
         resultPhotoLauncher =
             registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
                 if (uri != null) {
@@ -103,9 +106,12 @@ class BleetActivity : AppCompatActivity() {
         val bleetText = bind.bleetText.text.toString()
         val hashTags = getHashTags(bleetText)
 
-        // Prepare Bleet object
+        // Create new firebaseDB document and id
+        val bleetDocument = firebaseDB.collection(DATA_BLEETS_COLLECTION).document()
+
+        // Create Bleet object
         val bleet = Bleet(
-            bleetId = "",  // new bleet
+            bleetDocument.id,
             userName,
             bleetText,
             imageUrl = "",  // no image set yet
@@ -118,15 +124,15 @@ class BleetActivity : AppCompatActivity() {
         // Post Bleet with or without Image
         if (bleetImageUri == null) {
             // post Bleet without image
-            sendBleet(bleet)
+            sendBleet(bleet, bleetDocument)
         } else {
             // post Bleet with image
-            storeBleetImageAndSendBleet(bleet, bleetImageUri)
+            storeBleetImageAndSendBleet(bleet, bleetImageUri, bleetDocument)
         }
     }
 
     // Send Bleet to FirebaseDB Bleet database
-    private fun sendBleet(bleet: Bleet) {
+    private fun sendBleet(bleet: Bleet, bleetDocument: DocumentReference) {
 
         // Show failure message
         fun onSendBleetFailure(e: Exception) {
@@ -137,12 +143,8 @@ class BleetActivity : AppCompatActivity() {
             bind.bleetProgressLayout.visibility = View.GONE
         }
 
-        // Create new firebaseDB document and Bleet id
-        val bleetDocument = firebaseDB.collection(DATA_BLEETS_COLLECTION).document()
-        val bleetWithId = bleet.copy(bleetId = bleetDocument.id)
-
         // Send the Bleet to the FirebaseDB
-        bleetDocument.set(bleetWithId)
+        bleetDocument.set(bleet)
             .addOnSuccessListener {
                 finish()
             }
@@ -152,7 +154,7 @@ class BleetActivity : AppCompatActivity() {
     }
 
     // Save the bleet image to the firebase Storage
-    private fun storeBleetImageAndSendBleet(bleet: Bleet, bleetImageUri: Uri?) {
+    private fun storeBleetImageAndSendBleet(bleet: Bleet, bleetImageUri: Uri?, bleetDocument: DocumentReference) {
 
         // Show failure message
         fun onUploadFailure(e: Exception) {
@@ -169,7 +171,7 @@ class BleetActivity : AppCompatActivity() {
 
             // Upload the Bleet image to firebase Storage
             val bleetImageStorageRef =
-                firebaseStorage.child(DATA_BLEET_IMAGES_STORAGE).child(userId!!)
+                firebaseStorage.child(DATA_BLEET_IMAGES_STORAGE).child(bleet.bleetId!!) // Bleet.bleetId is the name and owner of this image
             bleetImageStorageRef.putFile(bleetImageUri)
                 .addOnSuccessListener {
 
@@ -180,7 +182,7 @@ class BleetActivity : AppCompatActivity() {
                             val bleetImageUrl = bleetImageUri.toString()
                             val bleetToSend = bleet.copy(imageUrl = bleetImageUrl)
 
-                            sendBleet(bleetToSend)
+                            sendBleet(bleetToSend, bleetDocument)
                         }
                         .addOnFailureListener { e ->
                             onUploadFailure(e)
