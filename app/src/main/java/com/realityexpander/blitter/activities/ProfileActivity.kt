@@ -1,7 +1,6 @@
 package com.realityexpander.blitter.activities
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -15,7 +14,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.realityexpander.blitter.R
-import com.realityexpander.blitter.databinding.ActivityHomeBinding
 import com.realityexpander.blitter.databinding.ActivityProfileBinding
 import com.realityexpander.blitter.util.*
 import java.lang.Exception
@@ -156,12 +154,12 @@ class ProfileActivity : AppCompatActivity() {
             bind.profileProgressLayout.visibility = View.VISIBLE
 
             // Upload the new profile image to firebase Storage
-            val profileImageFilePath = firebaseStorage.child(DATA_PROFILE_IMAGES_STORAGE).child(userId!!)
-            profileImageFilePath.putFile(profileImageUri)
+            val profileImageStorageRef = firebaseStorage.child(DATA_PROFILE_IMAGES_STORAGE).child(userId!!)
+            profileImageStorageRef.putFile(profileImageUri)
                 .addOnSuccessListener {
 
                     // Download the new profile image from firebase Storage
-                    profileImageFilePath.downloadUrl
+                    profileImageStorageRef.downloadUrl
                         .addOnSuccessListener { profileImageUri->
 
                             // Update the users' profile in the firebase user database with the new profileImageUrl
