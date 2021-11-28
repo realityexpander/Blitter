@@ -25,9 +25,7 @@ class BleetActivity : AppCompatActivity() {
     private val firebaseDB = FirebaseFirestore.getInstance()
     private val firebaseStorage = FirebaseStorage.getInstance().reference
     private var userId = FirebaseAuth.getInstance().currentUser?.uid
-    private var user: User? = null
     private var userName: String? = null
-    private var bleetImageUrl: String? = null // from the firebaseStorage
     private var bleetImageUri: Uri? = null // from the android system
     private lateinit var resultPhotoLauncher: ActivityResultLauncher<Array<out String>>
 
@@ -68,15 +66,16 @@ class BleetActivity : AppCompatActivity() {
         }
 
         // Setup photo picker
-        resultPhotoLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-            if (uri != null) {
-                Glide.with(this)
-                    .load(uri)
-                    .into(bind.imageIv)
+        resultPhotoLauncher =
+            registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+                if (uri != null) {
+                    Glide.with(this)
+                        .load(uri)
+                        .into(bind.imageIv)
 
-                bleetImageUri = uri
+                    bleetImageUri = uri
+                }
             }
-        }
 
         bind.imageIv.setOnClickListener { view ->
             addImage(view)
@@ -117,7 +116,7 @@ class BleetActivity : AppCompatActivity() {
         )
 
         // Post Bleet with or without Image
-        if(bleetImageUri == null) {
+        if (bleetImageUri == null) {
             // post Bleet without image
             sendBleet(bleet)
         } else {
@@ -126,9 +125,10 @@ class BleetActivity : AppCompatActivity() {
         }
     }
 
+    // Send Bleet to FirebaseDB Bleet database
     private fun sendBleet(bleet: Bleet) {
 
-        // show failure message
+        // Show failure message
         fun onSendBleetFailure(e: Exception) {
             e.printStackTrace()
             Toast.makeText(this,
@@ -154,10 +154,12 @@ class BleetActivity : AppCompatActivity() {
     // Save the bleet image to the firebase Storage
     private fun storeBleetImageAndSendBleet(bleet: Bleet, bleetImageUri: Uri?) {
 
-        // show failure message
+        // Show failure message
         fun onUploadFailure(e: Exception) {
             e.printStackTrace()
-            Toast.makeText(this, "Bleet Image upload failed, please try again later. ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this,
+                "Bleet Image upload failed, please try again later. ${e.localizedMessage}",
+                Toast.LENGTH_LONG).show()
             bind.bleetProgressLayout.visibility = View.GONE
         }
 
@@ -165,25 +167,26 @@ class BleetActivity : AppCompatActivity() {
             Toast.makeText(this, "Uploading...", Toast.LENGTH_LONG).show()
             bind.bleetProgressLayout.visibility = View.VISIBLE
 
-            // Upload the new bleet image to firebase Storage
-            val bleetImageStorageRef = firebaseStorage.child(DATA_BLEET_IMAGES_STORAGE).child(userId!!)
+            // Upload the Bleet image to firebase Storage
+            val bleetImageStorageRef =
+                firebaseStorage.child(DATA_BLEET_IMAGES_STORAGE).child(userId!!)
             bleetImageStorageRef.putFile(bleetImageUri)
                 .addOnSuccessListener {
 
                     // Get the new Bleet image URL from firebase Storage
                     bleetImageStorageRef.downloadUrl
-                        .addOnSuccessListener { bleetImageUri->
-
-                            // Update the Bleet with Image URL, and send the Bleet to FirebaseDB Bleet database
+                        .addOnSuccessListener { bleetImageUri ->
+                            // Update the Bleet with Image URL, then send the Bleet to FirebaseDB Bleet database
                             val bleetImageUrl = bleetImageUri.toString()
                             val bleetToSend = bleet.copy(imageUrl = bleetImageUrl)
+
                             sendBleet(bleetToSend)
                         }
-                        .addOnFailureListener { e->
+                        .addOnFailureListener { e ->
                             onUploadFailure(e)
                         }
                 }
-                .addOnFailureListener { e->
+                .addOnFailureListener { e ->
                     onUploadFailure(e)
                 }
         }
@@ -195,7 +198,7 @@ class BleetActivity : AppCompatActivity() {
     // #abc xyz #123 -> ["abc","123"]
     // #abc xyz #abc -> ["abc"]
     private fun getHashTags(source: String): ArrayList<String> {
-        val tags = Regex("(#\\w+)", RegexOption.IGNORE_CASE)
+        val tags = Regex("(#\\w+)")
             .findAll(source)
             .map { match ->
                 match.value

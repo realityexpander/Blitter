@@ -38,22 +38,23 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(bind.root)
 
         // user not logged in?
-        if(userId == null) {
+        if (userId == null) {
             finish()
         }
 
-        bind.profileProgressLayout.setOnTouchListener{ v, event -> true}
+        bind.profileProgressLayout.setOnTouchListener { v, event -> true }
 
         // Setup photo picker (new way)
-        val resultPhotoLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-            if (uri != null) {
-                Glide.with(this)
-                    .load(uri)
-                    .into(bind.profileImageIv)
+        val resultPhotoLauncher =
+            registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+                if (uri != null) {
+                    Glide.with(this)
+                        .load(uri)
+                        .into(bind.profileImageIv)
 
-                storeProfileImage(uri)
+                    storeProfileImage(uri)
+                }
             }
-        }
         bind.profileImageIv.setOnClickListener {
             resultPhotoLauncher.launch(arrayOf("image/*")) // OpenDocument
         }
@@ -82,7 +83,7 @@ class ProfileActivity : AppCompatActivity() {
                 }
                 bind.profileProgressLayout.visibility = View.GONE
             }
-            .addOnFailureListener { e->
+            .addOnFailureListener { e ->
                 e.printStackTrace()
                 finish()
             }
@@ -102,7 +103,9 @@ class ProfileActivity : AppCompatActivity() {
         // show failure message
         fun onApplyFailure(e: Exception) {
             e.printStackTrace()
-            Toast.makeText(this, "Update failed, please try again. ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this,
+                "Update failed, please try again. ${e.localizedMessage}",
+                Toast.LENGTH_LONG).show()
             bind.profileProgressLayout.visibility = View.GONE
         }
 
@@ -121,12 +124,12 @@ class ProfileActivity : AppCompatActivity() {
                             bind.profileProgressLayout.visibility = View.GONE
                             finish()
                         }
-                        .addOnFailureListener { e->
+                        .addOnFailureListener { e ->
                             onApplyFailure(e)
                         }
                 }
             }
-            .addOnFailureListener { e->
+            .addOnFailureListener { e ->
                 onApplyFailure(e)
             }
     }
@@ -145,7 +148,9 @@ class ProfileActivity : AppCompatActivity() {
         // show failure message
         fun onUploadFailure(e: Exception) {
             e.printStackTrace()
-            Toast.makeText(this, "Profile Image upload failed, please try again later. ${e.localizedMessage}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this,
+                "Profile Image upload failed, please try again later. ${e.localizedMessage}",
+                Toast.LENGTH_LONG).show()
             bind.profileProgressLayout.visibility = View.GONE
         }
 
@@ -154,18 +159,19 @@ class ProfileActivity : AppCompatActivity() {
             bind.profileProgressLayout.visibility = View.VISIBLE
 
             // Upload the new profile image to firebase Storage
-            val profileImageStorageRef = firebaseStorage.child(DATA_PROFILE_IMAGES_STORAGE).child(userId!!)
+            val profileImageStorageRef =
+                firebaseStorage.child(DATA_PROFILE_IMAGES_STORAGE).child(userId!!)
             profileImageStorageRef.putFile(profileImageUri)
                 .addOnSuccessListener {
 
                     // Download the new profile image from firebase Storage
                     profileImageStorageRef.downloadUrl
-                        .addOnSuccessListener { profileImageUri->
+                        .addOnSuccessListener { profileImageUri ->
 
                             // Update the users' profile in the firebase user database with the new profileImageUrl
                             val profileImageUrl = profileImageUri.toString()
 
-                            // create the hashmap for firebaseDB update
+                            // create the hashmap for firebaseDB update object
                             val map = HashMap<String, Any>()
                             map[DATA_USERS_IMAGE_URL] = profileImageUrl
                             map[DATA_USERS_UPDATED_TIMESTAMP] = System.currentTimeMillis()
@@ -176,18 +182,20 @@ class ProfileActivity : AppCompatActivity() {
                                 .addOnSuccessListener {
                                     // bind.profileImageIv.loadUrl(profileImageUrl, R.drawable.default_user) // we optimistically loaded the profile image after it was picked
 
-                                    Toast.makeText(this, "Profile image update successful", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this,
+                                        "Profile image update successful",
+                                        Toast.LENGTH_SHORT).show()
                                     bind.profileProgressLayout.visibility = View.GONE
                                 }
-                                .addOnFailureListener { e->
+                                .addOnFailureListener { e ->
                                     onUploadFailure(e)
                                 }
                         }
-                        .addOnFailureListener { e->
+                        .addOnFailureListener { e ->
                             onUploadFailure(e)
                         }
                 }
-                .addOnFailureListener { e->
+                .addOnFailureListener { e ->
                     onUploadFailure(e)
                 }
         }
