@@ -11,16 +11,25 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.realityexpander.blitter.R
 import com.realityexpander.blitter.databinding.ActivityHomeBinding
+import com.realityexpander.blitter.fragments.BlitterFragment
 import com.realityexpander.blitter.fragments.HomeFragment
 import com.realityexpander.blitter.fragments.MyActivityFragment
 import com.realityexpander.blitter.fragments.SearchFragment
+import com.realityexpander.blitter.util.DATA_USERS_COLLECTION
+import com.realityexpander.blitter.util.User
+import com.realityexpander.blitter.util.loadUrl
 
 
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var bind: ActivityHomeBinding
     private val firebaseAuth = FirebaseAuth.getInstance()
+    private val firebaseDB = FirebaseFirestore.getInstance()
+    private val userId = FirebaseAuth.getInstance().currentUser?.uid
+    private var user: User? = null
 
     private lateinit var onTabSelectedListener: TabLayout.OnTabSelectedListener
     private lateinit var sectionPageAdapter : SectionPageAdapter
@@ -41,6 +50,12 @@ class HomeActivity : AppCompatActivity() {
         bind = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(bind.root)
 
+        // user not logged in?
+        if(userId == null) {
+            startActivity(LoginActivity.newIntent(this))
+            finish()
+        }
+
         // Setup the Section ViewPager adapter
         sectionPageAdapter = SectionPageAdapter(this)
         bind.viewPager.adapter = sectionPageAdapter
@@ -57,9 +72,35 @@ class HomeActivity : AppCompatActivity() {
        // bind.tabLayout.getTabAt(TabLayoutItem.HOME.ordinal)!!.text = "Home"
 
         // Nav to profile activity
-        bind.logo.setOnClickListener { view ->
+        bind.profileImageIv.setOnClickListener { view ->
             startActivity(ProfileActivity.newIntent(this))
         }
+
+        // Create a new Bleet
+        bind.fab.setOnClickListener {
+            startActivity(BleetActivity.newIntent(this, userId, user?.username))
+        }
+
+        populateInfo()
+    }
+
+    private fun populateInfo() {
+        bind.homeProgressLayout.visibility = View.VISIBLE
+
+        firebaseDB.collection(DATA_USERS_COLLECTION).document(userId!!).get()
+            .addOnSuccessListener { documentSnapshot ->
+                user = documentSnapshot.toObject(User::class.java) // load the user data
+
+                // Load the profileImage for the user from the firebase Storage
+                user?.imageUrl.let { profileImageUrl ->
+                    bind.profileImageIv.loadUrl(profileImageUrl, R.drawable.default_user)
+                }
+                bind.homeProgressLayout.visibility = View.GONE
+            }
+            .addOnFailureListener { e->
+                e.printStackTrace()
+                finish()
+            }
     }
 
     inner class SectionPageAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {

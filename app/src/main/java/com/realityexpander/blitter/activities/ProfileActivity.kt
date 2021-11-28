@@ -71,6 +71,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun populateInfo() {
         bind.profileProgressLayout.visibility = View.VISIBLE
+
         firebaseDB.collection(DATA_USERS_COLLECTION).document(userId!!).get()
             .addOnSuccessListener { documentSnapshot ->
                 val user = documentSnapshot.toObject(User::class.java)

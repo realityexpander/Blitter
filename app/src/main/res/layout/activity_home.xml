@@ -26,7 +26,7 @@
                 app:cardCornerRadius="@dimen/standard_corner_radius">
 
             <ImageView
-                    android:id="@+id/logo"
+                    android:id="@+id/profile_image_iv"
                     android:layout_width="@dimen/standard_image"
                     android:layout_height="@dimen/standard_image"
                     android:foreground="?attr/selectableItemBackground"
