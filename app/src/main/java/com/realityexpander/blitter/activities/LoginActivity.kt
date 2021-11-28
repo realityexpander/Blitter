@@ -10,6 +10,7 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.realityexpander.blitter.databinding.ActivityLoginBinding
 import com.realityexpander.blitter.util.ActivityUtil
+import java.lang.Exception
 
 // Firebase dashboard
 // https://console.firebase.google.com/u/3/project/blitter-7f038/storage/blitter-7f038.appspot.com/rules
@@ -43,12 +44,21 @@ class LoginActivity : AppCompatActivity() {
         ActivityUtil.setTextChangeListener(bind.passwordET, bind.passwordTIL)
 
         // After pressing Login button, loginProgressLayout obscures the login screen, this will eat the tap events:
-        bind.loginProgressLayout.setOnTouchListener { v, event ->
+        bind.loginProgressLayout.setOnTouchListener { _, _ ->
             true // this will block any tap events
         }
     }
 
-    fun onLogin(v: View) {
+    @Suppress("UNUSED_PARAMETER")
+    fun onLogin(unused: View) {
+
+        // show failure message
+        fun onLoginFailure(e: Exception? = Exception("unknown error")) {
+            e?.printStackTrace()
+            Toast.makeText(this, "Login failed, please try again. ${e?.localizedMessage}", Toast.LENGTH_LONG).show()
+            bind.loginProgressLayout.visibility = View.GONE
+        }
+
         var proceed = true
 
         if(bind.emailET.text.isNullOrEmpty()) {
@@ -63,23 +73,23 @@ class LoginActivity : AppCompatActivity() {
         }
         if(proceed) {
             bind.loginProgressLayout.visibility = View.VISIBLE
-            firebaseAuth.signInWithEmailAndPassword(bind.emailET.text.toString(), bind.passwordET.text.toString())
+            firebaseAuth.signInWithEmailAndPassword(
+                bind.emailET.text.toString(),
+                bind.passwordET.text.toString()
+            )
                 .addOnCompleteListener { task ->
                     if(!task.isSuccessful) {
-                        bind.loginProgressLayout.visibility = View.GONE
-                        Toast.makeText(this@LoginActivity,
-                            "Login error: ${task.exception?.localizedMessage}",
-                            Toast.LENGTH_SHORT).show()
+                        onLoginFailure(task.exception)
                     }
                 }
                 .addOnFailureListener { e ->
-                    e.printStackTrace()
-                    bind.loginProgressLayout.visibility = View.GONE
+                    onLoginFailure(e)
                 }
         }
     }
 
-    fun goToSignUp(v: View) {
+    @Suppress("UNUSED_PARAMETER")
+    fun goToSignUp(unused: View) {
         startActivity(SignupActivity.newIntent(this))
         finish()
     }

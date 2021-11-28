@@ -7,6 +7,7 @@
         <entry key="app/src/main/res/drawable/selector_myactivity.xml" value="0.2865" />
         <entry key="app/src/main/res/drawable/selector_search.xml" value="0.2865" />
         <entry key="app/src/main/res/drawable/standard_button_rounded.xml" value="0.386" />
+        <entry key="app/src/main/res/layout/activity_bleet.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.3859375" />

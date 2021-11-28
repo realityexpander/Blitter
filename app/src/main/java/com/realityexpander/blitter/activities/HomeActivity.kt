@@ -56,6 +56,11 @@ class HomeActivity : AppCompatActivity() {
             finish()
         }
 
+        // Set progress obscurity view
+        bind.homeProgressLayout.setOnTouchListener { _, _ ->
+            true // this will block any tap events
+        }
+
         // Setup the Section ViewPager adapter
         sectionPageAdapter = SectionPageAdapter(this)
         bind.viewPager.adapter = sectionPageAdapter
@@ -72,7 +77,7 @@ class HomeActivity : AppCompatActivity() {
        // bind.tabLayout.getTabAt(TabLayoutItem.HOME.ordinal)!!.text = "Home"
 
         // Nav to profile activity
-        bind.profileImageIv.setOnClickListener { view ->
+        bind.profileImageIv.setOnClickListener { _ ->
             startActivity(ProfileActivity.newIntent(this))
         }
 
@@ -80,8 +85,6 @@ class HomeActivity : AppCompatActivity() {
         bind.fab.setOnClickListener {
             startActivity(BleetActivity.newIntent(this, userId, user?.username))
         }
-
-        populateInfo()
     }
 
     private fun populateInfo() {
@@ -128,6 +131,8 @@ class HomeActivity : AppCompatActivity() {
             startActivity(LoginActivity.newIntent(this))
             finish()
         }
+
+        populateInfo()
 
         // Nav to new page when bottom tab item is selected
         onTabSelectedListener = object: TabLayout.OnTabSelectedListener {

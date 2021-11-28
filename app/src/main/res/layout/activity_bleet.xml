@@ -6,4 +6,58 @@
         android:layout_height="match_parent"
         tools:context=".activities.BleetActivity">
 
+
+    <EditText
+            android:id="@+id/bleetText"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:hint="@string/hint_whats_bleetin"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+            android:id="@+id/imageIv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:minHeight="200dp"
+            android:onClick="addImage"
+            android:scaleType="center"
+            app:layout_constraintTop_toBottomOf="@id/bleetText" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_3x"
+            android:onClick="postBleet"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/send" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAddImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/grid_3x"
+            android:onClick="addImage"
+            app:layout_constraintBottom_toTopOf="@id/fabSend"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/camera" />
+
+    <LinearLayout
+            android:id="@+id/bleetProgressLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/transparent_grey"
+            android:elevation="5dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+        <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

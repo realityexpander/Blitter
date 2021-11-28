@@ -5,6 +5,7 @@
     <string name="hint_email">Email</string>
     <string name="hint_password">Password</string>
     <string name="hint_search">Search…</string>
+    <string name="hint_whats_bleetin">Whats Bleetin\'?</string>
 
     <string name="button_login">Login</string>
     <string name="button_sign_up_link_text">No account? Go to Sign up</string>
@@ -16,5 +17,6 @@
 
     <string name="home_screen_title_text">Home</string>
     <string name="content_description_write_blit">Write Blit</string>
+
 
 </resources>

@@ -15,6 +15,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.realityexpander.blitter.R
+import com.realityexpander.blitter.databinding.ActivityHomeBinding
 import com.realityexpander.blitter.databinding.ActivityProfileBinding
 import com.realityexpander.blitter.util.*
 import java.lang.Exception
