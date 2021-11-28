@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <TextView
+            android:id="@+id/bleetUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            tools:text="Bleeter Username" />
+
+    <TextView
+            android:id="@+id/bleetText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:text=""
+            android:textSize="@dimen/standard_text_size"
+            app:layout_constraintTop_toBottomOf="@id/bleetUsername"
+            tools:text="Bleet text" />
+
+    <ImageView
+            android:id="@+id/bleetImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="centerInside"
+            app:layout_constraintTop_toBottomOf="@id/bleetText"
+            tools:src="@drawable/default_user" />
+
+    <TextView
+            android:id="@+id/bleetDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            app:layout_constraintTop_toBottomOf="@id/bleetImage"
+            tools:text="Tue 1/2/2021 3:33pm" />
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_2x"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/bleetDate">
+
+        <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+            <ImageView
+                    android:id="@+id/bleetLike"
+                    android:layout_width="@dimen/small_image"
+                    android:layout_height="@dimen/small_image"
+                    android:background="@null"
+                    android:padding="@dimen/grid_1x"
+                    android:scaleType="centerInside"
+                    app:srcCompat="@drawable/like_inactive" />
+
+            <TextView
+                    android:id="@+id/bleetLikeCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/grid_2x"
+                    android:textSize="@dimen/standard_text_size"
+                    tools:text="5" />
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+            <ImageView
+                    android:id="@+id/bleetRebleet"
+                    android:layout_width="@dimen/small_image"
+                    android:layout_height="@dimen/small_image"
+                    android:background="@null"
+                    android:padding="@dimen/grid_1x"
+                    android:scaleType="centerInside"
+                    app:srcCompat="@drawable/retweet_inactive" />
+
+            <TextView
+                    android:id="@+id/bleetRebleetCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/grid_2x"
+                    android:textSize="@dimen/standard_text_size"
+                    tools:text="10" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
