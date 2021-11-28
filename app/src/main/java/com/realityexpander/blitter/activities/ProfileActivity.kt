@@ -1,27 +1,34 @@
 package com.realityexpander.blitter.activities
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.core.content.ContextCompat.startActivity
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.realityexpander.blitter.R
 import com.realityexpander.blitter.databinding.ActivityProfileBinding
 import com.realityexpander.blitter.util.*
+import java.io.File
 
 class ProfileActivity : AppCompatActivity() {
 
     private lateinit var bind: ActivityProfileBinding
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val firebaseDB = FirebaseFirestore.getInstance()
+    private val firebaseStorage = FirebaseStorage.getInstance().reference
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
+    private var imageUrl: String? = null
 
     companion object {
-
         // navigate to this activity
         fun newIntent(context: Context) = Intent(context, ProfileActivity::class.java)
     }
@@ -39,6 +46,25 @@ class ProfileActivity : AppCompatActivity() {
 
         bind.profileProgressLayout.setOnTouchListener{ v, event -> true}
 
+        // Setup photo picker (new way)
+        var resultPhotoLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            if (uri != null) {
+                Glide.with(this)
+                    .load(uri)
+                    .into(bind.photoIV)
+            }
+        }
+        bind.photoIV.setOnClickListener {
+            resultPhotoLauncher.launch("image/*")
+        }
+
+//        // Setup photo picker (deprecated way)
+//        bind.photoIV.setOnClickListener {
+//            val intent = Intent(Intent.ACTION_PICK) // open file/image picker
+//            intent.type = "image/*"
+//            startActivityForResult(intent, REQUEST_CODE_PHOTO)
+//        }
+
         populateInfo()
     }
 
@@ -50,6 +76,9 @@ class ProfileActivity : AppCompatActivity() {
                 bind.usernameET.setText(user?.username)
                 bind.emailET.setText(user?.email)
                 bind.profileProgressLayout.visibility = View.GONE
+                imageUrl.let {
+                    bind.photoIV.loadUrl(user?.imageUrl, R.drawable.logo)
+                }
             }
             .addOnFailureListener { e->
                 e.printStackTrace()
@@ -93,6 +122,21 @@ class ProfileActivity : AppCompatActivity() {
                 bind.profileProgressLayout.visibility = View.GONE
             }
     }
+
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//        if(resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_PHOTO) {
+//            storeImage(data?.data)
+//        }
+//    }
+
+//    private fun storeImage(imageUri: Uri?) {
+//        imageUri?.let {
+//            Toast.makeText(this, "Uploading...", Toast.LENGTH_LONG).show()
+//            bind.profileProgressLayout.visibility = View.VISIBLE
+//            val filePath = firebaseStorage.child()
+//        }
+//    }
 
     fun onLogout(v: View) {
         firebaseAuth.signOut()

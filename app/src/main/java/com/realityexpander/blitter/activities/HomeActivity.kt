@@ -32,6 +32,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     companion object {
+        // navigate to home activity
         fun newIntent(context: Context) = Intent(context, HomeActivity::class.java)
     }
 
@@ -46,7 +47,7 @@ class HomeActivity : AppCompatActivity() {
         bind.viewPager.registerOnPageChangeCallback( object: ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                sectionPageAdapter.selectTab(position) // update the tabs for the newly swiped-to fragment
+                sectionPageAdapter.selectTabItem(position) // set the selected tab for the swiped-to fragment
             }
         })
         // Add page transformer: https://developer.android.com/training/animation/screen-slide-2#pagetransformer
@@ -73,7 +74,7 @@ class HomeActivity : AppCompatActivity() {
         }
 
         // Utility to Select the tab at position in tabLayout
-        fun selectTab(position: Int) {
+        fun selectTabItem(position: Int) {
             bind.tabLayout.selectTab(bind.tabLayout.getTabAt(position), true)
         }
     }

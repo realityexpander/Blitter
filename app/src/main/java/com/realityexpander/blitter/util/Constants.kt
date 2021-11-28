@@ -1,5 +1,6 @@
 package com.realityexpander.blitter.util
 
+// Firebase Database
 const val DATA_USERS_COLLECTION = "DATA_USERS" // name of the collection
 const val DATA_USERS_EMAIL = "email"
 const val DATA_USERS_USERNAME = "username"
@@ -8,3 +9,9 @@ const val DATA_USERS_FOLLOW_HASHTAGS = "followHashtags"
 const val DATA_USERS_FOLLOW_USERS = "followUsers"
 const val DATA_USERS_SIGNUP_TIMESTAMP = "SignupTimestamp"
 const val DATA_USERS_UPDATED_TIMESTAMP = "updatedTimestamp"
+
+
+// Firebase Storage
+const val DATA_PROFILE_IMAGES = "DATA_PROFILE_IMAGES" // name of the collection
+
+val REQUEST_CODE_PHOTO = 1001
