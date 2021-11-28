@@ -8,7 +8,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -43,24 +45,28 @@ class ProfileActivity : AppCompatActivity() {
 
         bind.profileProgressLayout.setOnTouchListener{ v, event -> true}
 
-//        // Setup photo picker (new way)
-//        var resultPhotoLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        // Setup photo picker (new way)
+        val resultPhotoLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument() /*.TakePicturePreview()*/ /*GetContent()*/ ) { uri ->
 //            if (uri != null) {
 //                Glide.with(this)
 //                    .load(uri)
-//                    .into(bind.photoIV)
+//                    .into(bind.profileImageIv)
+//
+//                storeImage(uri)
 //            }
-//        }
-//        bind.photoIV.setOnClickListener {
-//            resultPhotoLauncher.launch("image/*")
-//        }
-
-        // Setup photo picker (deprecated way)
-        bind.profileImageIv.setOnClickListener {
-            val intent = Intent(Intent.ACTION_PICK) // open file/image picker
-            intent.type = "image/*"
-            startActivityForResult(intent, REQUEST_CODE_PHOTO)
         }
+        bind.profileImageIv.setOnClickListener {
+//            resultPhotoLauncher.launch("image/*") // GetContent()
+            resultPhotoLauncher.launch(arrayOf("image/*")) // OpenDocument
+//            resultPhotoLauncher.launch(null) // TakePicturePreview
+        }
+
+//        // Setup photo picker (deprecated way)
+//        bind.profileImageIv.setOnClickListener {
+//            val intent = Intent(Intent.ACTION_PICK) // open file/image picker
+//            intent.type = "image/*"
+//            startActivityForResult(intent, REQUEST_CODE_PHOTO)
+//        }
 
         populateInfo()
     }
