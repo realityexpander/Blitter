@@ -7,11 +7,13 @@
         tools:context=".fragments.SearchFragment">
 
     <ImageView
+            android:id="@+id/followHashtagIv"
             android:layout_width="@dimen/standard_image"
             android:layout_height="@dimen/standard_image"
             android:layout_margin="@dimen/grid_2x"
             android:elevation="1dp"
             android:scaleType="centerInside"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/swipeRefresh"
             app:srcCompat="@drawable/follow_inactive" />
@@ -19,11 +21,13 @@
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefresh"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/tweetList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/bleet_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

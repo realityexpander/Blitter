@@ -52,7 +52,7 @@ class BleetActivity : AppCompatActivity() {
         bind = ActivityBleetBinding.inflate(layoutInflater)
         setContentView(bind.root)
 
-        // Set progress event eater
+        // Setup progress tap-eater
         bind.bleetProgressLayout.setOnTouchListener { _, _ ->
             true // this will block any tap events
         }
@@ -80,6 +80,7 @@ class BleetActivity : AppCompatActivity() {
                 }
             }
 
+        // Click on image to replace the image
         bind.imageIv.setOnClickListener { view ->
             addImage(view)
         }
@@ -116,8 +117,8 @@ class BleetActivity : AppCompatActivity() {
             bleetText,
             imageUrl = "",  // no image set yet
             hashTags,
-            userIds = arrayListOf(userId!!),
-            likes = arrayListOf(),
+            rebleetUserIds = arrayListOf(userId!!),
+            likesUserIds = arrayListOf(),
             timeStamp = System.currentTimeMillis()
         )
 
@@ -203,7 +204,7 @@ class BleetActivity : AppCompatActivity() {
         val tags = Regex("(#\\w+)")
             .findAll(source)
             .map { match ->
-                match.value
+                match.value.split("#")[1]
             }
             .toSet()
 

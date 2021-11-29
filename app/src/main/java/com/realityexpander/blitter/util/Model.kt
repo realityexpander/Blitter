@@ -16,7 +16,7 @@ data class Bleet(
     val text: String? = "",
     val imageUrl: String? = "",
     val hashTags: ArrayList<String>? = arrayListOf(),
-    val userIds: ArrayList<String>? = arrayListOf(), // list of people who re-tweeted this tweet
-    val likes: ArrayList<String>? = arrayListOf(),
+    val rebleetUserIds: ArrayList<String>? = arrayListOf(), // list of people who re-tweeted this tweet
+    val likesUserIds: ArrayList<String>? = arrayListOf(),
     val timeStamp: Long? = 0,
 )

@@ -9,11 +9,14 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.realityexpander.blitter.R
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 fun ImageView.loadUrl(url: String?, errorDrawable: Int = R.drawable.empty) {
     context?.let {
         val options = RequestOptions()
             .placeholder(progressDrawable(context))
+            .fallback(progressDrawable(context))
             .error(errorDrawable)
 
         Glide.with(context.applicationContext)
@@ -29,4 +32,13 @@ fun progressDrawable(context: Context) : CircularProgressDrawable {
         centerRadius = 30f
         start()
     }
+}
+
+fun Long?.getDateString(): String {
+    var dateLong: Long? = this ?: return "unknown date"
+
+    val sdf = SimpleDateFormat("EEE MMM dd, yyyy hh:mm a", Locale.US)
+    val resultDate = Date(dateLong!!)
+
+    return sdf.format(resultDate).lowercase(Locale.US)
 }

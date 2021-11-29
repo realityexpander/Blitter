@@ -6,6 +6,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -15,7 +16,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.realityexpander.blitter.R
 import com.realityexpander.blitter.databinding.ActivityHomeBinding
-import com.realityexpander.blitter.fragments.BlitterFragment
 import com.realityexpander.blitter.fragments.HomeFragment
 import com.realityexpander.blitter.fragments.MyActivityFragment
 import com.realityexpander.blitter.fragments.SearchFragment
@@ -33,7 +33,11 @@ class HomeActivity : AppCompatActivity() {
     private var user: User? = null
 
     private lateinit var onTabSelectedListener: TabLayout.OnTabSelectedListener
-    private lateinit var sectionPageAdapter : SectionPageAdapter
+    private lateinit var sectionPageAdapter: SectionPageAdapter
+
+    private lateinit var homeFragment: HomeFragment
+    private lateinit var searchFragment: SearchFragment
+    private lateinit var myActivityFragment: MyActivityFragment
 
     private enum class TabLayoutItem {
         HOME,
@@ -53,12 +57,12 @@ class HomeActivity : AppCompatActivity() {
         setContentView(bind.root)
 
         // user not logged in?
-        if(userId == null) {
+        if (userId == null) {
             startActivity(LoginActivity.newIntent(this))
             finish()
         }
 
-        // Set progress obscurity view
+        // Setup progress tap-eater
         bind.homeProgressLayout.setOnTouchListener { _, _ ->
             true // this will block any tap events
         }
@@ -66,7 +70,7 @@ class HomeActivity : AppCompatActivity() {
         // Setup the Section ViewPager adapter
         sectionPageAdapter = SectionPageAdapter(this)
         bind.viewPager.adapter = sectionPageAdapter
-        bind.viewPager.registerOnPageChangeCallback( object: ViewPager2.OnPageChangeCallback() {
+        bind.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 sectionPageAdapter.selectTabItem(position) // set the selected tab for the swiped-to fragment
@@ -75,8 +79,8 @@ class HomeActivity : AppCompatActivity() {
         // Add page transformer: https://developer.android.com/training/animation/screen-slide-2#pagetransformer
         bind.viewPager.setPageTransformer(ZoomOutPageTransformer())
 
-       // // example to Rename the tabs
-       // bind.tabLayout.getTabAt(TabLayoutItem.HOME.ordinal)!!.text = "Home"
+        // // example to Rename the tabs
+        // bind.tabLayout.getTabAt(TabLayoutItem.HOME.ordinal)!!.text = "Home"
 
         // Nav to profile activity
         bind.profileImageIv.setOnClickListener { _ ->
@@ -86,6 +90,20 @@ class HomeActivity : AppCompatActivity() {
         // Create a new Bleet
         bind.fab.setOnClickListener {
             startActivity(BleetActivity.newIntent(this, userId, user?.username))
+        }
+
+        // Get the "search" text
+        bind.search.setOnEditorActionListener { v, actionId, _ ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE,
+                EditorInfo.IME_ACTION_SEARCH -> {
+                    searchFragment.newHashTagSearch(v?.text.toString())
+                    true
+                }
+                else -> {
+                    false
+                }
+            }
         }
     }
 
@@ -102,7 +120,7 @@ class HomeActivity : AppCompatActivity() {
                 }
                 bind.homeProgressLayout.visibility = View.GONE
             }
-            .addOnFailureListener { e->
+            .addOnFailureListener { e ->
                 e.printStackTrace()
                 finish()
             }
@@ -112,11 +130,20 @@ class HomeActivity : AppCompatActivity() {
         override fun getItemCount(): Int = TabLayoutItem.values().size
 
         override fun createFragment(position: Int): Fragment {
-            return when(TabLayoutItem.values()[position]) {
-              TabLayoutItem.HOME -> HomeFragment()
-              TabLayoutItem.SEARCH -> SearchFragment()
-              TabLayoutItem.MYACTIVITY -> MyActivityFragment()
-          }
+            return when (TabLayoutItem.values()[position]) {
+                TabLayoutItem.HOME -> {
+                    homeFragment = HomeFragment()
+                    homeFragment
+                }
+                TabLayoutItem.SEARCH -> {
+                    searchFragment = SearchFragment()
+                    searchFragment
+                }
+                TabLayoutItem.MYACTIVITY -> {
+                    myActivityFragment = MyActivityFragment()
+                    myActivityFragment
+                }
+            }
         }
 
         // Utility to Select the tab at position in tabLayout
@@ -129,7 +156,7 @@ class HomeActivity : AppCompatActivity() {
         super.onResume()
 
         // Check if user if logged out
-        if(firebaseAuth.currentUser?.uid == null) {
+        if (firebaseAuth.currentUser?.uid == null) {
             startActivity(LoginActivity.newIntent(this))
             finish()
         }
@@ -137,12 +164,12 @@ class HomeActivity : AppCompatActivity() {
         populateInfo()
 
         // Nav to new page when bottom tab item is selected
-        onTabSelectedListener = object: TabLayout.OnTabSelectedListener {
+        onTabSelectedListener = object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 tab?.position?.let { position ->
                     bind.viewPager.setCurrentItem(position, true)
 
-                    when(TabLayoutItem.values()[position]) {
+                    when (TabLayoutItem.values()[position]) {
                         TabLayoutItem.HOME -> {
                             bind.searchBar.visibility = View.INVISIBLE
                             bind.titleBar.text = "Home"
@@ -157,9 +184,11 @@ class HomeActivity : AppCompatActivity() {
                     }
                 }
             }
+
             override fun onTabUnselected(tab: TabLayout.Tab?) {
                 // do nothing
             }
+
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 // do nothing
             }
