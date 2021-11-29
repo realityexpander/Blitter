@@ -5,7 +5,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.realityexpander.blitter.util.Bleet
 import com.realityexpander.blitter.util.DATA_BLEETS_COLLECTION
-import com.realityexpander.blitter.util.DATA_BLEETS_LIKES_USERIDS
+import com.realityexpander.blitter.util.DATA_BLEETS_LIKE_USER_IDS
 import com.realityexpander.blitter.util.User
 
 class BlitterListenerImpl(val bleetListRv: RecyclerView,
@@ -22,7 +22,7 @@ class BlitterListenerImpl(val bleetListRv: RecyclerView,
     override fun onLike(bleet: Bleet?) {
         bleet?.let {
             bleetListRv.isClickable = false
-            val likesUserIds = bleet.likesUserIds
+            val likesUserIds = bleet.likeUserIds
 
             if(likesUserIds?.contains(currentUserId) == true) {
                 likesUserIds.remove(currentUserId)
@@ -32,10 +32,10 @@ class BlitterListenerImpl(val bleetListRv: RecyclerView,
 
             firebaseDB.collection(DATA_BLEETS_COLLECTION)
                 .document(bleet.bleetId!!)
-                .update(DATA_BLEETS_LIKES_USERIDS, likesUserIds)
+                .update(DATA_BLEETS_LIKE_USER_IDS, likesUserIds)
                 .addOnSuccessListener {
-                    bleetListRv.isClickable = true
                     homeCallback?.onRefresh()
+                    bleetListRv.isClickable = true
                 }
                 .addOnFailureListener { e->
                     println(e.localizedMessage)

@@ -118,8 +118,8 @@ class BleetActivity : AppCompatActivity() {
             imageUrl = "",  // no image set yet
             hashTags,
             rebleetUserIds = arrayListOf(currentUserId!!),
-            likesUserIds = arrayListOf(),
-            timeStamp = System.currentTimeMillis()
+            likeUserIds = arrayListOf(),
+            timestamp = System.currentTimeMillis()
         )
 
         // Post Bleet with or without Image

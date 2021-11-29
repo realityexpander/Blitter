@@ -150,7 +150,7 @@ class SearchFragment : BlitterFragment() {
                     }
                 }
                 val sortedBleets = bleets.sortedWith(
-                    compareByDescending { it.timeStamp }
+                    compareByDescending { it.timestamp }
                 )
 
                 bleetListAdapter?.updateBleets(sortedBleets)

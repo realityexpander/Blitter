@@ -59,7 +59,7 @@ class BleetListAdapter(val userId: String, val bleets: ArrayList<Bleet>) :
 
         fun bind(userId: String, bleet: Bleet, listener: BleetListener?) {
 
-            userName.text = bleet.userName
+            userName.text = bleet.username
             text.text = bleet.text
 
             if (bleet.imageUrl.isNullOrEmpty()) {
@@ -69,8 +69,8 @@ class BleetListAdapter(val userId: String, val bleets: ArrayList<Bleet>) :
                 image.loadUrl(bleet.imageUrl)
             }
 
-            date.text = bleet.timeStamp.getDateString()
-            likeCount.text = bleet.likesUserIds
+            date.text = bleet.timestamp.getDateString()
+            likeCount.text = bleet.likeUserIds
                 ?.size?.coerceAtLeast(1).toString()
             rebleetCount.text = bleet.rebleetUserIds
                 ?.size?.minus(1)
@@ -83,7 +83,7 @@ class BleetListAdapter(val userId: String, val bleets: ArrayList<Bleet>) :
 
             // === Likes ===
             // If the likes of this bleet contain this userId, set it to liked
-            if (bleet.likesUserIds?.contains(userId) == true) {
+            if (bleet.likeUserIds?.contains(userId) == true) {
                 likeButton.setImageDrawable(ContextCompat.getDrawable(likeButton.context,
                     R.drawable.like))
             } else {
