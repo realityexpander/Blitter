@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.realityexpander.blitter.R
 import com.realityexpander.blitter.adapters.BleetListAdapter
 import com.realityexpander.blitter.databinding.FragmentSearchBinding
+import com.realityexpander.blitter.listeners.BlitterListenerImpl
 import com.realityexpander.blitter.util.*
 import java.lang.Exception
 import java.util.*
@@ -38,10 +39,12 @@ class SearchFragment : BlitterFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        bleetListener = BlitterListenerImpl(bind.bleetListRv, currentUser, homeCallback)
+
         // Setup the listAdapter
         bleetListAdapter = BleetListAdapter(currentUserId!!, arrayListOf())
         bleetListAdapter?.setListener(bleetListener)
-        bind.bleetList.apply {
+        bind.bleetListRv.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = bleetListAdapter
             addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))

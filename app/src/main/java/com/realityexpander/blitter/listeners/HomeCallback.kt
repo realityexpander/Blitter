@@ -2,6 +2,7 @@ package com.realityexpander.blitter.listeners
 
 interface HomeCallback {
 
-    fun onUserUpdated() {
-    }
+    fun onUserUpdated()
+
+    fun onRefresh()
 }

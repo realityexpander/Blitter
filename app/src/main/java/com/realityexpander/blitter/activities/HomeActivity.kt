@@ -164,6 +164,10 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
         populate()
     }
 
+    override fun onRefresh() {
+        currentFragment.updateList()
+    }
+
     private fun updateFragmentToCurrentUser() {
         homeFragment.setUser(currentUser)
         searchFragment.setUser(currentUser)

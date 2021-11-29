@@ -16,7 +16,7 @@ abstract class BlitterFragment: Fragment() {
     protected var currentUser: User? = null
 
     protected var bleetListAdapter: BleetListAdapter? = null  // why not late init?
-    protected val bleetListener: BleetListener? = null // why not late init?
+    protected var bleetListener: BleetListener? = null // why not late init?
     protected var homeCallback: HomeCallback? = null
 
     fun setUser(user: User?) {
