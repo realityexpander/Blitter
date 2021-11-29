@@ -25,8 +25,8 @@ class BleetActivity : AppCompatActivity() {
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val firebaseDB = FirebaseFirestore.getInstance()
     private val firebaseStorage = FirebaseStorage.getInstance().reference
+    private var currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
-    private var userId = FirebaseAuth.getInstance().currentUser?.uid
     private var userName: String? = null
     private var bleetImageUri: Uri? = null // from the android system
 
@@ -57,9 +57,9 @@ class BleetActivity : AppCompatActivity() {
             true // this will block any tap events
         }
 
-        // Get passed-in Parameters for Bleetin'
+        // Get passed-in Parameters to create a new Bleet
         if (intent.hasExtra(PARAM_USER_ID) && intent.hasExtra(PARAM_USER_NAME)) {
-            userId = intent.getStringExtra(PARAM_USER_ID)
+            currentUserId = intent.getStringExtra(PARAM_USER_ID)
             userName = intent.getStringExtra(PARAM_USER_NAME)
         } else {
             Toast.makeText(this,
@@ -117,7 +117,7 @@ class BleetActivity : AppCompatActivity() {
             bleetText,
             imageUrl = "",  // no image set yet
             hashTags,
-            rebleetUserIds = arrayListOf(userId!!),
+            rebleetUserIds = arrayListOf(currentUserId!!),
             likesUserIds = arrayListOf(),
             timeStamp = System.currentTimeMillis()
         )

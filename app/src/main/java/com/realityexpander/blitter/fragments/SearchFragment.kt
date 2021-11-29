@@ -39,7 +39,7 @@ class SearchFragment : BlitterFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Setup the listAdapter
-        bleetListAdapter = BleetListAdapter(userId!!, arrayListOf())
+        bleetListAdapter = BleetListAdapter(currentUserId!!, arrayListOf())
         bleetListAdapter?.setListener(bleetListener)
         bind.bleetList.apply {
             layoutManager = LinearLayoutManager(context)
@@ -76,7 +76,7 @@ class SearchFragment : BlitterFragment() {
 
             // Save the updated list of hashtags for the user in the firebaseDB
             firebaseDB.collection(DATA_USERS_COLLECTION)
-                .document(userId)
+                .document(currentUserId)
                 .update(DATA_USERS_FOLLOW_HASHTAGS, followHashtags)
                 .addOnSuccessListener {
                     homeCallback?.onUserUpdated()
@@ -88,15 +88,16 @@ class SearchFragment : BlitterFragment() {
         }
     }
 
-    // Update with a new search tag
-    fun newHashtagSearch(term: String) {
+    // Search for a new search tag
+    fun onNewHashtagSearch(term: String) {
         currentSearchHashtag = term
         bind.followHashtagIv.visibility = View.VISIBLE
 
         updateList()
     }
 
-    fun newHashtagKeyPress(term: String) {
+    // Update the hash tag follow button based on the search term each keypress
+    fun onHashtagSearchTermKeyPress(term: String) {
         currentSearchHashtag = term
         bind.followHashtagIv.visibility = View.VISIBLE
 

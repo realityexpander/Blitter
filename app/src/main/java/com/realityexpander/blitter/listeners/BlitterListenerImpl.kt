@@ -5,8 +5,8 @@ import com.realityexpander.blitter.util.Bleet
 import com.realityexpander.blitter.util.User
 
 class BlitterListenerImpl(val bleetList: RecyclerView,
-                          val user: User?,
-                          val callback: HomeCallback
+                          val currentUser: User?,
+                          val homeCallback: HomeCallback
 ): BleetListener {
     override fun onLayoutClick(bleet: Bleet?) {
         TODO("Not yet implemented")

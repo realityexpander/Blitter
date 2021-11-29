@@ -12,8 +12,9 @@ import com.realityexpander.blitter.util.User
 abstract class BlitterFragment: Fragment() {
 
     protected val firebaseDB = FirebaseFirestore.getInstance()
-    protected val userId =  FirebaseAuth.getInstance().currentUser?.uid
+    protected val currentUserId =  FirebaseAuth.getInstance().currentUser?.uid
     protected var currentUser: User? = null
+
     protected var bleetListAdapter: BleetListAdapter? = null  // why not late init?
     protected val bleetListener: BleetListener? = null // why not late init?
     protected var homeCallback: HomeCallback? = null
@@ -30,7 +31,7 @@ abstract class BlitterFragment: Fragment() {
         if(context is HomeCallback) {
             homeCallback = context
         } else {
-            throw RuntimeException(context.toString() + "must implement HomeCallBack")
+            throw RuntimeException("$context must implement HomeCallBack")
         }
     }
 

@@ -24,7 +24,7 @@ class ProfileActivity : AppCompatActivity() {
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val firebaseDB = FirebaseFirestore.getInstance()
     private val firebaseStorage = FirebaseStorage.getInstance().reference
-    private val userId = FirebaseAuth.getInstance().currentUser?.uid
+    private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
     companion object {
         // navigate to this activity
@@ -38,7 +38,7 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(bind.root)
 
         // user not logged in?
-        if (userId == null) {
+        if (currentUserId == null) {
             finish()
         }
 
@@ -72,7 +72,7 @@ class ProfileActivity : AppCompatActivity() {
     private fun populateInfo() {
         bind.profileProgressLayout.visibility = View.VISIBLE
 
-        firebaseDB.collection(DATA_USERS_COLLECTION).document(userId!!).get()
+        firebaseDB.collection(DATA_USERS_COLLECTION).document(currentUserId!!).get()
             .addOnSuccessListener { documentSnapshot ->
                 val user = documentSnapshot.toObject(User::class.java)
 
@@ -117,7 +117,7 @@ class ProfileActivity : AppCompatActivity() {
 
                     // Update Firebase database user info
                     firebaseDB.collection(DATA_USERS_COLLECTION)
-                        .document(userId!!)
+                        .document(currentUserId!!)
                         .update(map)
                         .addOnSuccessListener {
                             Toast.makeText(this, "Update successful", Toast.LENGTH_SHORT).show()
@@ -160,7 +160,7 @@ class ProfileActivity : AppCompatActivity() {
 
             // Upload the new profile image to firebase Storage
             val profileImageStorageRef =
-                firebaseStorage.child(DATA_PROFILE_IMAGES_STORAGE).child(userId!!)
+                firebaseStorage.child(DATA_PROFILE_IMAGES_STORAGE).child(currentUserId!!)
             profileImageStorageRef.putFile(profileImageUri)
                 .addOnSuccessListener {
 
@@ -177,7 +177,7 @@ class ProfileActivity : AppCompatActivity() {
                             map[DATA_USERS_UPDATED_TIMESTAMP] = System.currentTimeMillis()
 
                             firebaseDB.collection(DATA_USERS_COLLECTION)
-                                .document(userId)
+                                .document(currentUserId)
                                 .update(map)
                                 .addOnSuccessListener {
                                     // bind.profileImageIv.loadUrl(profileImageUrl, R.drawable.default_user) // we optimistically loaded the profile image after it was picked

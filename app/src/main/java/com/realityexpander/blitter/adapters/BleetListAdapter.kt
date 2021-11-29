@@ -59,7 +59,6 @@ class BleetListAdapter(val userId: String, val bleets: ArrayList<Bleet>) :
 
         fun bind(userId: String, bleet: Bleet, listener: BleetListener?) {
 
-            // Setup the bleet data
             userName.text = bleet.userName
             text.text = bleet.text
 
@@ -82,6 +81,7 @@ class BleetListAdapter(val userId: String, val bleets: ArrayList<Bleet>) :
             likeButton.setOnClickListener { listener?.onLike(bleet) }
             rebleetButton.setOnClickListener { listener?.onRebleet(bleet) }
 
+            // === Likes ===
             // If the likes of this bleet contain this userId, set it to liked
             if (bleet.likesUserIds?.contains(userId) == true) {
                 likeButton.setImageDrawable(ContextCompat.getDrawable(likeButton.context,
@@ -91,6 +91,7 @@ class BleetListAdapter(val userId: String, val bleets: ArrayList<Bleet>) :
                     R.drawable.like_inactive))
             }
 
+            // === Rebleets ===
             when {
                 // If the bleet is from the userId, show "un-rebleeted" icon
                 bleet.rebleetUserIds?.getOrNull(0).equals(userId) -> {

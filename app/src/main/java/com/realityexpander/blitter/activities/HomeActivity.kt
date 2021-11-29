@@ -32,7 +32,7 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
     private lateinit var bind: ActivityHomeBinding
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val firebaseDB = FirebaseFirestore.getInstance()
-    private val userId = FirebaseAuth.getInstance().currentUser?.uid
+    private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
     private var currentUser: User? = null
 
     private lateinit var onTabSelectedListener: TabLayout.OnTabSelectedListener
@@ -61,7 +61,7 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
         setContentView(bind.root)
 
         // user not logged in?
-        if (userId == null) {
+        if (currentUserId == null) {
             startActivity(LoginActivity.newIntent(this))
             finish()
         }
@@ -93,7 +93,7 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
 
         // Create a new Bleet
         bind.fab.setOnClickListener {
-            startActivity(BleetActivity.newIntent(this, userId, currentUser?.username))
+            startActivity(BleetActivity.newIntent(this, currentUserId, currentUser?.username))
         }
 
         // Get the "search" text
@@ -101,7 +101,7 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
             when (actionId) {
                 EditorInfo.IME_ACTION_DONE,
                 EditorInfo.IME_ACTION_SEARCH -> {
-                    searchFragment.newHashtagSearch(v?.text.toString())
+                    searchFragment.onNewHashtagSearch(v?.text.toString())
                     true
                 }
                 else -> {
@@ -111,7 +111,7 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
         }
         bind.search.addTextChangedListener { editable ->
             val term = editable.toString()
-            searchFragment.newHashtagKeyPress(term)
+            searchFragment.onHashtagSearchTermKeyPress(term)
         }
 
     }
@@ -120,7 +120,7 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
         bind.homeProgressLayout.visibility = View.VISIBLE
 
         // Load the current user data from firebaseDB
-        firebaseDB.collection(DATA_USERS_COLLECTION).document(userId!!).get()
+        firebaseDB.collection(DATA_USERS_COLLECTION).document(currentUserId!!).get()
             .addOnSuccessListener { documentSnapshot ->
                 currentUser = documentSnapshot.toObject(User::class.java) // load the user data
 
