@@ -9,12 +9,9 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.realityexpander.blitter.R
 import com.realityexpander.blitter.adapters.BleetListAdapter
 import com.realityexpander.blitter.databinding.FragmentSearchBinding
-import com.realityexpander.blitter.listeners.BleetListener
 import com.realityexpander.blitter.util.*
 import java.lang.Exception
 import java.util.*
@@ -82,7 +79,7 @@ class SearchFragment : BlitterFragment() {
                 .document(userId)
                 .update(DATA_USERS_FOLLOW_HASHTAGS, followHashtags)
                 .addOnSuccessListener {
-                    callback?.onUserUpdated()
+                    homeCallback?.onUserUpdated()
                     bind.followHashtagIv.isClickable = true
                 }
                 .addOnFailureListener { e->

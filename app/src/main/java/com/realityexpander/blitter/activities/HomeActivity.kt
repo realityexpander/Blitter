@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.TextView
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -34,7 +33,7 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val firebaseDB = FirebaseFirestore.getInstance()
     private val userId = FirebaseAuth.getInstance().currentUser?.uid
-    private var user: User? = null
+    private var currentUser: User? = null
 
     private lateinit var onTabSelectedListener: TabLayout.OnTabSelectedListener
     private lateinit var sectionPageAdapter: SectionPageAdapter
@@ -94,7 +93,7 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
 
         // Create a new Bleet
         bind.fab.setOnClickListener {
-            startActivity(BleetActivity.newIntent(this, userId, user?.username))
+            startActivity(BleetActivity.newIntent(this, userId, currentUser?.username))
         }
 
         // Get the "search" text
@@ -120,15 +119,16 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
     private fun populate() {
         bind.homeProgressLayout.visibility = View.VISIBLE
 
+        // Load the current user data from firebaseDB
         firebaseDB.collection(DATA_USERS_COLLECTION).document(userId!!).get()
             .addOnSuccessListener { documentSnapshot ->
-                user = documentSnapshot.toObject(User::class.java) // load the user data
+                currentUser = documentSnapshot.toObject(User::class.java) // load the user data
 
                 // Load the profileImage for the user from the firebase Storage
-                user?.imageUrl.let { profileImageUrl ->
+                currentUser?.imageUrl.let { profileImageUrl ->
                     bind.profileImageIv.loadUrl(profileImageUrl, R.drawable.default_user)
                 }
-                updateFragmentUser()
+                updateFragmentToCurrentUser()
                 bind.homeProgressLayout.visibility = View.GONE
             }
             .addOnFailureListener { e ->
@@ -164,10 +164,10 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
         populate()
     }
 
-    private fun updateFragmentUser() {
-        homeFragment.setUser(user)
-        searchFragment.setUser(user)
-        myActivityFragment.setUser(user)
+    private fun updateFragmentToCurrentUser() {
+        homeFragment.setUser(currentUser)
+        searchFragment.setUser(currentUser)
+        myActivityFragment.setUser(currentUser)
 
         currentFragment.updateList()
     }

@@ -16,7 +16,7 @@ abstract class BlitterFragment: Fragment() {
     protected var currentUser: User? = null
     protected var bleetListAdapter: BleetListAdapter? = null  // why not late init?
     protected val bleetListener: BleetListener? = null // why not late init?
-    protected var callback: HomeCallback? = null
+    protected var homeCallback: HomeCallback? = null
 
     fun setUser(user: User?) {
         this.currentUser = user
@@ -28,7 +28,7 @@ abstract class BlitterFragment: Fragment() {
         super.onAttach(context)
 
         if(context is HomeCallback) {
-            callback = context
+            homeCallback = context
         } else {
             throw RuntimeException(context.toString() + "must implement HomeCallBack")
         }
