@@ -6,17 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.realityexpander.blitter.R
 import com.realityexpander.blitter.adapters.BleetListAdapter
 import com.realityexpander.blitter.databinding.FragmentSearchBinding
 import com.realityexpander.blitter.listeners.BleetListener
-import com.realityexpander.blitter.util.Bleet
-import com.realityexpander.blitter.util.DATA_BLEETS_COLLECTION
-import com.realityexpander.blitter.util.DATA_BLEETS_HASHTAGS
-import com.realityexpander.blitter.util.User
+import com.realityexpander.blitter.util.*
 import java.lang.Exception
 import java.util.*
 
@@ -28,12 +27,6 @@ import java.util.*
 class SearchFragment : BlitterFragment() {
 
     private lateinit var bind: FragmentSearchBinding
-    private val firebaseDB = FirebaseFirestore.getInstance()
-    private val userId =  FirebaseAuth.getInstance().currentUser?.uid
-
-    private var bleetListAdapter: BleetListAdapter? = null  // why not late init?
-    private val bleetListener: BleetListener? = null // why not late init?
-    private var currentUser: User? = null
 
     private var currentSearchHashtag = ""
 
@@ -62,16 +55,73 @@ class SearchFragment : BlitterFragment() {
             bind.swipeRefresh.isRefreshing = true
             updateList()
         }
+
+        // Setup followHashtag button
+        bind.followHashtagIv.setOnClickListener {
+            bind.followHashtagIv.isClickable = false
+            val followHashtags = currentUser?.followHashtags
+
+            // Toggle followed for the current "search" hashtag
+            if(followHashtags?.contains(currentSearchHashtag) == true) {
+                followHashtags.remove(currentSearchHashtag)
+            } else {
+                followHashtags?.add(currentSearchHashtag)
+            }
+
+            // Show failure message
+            fun onUpdateFollowHashtagsFailure(e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(bind.root.context,
+                    "Adding hashtag failed, please try again. ${e.localizedMessage}",
+                    Toast.LENGTH_LONG).show()
+                bind.followHashtagIv.isClickable = true
+            }
+
+            // Save the updated list of hashtags for the user in the firebaseDB
+            firebaseDB.collection(DATA_USERS_COLLECTION)
+                .document(userId)
+                .update(DATA_USERS_FOLLOW_HASHTAGS, followHashtags)
+                .addOnSuccessListener {
+                    callback?.onUserUpdated()
+                    bind.followHashtagIv.isClickable = true
+                }
+                .addOnFailureListener { e->
+                    onUpdateFollowHashtagsFailure(e)
+                }
+        }
     }
 
-    fun newHashTagSearch(term: String) {
+    // Update with a new search tag
+    fun newHashtagSearch(term: String) {
         currentSearchHashtag = term
         bind.followHashtagIv.visibility = View.VISIBLE
 
         updateList()
     }
 
-    private fun updateList() {
+    fun newHashtagKeyPress(term: String) {
+        currentSearchHashtag = term
+        bind.followHashtagIv.visibility = View.VISIBLE
+
+        updateFollowHashtagButton()
+    }
+
+    // Show if the current search tag is followed by the user
+    private fun updateFollowHashtagButton() {
+        val followHashtags = currentUser?.followHashtags
+
+        if(followHashtags?.contains(currentSearchHashtag) == true) {
+            bind.followHashtagIv.setImageDrawable(
+                ContextCompat.getDrawable(bind.followHashtagIv.context,
+                R.drawable.follow))
+        } else {
+            bind.followHashtagIv.setImageDrawable(
+                ContextCompat.getDrawable(bind.followHashtagIv.context,
+                    R.drawable.follow_inactive))
+        }
+    }
+
+    override fun updateList() {
 
         // Show failure message
         fun onSearchBleetHashtagsFailure(e: Exception) {
@@ -82,7 +132,6 @@ class SearchFragment : BlitterFragment() {
             bind.swipeRefresh.isRefreshing = false
         }
 
-        bind.bleetList.visibility = View.GONE
         bind.swipeRefresh.isRefreshing = true
 
         // Get bleets from firebaseDB that match the search hashtag & sort desc by timeStamp
@@ -103,10 +152,8 @@ class SearchFragment : BlitterFragment() {
                     compareByDescending { it.timeStamp }
                 )
 
-                println(sortedBleets)
-
-                bind.bleetList.visibility = View.VISIBLE
                 bleetListAdapter?.updateBleets(sortedBleets)
+                updateFollowHashtagButton()
                 bind.swipeRefresh.isRefreshing = false
 
             }

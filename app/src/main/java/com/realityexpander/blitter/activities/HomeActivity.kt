@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.widget.TextView
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -16,15 +18,17 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.realityexpander.blitter.R
 import com.realityexpander.blitter.databinding.ActivityHomeBinding
+import com.realityexpander.blitter.fragments.BlitterFragment
 import com.realityexpander.blitter.fragments.HomeFragment
 import com.realityexpander.blitter.fragments.MyActivityFragment
 import com.realityexpander.blitter.fragments.SearchFragment
+import com.realityexpander.blitter.listeners.HomeCallback
 import com.realityexpander.blitter.util.DATA_USERS_COLLECTION
 import com.realityexpander.blitter.util.User
 import com.realityexpander.blitter.util.loadUrl
 
 
-class HomeActivity : AppCompatActivity() {
+class HomeActivity : AppCompatActivity(), HomeCallback {
 
     private lateinit var bind: ActivityHomeBinding
     private val firebaseAuth = FirebaseAuth.getInstance()
@@ -35,9 +39,10 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var onTabSelectedListener: TabLayout.OnTabSelectedListener
     private lateinit var sectionPageAdapter: SectionPageAdapter
 
-    private lateinit var homeFragment: HomeFragment
-    private lateinit var searchFragment: SearchFragment
-    private lateinit var myActivityFragment: MyActivityFragment
+    private val homeFragment = HomeFragment()
+    private val searchFragment = SearchFragment()
+    private val myActivityFragment = MyActivityFragment()
+    private var currentFragment: BlitterFragment = homeFragment
 
     private enum class TabLayoutItem {
         HOME,
@@ -97,7 +102,7 @@ class HomeActivity : AppCompatActivity() {
             when (actionId) {
                 EditorInfo.IME_ACTION_DONE,
                 EditorInfo.IME_ACTION_SEARCH -> {
-                    searchFragment.newHashTagSearch(v?.text.toString())
+                    searchFragment.newHashtagSearch(v?.text.toString())
                     true
                 }
                 else -> {
@@ -105,9 +110,14 @@ class HomeActivity : AppCompatActivity() {
                 }
             }
         }
+        bind.search.addTextChangedListener { editable ->
+            val term = editable.toString()
+            searchFragment.newHashtagKeyPress(term)
+        }
+
     }
 
-    private fun populateInfo() {
+    private fun populate() {
         bind.homeProgressLayout.visibility = View.VISIBLE
 
         firebaseDB.collection(DATA_USERS_COLLECTION).document(userId!!).get()
@@ -118,6 +128,7 @@ class HomeActivity : AppCompatActivity() {
                 user?.imageUrl.let { profileImageUrl ->
                     bind.profileImageIv.loadUrl(profileImageUrl, R.drawable.default_user)
                 }
+                updateFragmentUser()
                 bind.homeProgressLayout.visibility = View.GONE
             }
             .addOnFailureListener { e ->
@@ -132,15 +143,12 @@ class HomeActivity : AppCompatActivity() {
         override fun createFragment(position: Int): Fragment {
             return when (TabLayoutItem.values()[position]) {
                 TabLayoutItem.HOME -> {
-                    homeFragment = HomeFragment()
                     homeFragment
                 }
                 TabLayoutItem.SEARCH -> {
-                    searchFragment = SearchFragment()
                     searchFragment
                 }
                 TabLayoutItem.MYACTIVITY -> {
-                    myActivityFragment = MyActivityFragment()
                     myActivityFragment
                 }
             }
@@ -152,6 +160,18 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
+    override fun onUserUpdated() {
+        populate()
+    }
+
+    private fun updateFragmentUser() {
+        homeFragment.setUser(user)
+        searchFragment.setUser(user)
+        myActivityFragment.setUser(user)
+
+        currentFragment.updateList()
+    }
+
     override fun onResume() {
         super.onResume()
 
@@ -159,9 +179,10 @@ class HomeActivity : AppCompatActivity() {
         if (firebaseAuth.currentUser?.uid == null) {
             startActivity(LoginActivity.newIntent(this))
             finish()
+        } else {
+            // If we have a user, populate the latest user info
+            populate()
         }
-
-        populateInfo()
 
         // Nav to new page when bottom tab item is selected
         onTabSelectedListener = object : TabLayout.OnTabSelectedListener {
@@ -171,24 +192,25 @@ class HomeActivity : AppCompatActivity() {
 
                     when (TabLayoutItem.values()[position]) {
                         TabLayoutItem.HOME -> {
+                            currentFragment = homeFragment
                             bind.searchBar.visibility = View.INVISIBLE
                             bind.titleBar.text = "Home"
                         }
                         TabLayoutItem.SEARCH -> {
+                            currentFragment = searchFragment
                             bind.searchBar.visibility = View.VISIBLE
                         }
                         TabLayoutItem.MYACTIVITY -> {
+                            currentFragment = myActivityFragment
                             bind.searchBar.visibility = View.INVISIBLE
                             bind.titleBar.text = "My Activity"
                         }
                     }
                 }
             }
-
             override fun onTabUnselected(tab: TabLayout.Tab?) {
                 // do nothing
             }
-
             override fun onTabReselected(tab: TabLayout.Tab?) {
                 // do nothing
             }

@@ -71,8 +71,11 @@ class BleetListAdapter(val userId: String, val bleets: ArrayList<Bleet>) :
             }
 
             date.text = bleet.timeStamp.getDateString()
-            likeCount.text = bleet.likesUserIds?.size.toString()
-            rebleetCount.text = bleet.rebleetUserIds?.size?.minus(1).toString()
+            likeCount.text = bleet.likesUserIds
+                ?.size?.coerceAtLeast(1).toString()
+            rebleetCount.text = bleet.rebleetUserIds
+                ?.size?.minus(1)
+                ?.coerceAtLeast(0).toString()
 
             // Setup buttons & actions
             layout.setOnClickListener { listener?.onLayoutClick(bleet) }
@@ -89,7 +92,7 @@ class BleetListAdapter(val userId: String, val bleets: ArrayList<Bleet>) :
             }
 
             when {
-                // If the bleet is from the userId, show "unRebleeted" icon
+                // If the bleet is from the userId, show "un-rebleeted" icon
                 bleet.rebleetUserIds?.getOrNull(0).equals(userId) -> {
                     rebleetButton.setImageDrawable(ContextCompat.getDrawable(rebleetButton.context,
                         R.drawable.original))
