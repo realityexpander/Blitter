@@ -70,13 +70,13 @@ class SearchFragment : BlitterFragment() {
         // Setup followHashtag button
         bind.followHashtagIv.setOnClickListener {
             bind.followHashtagIv.isClickable = false
-            val followHashtags = currentUser?.followHashtags
+            val followHashtags = currentUser?.followHashtags ?: arrayListOf()
 
-            // Toggle followed for the current "search" hashtag
-            if(followHashtags?.contains(currentSearchHashtag) == true) {
+            // Toggle followed hashtag for the current "search" query
+            if(followHashtags.contains(currentSearchHashtag)) {
                 followHashtags.remove(currentSearchHashtag)
             } else {
-                followHashtags?.add(currentSearchHashtag)
+                followHashtags.add(currentSearchHashtag)
             }
 
             // Show failure message
@@ -178,8 +178,8 @@ class SearchFragment : BlitterFragment() {
                 onSearchBleetHashtagsFailure(e)
             }
 
-        // To search text field, matches only the start. Need to separate out the words into Arrays to do text search on the words of text
-        // For full fuzzy text search: https://github.com/typesense/firestore-typesense-search
+//        // To search text field, matches only the start. Need to separate out the words into Arrays to do text search on the words of text
+//        // For full fuzzy text search: https://github.com/typesense/firestore-typesense-search
 //            .orderBy(DATA_BLEETS_TEXT)
 ////            .startAt(currentSearchHashtag)  // #1 seems to work the same as #2
 ////            .endAt(currentSearchHashtag+"\uf8ff")

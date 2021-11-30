@@ -118,7 +118,7 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
                 currentUser?.imageUrl.let { profileImageUrl ->
                     bind.profileImageIv.loadUrl(profileImageUrl, R.drawable.default_user)
                 }
-                updateFragmentToCurrentUser()
+                updateFragmentWithCurrentUser()
                 bind.homeProgressLayout.visibility = View.GONE
             }
             .addOnFailureListener { e ->
@@ -208,7 +208,7 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
         println("onSearchFragmentCreated currentfragment=$currentFragment")
     }
 
-    private fun updateFragmentToCurrentUser() {
+    private fun updateFragmentWithCurrentUser() {
         homeFragment?.setUser(currentUser)
         searchFragment?.setUser(currentUser)
         myActivityFragment?.setUser(currentUser)
