@@ -8,10 +8,11 @@ interface HomeCallback {
 
     fun onUserUpdated()
 
-    fun onRefresh()
+    fun onRefreshList()
 
     // Pass back the fragment to the home activity when fragment is created after process death
     fun onSearchFragmentCreated(searchFragment: SearchFragment)
 
+    // Update the fragments with the updated User
     fun updateFragmentsWithUpdatedUser(updatedUser: User?)
 }

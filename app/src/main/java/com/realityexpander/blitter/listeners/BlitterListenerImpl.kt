@@ -34,7 +34,7 @@ class BlitterListenerImpl(val bleetListRv: RecyclerView,
                 .document(bleet.bleetId!!)
                 .update(DATA_BLEETS_LIKE_USER_IDS, likesUserIds)
                 .addOnSuccessListener {
-                    homeCallback?.onRefresh()
+                    homeCallback?.onRefreshList()
                     bleetListRv.isClickable = true
                 }
                 .addOnFailureListener { e->

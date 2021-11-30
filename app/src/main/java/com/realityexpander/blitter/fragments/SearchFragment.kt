@@ -22,7 +22,6 @@ import java.util.*
  * create an instance of this fragment.
  */
 class SearchFragment : BlitterFragment() {
-
     private lateinit var bind: FragmentSearchBinding
 
     private var currentHashtagQuery = ""
@@ -42,11 +41,11 @@ class SearchFragment : BlitterFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        //println("onViewCreated SearchFragment bind=$bind")
 
-        println("onViewCreated SearchFragment bind=$bind")
-
+        // pass back this fragment that the system created after process death
         if (savedInstanceState != null) {
-            homeCallback?.onSearchFragmentCreated(this) // pass back the fragment that the system created after process death
+            homeCallback?.onSearchFragmentCreated(this)
         }
 
         bleetListener = BlitterListenerImpl(bind.bleetListRv, currentUser, homeCallback)
@@ -104,25 +103,25 @@ class SearchFragment : BlitterFragment() {
         }
     }
 
-    // Search for a new search tag
-    fun onHashtagSearchActionSearch(term: String) {
-        println("onHashtagSearchActionSearch SearchFragment=$this, term=$term")
+    // Search for a new hashtag
+    fun onHashtagQueryActionSearch(term: String) {
+        //println("onHashtagSearchActionSearch SearchFragment=$this, term=$term")
         currentHashtagQuery = term
         bind.followHashtagIv.visibility = View.VISIBLE
 
         updateList()
     }
 
-    // Update the hash tag follow button based on the query term for every keypress
-    fun onHashtagSearchTermKeyPress(term: String) {
+    // Update the hashtag follow button based on the query term for every keypress
+    fun onHashtagQueryTermKeyPress(term: String) {
+        //println("onHashtagSearchTermKeyPress SearchFragment=$this")
         currentHashtagQuery = term
-        println("onHashtagSearchTermKeyPress SearchFragment=$this")
         bind.followHashtagIv.visibility = View.VISIBLE
 
         updateFollowHashtagButton()
     }
 
-    // Show if the current search tag is followed by the user
+    // Show if the current query hashtag is followed by the user
     private fun updateFollowHashtagButton() {
         val followHashtags = currentUser?.followHashtags
 

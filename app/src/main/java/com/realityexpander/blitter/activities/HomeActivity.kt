@@ -32,6 +32,7 @@ import com.realityexpander.blitter.util.loadUrl
 class HomeActivity : AppCompatActivity(), HomeCallback {
 
     private lateinit var bind: ActivityHomeBinding
+
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val firebaseDB = FirebaseFirestore.getInstance()
     private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
@@ -42,10 +43,11 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
     private lateinit var sectionPageAdapter: SectionPageAdapter
     private lateinit var onPageChangeCallback: ViewPager2.OnPageChangeCallback
 
-    // Hashtag Search
+    // Hashtag Query
     private lateinit var textChangedListener: TextWatcher
     private lateinit var onEditorActionListener : TextView.OnEditorActionListener
 
+    // Fragments
     private var homeFragment: HomeFragment? = null
     private var searchFragment: SearchFragment? = null
     private var myActivityFragment: MyActivityFragment? = null
@@ -70,15 +72,6 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
 
         println("onCreate for HomeActivity searchFragment=$searchFragment")
         println("savedInstanceState = $savedInstanceState")
-
-//        homeFragment = HomeFragment()
-//        searchFragment = SearchFragment()
-//        myActivityFragment = MyActivityFragment()
-//        currentFragment  = homeFragment
-//        println("  onCreate homeFragment=$homeFragment")
-//        println("  onCreate searchFragment=$searchFragment")
-//        println("  onCreate myActivityFragment=$myActivityFragment")
-//        println("  onCreate currentFragment=$currentFragment")
 
         // user not logged in?
         if (currentUserId == null) {
@@ -116,7 +109,7 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
             .addOnSuccessListener { documentSnapshot ->
                 currentUser = documentSnapshot.toObject(User::class.java) // load the user data
 
-                // Load the profileImage for the user from the firebase Storage
+                // Load the profileImage URL for the User using Glide
                 currentUser?.imageUrl.let { profileImageUrl ->
                     bind.profileImageIv.loadUrl(profileImageUrl, R.drawable.default_user)
                 }
@@ -131,15 +124,14 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
 
     override fun onStart() {
         super.onStart()
-        println("onStart for HomeActivity")
+        // println("onStart for HomeActivity")
 
         setupViewPagerAdapter()
-        setupBottomNavTabLayout()
+        setupBottomNavTabLayoutListeners()
     }
-
     override fun onResume() {
         super.onResume()
-        println("onResume for HomeActivity")
+        // println("onResume for HomeActivity")
 
         // Check if user if logged out
         if (firebaseAuth.currentUser?.uid == null) {
@@ -150,67 +142,68 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
             populate()
         }
     }
-
     override fun onPause() {
         super.onPause()
-        println("onPause for HomeActivity")
+        // println("onPause for HomeActivity")
 
-        teardownHashtagSearchEditText()
+        teardownHashtagQueryListeners()
     }
-
     override fun onStop() {
         super.onStop()
-        println("onStop for HomeActivity")
+        // println("onStop for HomeActivity")
     }
-
     override fun onDestroy() {
         super.onDestroy()
         println("onDestroy for HomeActivity")
 
         teardownViewPagerAdapter()
-        teardownBottomNavTabLayout()
+        teardownBottomNavTabLayoutListeners()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        println("onSaveInstanceState for HomeActivity")
+        //println("onSaveInstanceState for HomeActivity")
 
         outState.putInt("selectedTabPosition", bind.tabLayout.selectedTabPosition)
-        println("  selectedTabPosition=${outState.getInt("selectedTabPosition")}")
+        // println("  selectedTabPosition=${outState.getInt("selectedTabPosition")}")
 
         super.onSaveInstanceState(outState)
     }
-
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        println("onRestoreInstanceState for HomeActivity")
+        // println("onRestoreInstanceState for HomeActivity")
 
         val selectedTabPosition = savedInstanceState.getInt("selectedTabPosition")
-        println("  selectedTabPosition=$selectedTabPosition")
+        // println("  selectedTabPosition=$selectedTabPosition")
 
         sectionPageAdapter.selectTabItem(selectedTabPosition)
 
     }
-
-    override fun onUserUpdated() {
-        populate()
-    }
-
-    override fun onRefresh() {
-        currentFragment?.updateList()
-    }
-
+    // Called when Android system recreates the search fragment after process death
     override fun onSearchFragmentCreated(searchFragment: SearchFragment) {
         this.searchFragment = searchFragment
 
         if(currentFragment == null) {
             currentFragment = searchFragment
-            setupHashtagSearchEditText()
+            setupHashtagQueryListeners()
         }
 
-        println("onSearchFragmentCreated currentfragment=$currentFragment")
+        // println("onSearchFragmentCreated currentfragment=$currentFragment")
     }
 
-    override fun updateFragmentsWithUpdatedUser(updatedUser: User? ) {
+    override fun onUserUpdated() {
+        populate()
+    }
+    override fun onRefreshList() {
+        currentFragment?.updateList()
+    }
+
+
+    fun updateFragmentsWithCurrentUser() {
+        homeFragment?.setUser(currentUser)
+        searchFragment?.setUser(currentUser)
+        myActivityFragment?.setUser(currentUser)
+    }
+    override fun updateFragmentsWithUpdatedUser(updatedUser: User?) {
         currentUser = updatedUser
 
         homeFragment?.setUser(updatedUser)
@@ -218,12 +211,6 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
         myActivityFragment?.setUser(updatedUser)
 
 //        currentFragment?.updateList() // necessary?
-    }
-
-    fun updateFragmentsWithCurrentUser() {
-        homeFragment?.setUser(currentUser)
-        searchFragment?.setUser(currentUser)
-        myActivityFragment?.setUser(currentUser)
     }
 
     private fun setupViewPagerAdapter() {
@@ -258,7 +245,7 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
         override fun getItemCount(): Int = TabLayoutItem.values().size
 
         override fun createFragment(position: Int): Fragment {
-            println("  SectionPageAdapter createFragment, position=$position")
+            // println("  SectionPageAdapter createFragment, position=$position")
 
             val newFragment = when (TabLayoutItem.values()[position]) {
                 TabLayoutItem.HOME -> {
@@ -267,8 +254,8 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
                 }
                 TabLayoutItem.SEARCH -> {
                     searchFragment = SearchFragment()
-                    teardownHashtagSearchEditText()
-                    setupHashtagSearchEditText()
+                    teardownHashtagQueryListeners()
+                    setupHashtagQueryListeners()
                     searchFragment!!
                 }
                 TabLayoutItem.MYACTIVITY -> {
@@ -294,8 +281,8 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
         bind.viewPager.unregisterOnPageChangeCallback(onPageChangeCallback)
     }
 
-    private fun setupBottomNavTabLayout() {
-        println("  setupBottomNavTabLayout")
+    private fun setupBottomNavTabLayoutListeners() {
+        //println("  setupBottomNavTabLayout")
 
         // Nav to new page when bottom tab item is selected
         onTabSelectedListener = object : TabLayout.OnTabSelectedListener {
@@ -333,13 +320,13 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
         }
         bind.tabLayout.addOnTabSelectedListener(onTabSelectedListener)
     }
-    private fun teardownBottomNavTabLayout() {
+    private fun teardownBottomNavTabLayoutListeners() {
         println("teardownBottomNavTabLayout")
         bind.tabLayout.removeOnTabSelectedListener(onTabSelectedListener)
     }
 
-    // Setup "search hashtag..." editText View
-    private fun setupHashtagSearchEditText() {
+    // Setup "Search hashtag..." editText View
+    private fun setupHashtagQueryListeners() {
         println("  setupHashtagSearchEditText searchFragment=$searchFragment")
 
         // Setup "Enter" & "Search" IME
@@ -349,7 +336,7 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
                 EditorInfo.IME_ACTION_SEARCH,
                 -> {
                     println("onEditorActionListener SearchFragment=$searchFragment")
-                    searchFragment?.onHashtagSearchActionSearch(v?.text.toString())
+                    searchFragment?.onHashtagQueryActionSearch(v?.text.toString())
                     true
                 }
                 else -> {
@@ -366,23 +353,21 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
             override fun afterTextChanged(editable: Editable?) {
                 val term = editable.toString()
                 println("  textChangedListener SearchFragment=$searchFragment")
-                searchFragment?.onHashtagSearchTermKeyPress(term)
+                searchFragment?.onHashtagQueryTermKeyPress(term)
             }
         }
         bind.search.addTextChangedListener(textChangedListener)
     }
-    private fun teardownHashtagSearchEditText() {
+    private fun teardownHashtagQueryListeners() {
         println("  teardownHashtagSearchEditText")
         if(::textChangedListener.isInitialized)
             bind.search.removeTextChangedListener(textChangedListener)
         bind.search.setOnEditorActionListener(null)
     }
-
 }
 
 private const val MIN_SCALE = 0.85f
 private const val MIN_ALPHA = 0.5f
-
 class ZoomOutPageTransformer : ViewPager2.PageTransformer {
 
     override fun transformPage(view: View, position: Float) {
@@ -408,7 +393,7 @@ class ZoomOutPageTransformer : ViewPager2.PageTransformer {
                     // Scale the page down (between MIN_SCALE and 1)
                     scaleX = scaleFactor
                     scaleY = scaleFactor
-                    rotation = position * 360.0f
+                    rotation = position * 180.0f
 
                     // Fade the page relative to its size.
                     alpha = (MIN_ALPHA +
