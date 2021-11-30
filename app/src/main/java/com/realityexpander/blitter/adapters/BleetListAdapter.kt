@@ -71,7 +71,7 @@ class BleetListAdapter(val userId: String, val bleets: ArrayList<Bleet>) :
 
             date.text = bleet.timestamp.getDateString()
             likeCount.text = bleet.likeUserIds
-                ?.size?.coerceAtLeast(1).toString()
+                ?.size?.coerceAtLeast(0).toString()
             rebleetCount.text = bleet.rebleetUserIds
                 ?.size?.minus(1)
                 ?.coerceAtLeast(0).toString()

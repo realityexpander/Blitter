@@ -14,6 +14,7 @@ data class Bleet(
     val bleetId: String? = "",
     val username: String? = "",
     val text: String? = "",
+    val textWords: ArrayList<String>? = arrayListOf(),
     val imageUrl: String? = "",
     val hashtags: ArrayList<String>? = arrayListOf(),
     val rebleetUserIds: ArrayList<String>? = arrayListOf(), // list of userIds who re-bleeted this tweet

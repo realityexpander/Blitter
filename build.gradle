@@ -27,3 +27,13 @@ buildscript {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+task killApp(type: Exec) {
+    println("Executing Killapp")
+    commandLine 'adb','-d','shell','am','kill','com.realityexpander.blitter'
+}
+
+task showAppRunning(type: Exec) {
+    println("Executing showAppRunning")
+    commandLine 'adb','-d','shell','ps','|','grep','com.realityexpander.blitter'
+}

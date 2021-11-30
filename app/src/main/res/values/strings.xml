@@ -4,7 +4,7 @@
     <string name="hint_username">Username</string>
     <string name="hint_email">Email</string>
     <string name="hint_password">Password</string>
-    <string name="hint_search">Search…</string>
+    <string name="hint_search">Search for hashtag…</string>
     <string name="hint_whats_bleetin">Whats Bleetin\'?</string>
 
     <string name="button_login">Login</string>

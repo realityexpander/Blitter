@@ -108,13 +108,15 @@ class BleetActivity : AppCompatActivity() {
         val hashTags = getHashTags(bleetText)
 
         // Create new firebaseDB document and id
-        val bleetDocument = firebaseDB.collection(DATA_BLEETS_COLLECTION).document()
+        val bleetDocument = firebaseDB.collection(DATA_BLEETS_COLLECTION)
+            .document()
 
-        // Create Bleet object
+        // Create new Bleet object
         val bleet = Bleet(
             bleetDocument.id,
             userName,
             bleetText,
+            textWords = toWordsArray(bleetText),
             imageUrl = "",  // no image set yet
             hashTags,
             rebleetUserIds = arrayListOf(currentUserId!!),
@@ -122,7 +124,7 @@ class BleetActivity : AppCompatActivity() {
             timestamp = System.currentTimeMillis()
         )
 
-        // Post Bleet with or without Image
+        // Post Bleet
         if (bleetImageUri == null) {
             // post Bleet without image
             sendBleet(bleet, bleetDocument)
@@ -211,7 +213,10 @@ class BleetActivity : AppCompatActivity() {
         return ArrayList(tags)
     }
 
-
+    // "abc def ghi 123 #54" -> ["abc","def","ghi","123","#54"]
+    private fun toWordsArray(source: String): ArrayList<String> {
+        return ArrayList(source.split(" "))
+    }
 }
 
 

@@ -14,6 +14,7 @@ const val DATA_BLEETS_COLLECTION         = "DATA_BLEETS"  // name of the collect
 const val DATA_BLEETS_BLEET_ID           = "bleetId"      // must match the object field names exactly
 const val DATA_BLEETS_USERNAME           = "username"
 const val DATA_BLEETS_TEXT               = "text"
+const val DATA_BLEETS_TEXT_WORDS         = "textWords"    // for basic text searching in firebase
 const val DATA_BLEETS_IMAGE_URL          = "imageUrl"
 const val DATA_BLEETS_HASHTAGS           = "hashtags"
 const val DATA_BLEETS_REBLEET_USER_IDS   = "rebleetUserIds"
