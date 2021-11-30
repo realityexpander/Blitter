@@ -30,7 +30,6 @@ import com.realityexpander.blitter.util.loadUrl
 
 
 class HomeActivity : AppCompatActivity(), HomeCallback {
-
     private lateinit var bind: ActivityHomeBinding
 
     private val firebaseAuth = FirebaseAuth.getInstance()
@@ -64,7 +63,7 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
         fun newIntent(context: Context) = Intent(context, HomeActivity::class.java)
     }
 
-    @SuppressLint("ClickableViewAccessibility") // for progress event eater
+    @SuppressLint("ClickableViewAccessibility") // for progress tap event eater
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         bind = ActivityHomeBinding.inflate(layoutInflater)
@@ -196,7 +195,6 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
     override fun onRefreshList() {
         currentFragment?.updateList()
     }
-
 
     fun updateFragmentsWithCurrentUser() {
         homeFragment?.setUser(currentUser)

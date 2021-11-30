@@ -43,15 +43,14 @@ class SearchFragment : BlitterFragment() {
         super.onViewCreated(view, savedInstanceState)
         //println("onViewCreated SearchFragment bind=$bind")
 
-        // pass back this fragment that the system created after process death
+        // After process death, pass this fragment (that the system created) - correct way to do this? SEEMS CLUNKY
         if (savedInstanceState != null) {
             homeCallback?.onSearchFragmentCreated(this)
         }
 
-        bleetListener = BlitterListenerImpl(bind.bleetListRv, currentUser, homeCallback)
-
-        // Setup the listAdapter
+        // Setup the RV listAdapter
         bleetListAdapter = BleetListAdapter(currentUserId!!, arrayListOf())
+        bleetListener = BlitterListenerImpl(bind.bleetListRv, currentUser, homeCallback)
         bleetListAdapter?.setListener(bleetListener)
         bind.bleetListRv.apply {
             layoutManager = LinearLayoutManager(context)
