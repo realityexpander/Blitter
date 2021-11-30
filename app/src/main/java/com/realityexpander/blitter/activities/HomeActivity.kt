@@ -110,7 +110,9 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
         bind.homeProgressLayout.visibility = View.VISIBLE
 
         // Load the current user data from firebaseDB
-        firebaseDB.collection(DATA_USERS_COLLECTION).document(currentUserId!!).get()
+        firebaseDB.collection(DATA_USERS_COLLECTION)
+            .document(currentUserId!!)
+            .get()
             .addOnSuccessListener { documentSnapshot ->
                 currentUser = documentSnapshot.toObject(User::class.java) // load the user data
 
@@ -118,7 +120,7 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
                 currentUser?.imageUrl.let { profileImageUrl ->
                     bind.profileImageIv.loadUrl(profileImageUrl, R.drawable.default_user)
                 }
-                updateFragmentWithCurrentUser()
+                updateFragmentsWithUpdatedUser(currentUser)
                 bind.homeProgressLayout.visibility = View.GONE
             }
             .addOnFailureListener { e ->
@@ -208,12 +210,20 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
         println("onSearchFragmentCreated currentfragment=$currentFragment")
     }
 
-    private fun updateFragmentWithCurrentUser() {
+    override fun updateFragmentsWithUpdatedUser(updatedUser: User? ) {
+        currentUser = updatedUser
+
+        homeFragment?.setUser(updatedUser)
+        searchFragment?.setUser(updatedUser)
+        myActivityFragment?.setUser(updatedUser)
+
+//        currentFragment?.updateList() // necessary?
+    }
+
+    fun updateFragmentsWithCurrentUser() {
         homeFragment?.setUser(currentUser)
         searchFragment?.setUser(currentUser)
         myActivityFragment?.setUser(currentUser)
-
-        currentFragment?.updateList()
     }
 
     private fun setupViewPagerAdapter() {
@@ -268,6 +278,7 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
             }
             if(currentFragment == null) currentFragment = newFragment
             println("  currentFragment=$currentFragment")
+            updateFragmentsWithCurrentUser()
             return newFragment
         }
 

@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.realityexpander.blitter.R
-import com.realityexpander.blitter.activities.HomeActivity
 import com.realityexpander.blitter.adapters.BleetListAdapter
 import com.realityexpander.blitter.databinding.FragmentSearchBinding
 import com.realityexpander.blitter.listeners.BlitterListenerImpl
@@ -26,7 +25,7 @@ class SearchFragment : BlitterFragment() {
 
     private lateinit var bind: FragmentSearchBinding
 
-    private var currentSearchHashtag = ""
+    private var currentHashtagQuery = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,11 +72,13 @@ class SearchFragment : BlitterFragment() {
             val followHashtags = currentUser?.followHashtags ?: arrayListOf()
 
             // Toggle followed hashtag for the current "search" query
-            if(followHashtags.contains(currentSearchHashtag)) {
-                followHashtags.remove(currentSearchHashtag)
+            if(followHashtags.contains(currentHashtagQuery)) {
+                followHashtags.remove(currentHashtagQuery)
             } else {
-                followHashtags.add(currentSearchHashtag)
+                followHashtags.add(currentHashtagQuery)
             }
+
+            updateFollowHashtagButton()
 
             // Show failure message
             fun onUpdateFollowHashtagsFailure(e: Exception) {
@@ -93,7 +94,8 @@ class SearchFragment : BlitterFragment() {
                 .document(currentUserId)
                 .update(DATA_USERS_FOLLOW_HASHTAGS, followHashtags)
                 .addOnSuccessListener {
-                    homeCallback?.onUserUpdated()
+                    homeCallback?.updateFragmentsWithUpdatedUser(currentUser?.copy()) // check if this a ref and always updated
+
                     bind.followHashtagIv.isClickable = true
                 }
                 .addOnFailureListener { e->
@@ -105,15 +107,15 @@ class SearchFragment : BlitterFragment() {
     // Search for a new search tag
     fun onHashtagSearchActionSearch(term: String) {
         println("onHashtagSearchActionSearch SearchFragment=$this, term=$term")
-        currentSearchHashtag = term
+        currentHashtagQuery = term
         bind.followHashtagIv.visibility = View.VISIBLE
 
         updateList()
     }
 
-    // Update the hash tag follow button based on the search term each keypress
+    // Update the hash tag follow button based on the query term for every keypress
     fun onHashtagSearchTermKeyPress(term: String) {
-        currentSearchHashtag = term
+        currentHashtagQuery = term
         println("onHashtagSearchTermKeyPress SearchFragment=$this")
         bind.followHashtagIv.visibility = View.VISIBLE
 
@@ -124,7 +126,7 @@ class SearchFragment : BlitterFragment() {
     private fun updateFollowHashtagButton() {
         val followHashtags = currentUser?.followHashtags
 
-        if(followHashtags?.contains(currentSearchHashtag) == true) {
+        if(followHashtags?.contains(currentHashtagQuery) == true) {
             bind.followHashtagIv.setImageDrawable(
                 ContextCompat.getDrawable(bind.followHashtagIv.context,
                 R.drawable.follow))
@@ -136,7 +138,7 @@ class SearchFragment : BlitterFragment() {
     }
 
     override fun updateList() {
-        if(currentSearchHashtag.toString().isEmpty()) return
+        if(currentHashtagQuery.toString().isEmpty()) return
 
         // Show failure message
         fun onSearchBleetHashtagsFailure(e: Exception) {
@@ -151,7 +153,7 @@ class SearchFragment : BlitterFragment() {
 
         // Get bleets from firebaseDB that match the search hashtag & sort desc by timeStamp
         firebaseDB.collection(DATA_BLEETS_COLLECTION)
-            .whereArrayContains(DATA_BLEETS_HASHTAGS, currentSearchHashtag)
+            .whereArrayContains(DATA_BLEETS_HASHTAGS, currentHashtagQuery)
             .get()
             .addOnSuccessListener { list ->
                 val bleets = arrayListOf<Bleet>()
@@ -160,7 +162,7 @@ class SearchFragment : BlitterFragment() {
                 for(bleetDocument in list.documents) {
                     val bleet = (bleetDocument.toObject(Bleet::class.java))
                     bleet?.let {
-                        if(bleet.text?.contains(currentSearchHashtag) == true) {
+                        if(bleet.text?.contains(currentHashtagQuery) == true) {
                             bleets.add(it)
                         }
                     }
