@@ -8,17 +8,9 @@ import com.realityexpander.blitter.listeners.HomeContext
 
 abstract class BlitterFragment: Fragment() {
 
-//    protected val firebaseDB = FirebaseFirestore.getInstance()
-//    protected val currentUserId =  FirebaseAuth.getInstance().currentUser?.uid
-//    protected var currentUser: User? = null
-
-    protected var bleetListAdapter: BleetListAdapter? = null  // why not late init?
-    protected var bleetListener: BleetListener? = null // why not late init?
+    protected var bleetListAdapter: BleetListAdapter? = null
+    protected var bleetListener: BleetListener? = null
     protected var homeContext: HomeContext? = null
-
-//    fun setUser(user: User?) {
-//        this.currentUser = user
-//    }
 
     abstract fun updateList()
 
@@ -33,9 +25,9 @@ abstract class BlitterFragment: Fragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        updateList()
-    }
+//    override fun onResume() {
+//        super.onResume()
+//
+//        updateList() // forces all fragment lists to update after onResume
+//    }
 }

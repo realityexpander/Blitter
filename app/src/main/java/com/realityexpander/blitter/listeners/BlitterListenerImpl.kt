@@ -9,10 +9,6 @@ class BlitterListenerImpl(
     private val bleetListRv: RecyclerView,
     private val homeContext: HomeContext?
 ): BleetListener {
-//    private val firebaseDB = FirebaseFirestore.getInstance()
-//    private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
-
-
 
     override fun onLayoutClick(bleet: Bleet?) {
 //        TODO("Not yet implemented")
@@ -31,11 +27,12 @@ class BlitterListenerImpl(
                 likeUserIds?.add(currentUserId)
             }
 
+            // Save like to firebase database
             homeContext.firebaseDB.collection(DATA_BLEETS_COLLECTION)
                 .document(bleet.bleetId!!)
                 .update(DATA_BLEETS_LIKE_USER_IDS, likeUserIds)
                 .addOnSuccessListener {
-                    homeContext.onRefreshList()
+                    homeContext.onRefreshListForCurrentFragment()
                     bleetListRv.isClickable = true
                 }
                 .addOnFailureListener { e->

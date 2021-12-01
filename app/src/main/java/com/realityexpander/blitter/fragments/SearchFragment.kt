@@ -25,27 +25,28 @@ class SearchFragment : BlitterFragment() {
     private lateinit var bind: FragmentSearchBinding
 
     private var currentHashtagQuery = ""
+    private var showSearchResults: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
-
-        println("onCreateView SearchFragment=$this, savedInstanceState=$savedInstanceState")
+        // println("onCreateView SearchFragment=$this, savedInstanceState=$savedInstanceState")
 
         bind = FragmentSearchBinding.inflate(inflater, container, false)
-        println("  onCreateView bind=$bind")
-
         return bind.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //println("onViewCreated SearchFragment bind=$bind")
 
-        // After process death, pass this fragment (that the system created) - correct way to do this? SEEMS CLUNKY
-        if (savedInstanceState != null) {
-            homeContext?.onSearchFragmentCreated(this)
+        savedInstanceState?.apply {
+            // After process death, pass this System-created fragment to HomeContext - (correct way to do this? SEEMS CLUNKY!)
+            homeContext?.onBlitterFragmentCreated(this@SearchFragment)
+
+            // Show the search results?
+            showSearchResults = getBoolean("search_showSearchResults", false)
+            currentHashtagQuery = getString("search_currentHashtagQuery", "")
         }
 
         // Setup the RV listAdapter
@@ -69,7 +70,7 @@ class SearchFragment : BlitterFragment() {
             bind.followHashtagIv.isClickable = false
             val followHashtags = homeContext!!.currentUser?.followHashtags ?: arrayListOf()
 
-            // Toggle followed hashtag for the current "search" query
+            // Toggle "follow hashtag" for the current "search hashtag" query
             if(followHashtags.contains(currentHashtagQuery)) {
                 followHashtags.remove(currentHashtagQuery)
             } else {
@@ -87,13 +88,11 @@ class SearchFragment : BlitterFragment() {
                 bind.followHashtagIv.isClickable = true
             }
 
-            // Save the updated list of hashtags for the user in the firebaseDB
+            // Save the updated list of hashtags for the User in the firebaseDB
             homeContext!!.firebaseDB.collection(DATA_USERS_COLLECTION)
                 .document(homeContext?.currentUserId!!)
                 .update(DATA_USERS_FOLLOW_HASHTAGS, followHashtags)
                 .addOnSuccessListener {
-//                    homeContext?.updateCurrentUser(currentUser?.copy()) // check if this a ref and always updated
-
                     bind.followHashtagIv.isClickable = true
                 }
                 .addOnFailureListener { e->
@@ -102,13 +101,21 @@ class SearchFragment : BlitterFragment() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+        outState.putBoolean("search_showSearchResults", showSearchResults)
+        outState.putString("search_currentHashtagQuery", currentHashtagQuery)
+    }
+
     // Search for a new hashtag
     fun onHashtagQueryActionSearch(term: String) {
         //println("onHashtagSearchActionSearch SearchFragment=$this, term=$term")
         currentHashtagQuery = term
+        showSearchResults = true
         bind.followHashtagIv.visibility = View.VISIBLE
 
-        updateList()
+        onSearchHashtag()
     }
 
     // Update the hashtag follow button based on the query term for every keypress
@@ -136,6 +143,14 @@ class SearchFragment : BlitterFragment() {
     }
 
     override fun updateList() {
+        updateFollowHashtagButton()
+
+        if (showSearchResults) {
+            onSearchHashtag()
+        }
+    }
+
+    private fun onSearchHashtag() {
         if(currentHashtagQuery.isEmpty()) return
 
         // Show failure message
