@@ -41,7 +41,7 @@ class SearchFragment : BlitterFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         savedInstanceState?.apply {
-            // After process death, pass this System-created fragment to HomeContext - (correct way to do this? SEEMS CLUNKY!)
+            // After process death, pass this System-created fragment to HomeContextI - (correct way to do this? SEEMS CLUNKY!)
             homeContext?.onBlitterFragmentCreated(this@SearchFragment)
 
             // Restore query search state
@@ -104,8 +104,8 @@ class SearchFragment : BlitterFragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        outState.putBoolean("search_showSearchResults", showSearchResults)
-        outState.putString("search_currentHashtagQuery", currentHashtagQuery)
+        outState.putBoolean(SEARCH_FRAGMENT_SHOW_SEARCH_RESULTS, showSearchResults)
+        outState.putString(SEARCH_FRAGMENT_CURRENT_HASHTAG_QUERY, currentHashtagQuery)
     }
 
     // Search for a new hashtag
@@ -115,7 +115,7 @@ class SearchFragment : BlitterFragment() {
         showSearchResults = true
         bind.followHashtagIv.visibility = View.VISIBLE
 
-        onSearchHashtag()
+        onSearchHashtagQuery()
     }
 
     // Update the "follow this hashtag" button icon based on the query term for every keypress
@@ -146,11 +146,11 @@ class SearchFragment : BlitterFragment() {
         updateFollowHashtagButton()
 
         if (showSearchResults) {
-            onSearchHashtag()
+            onSearchHashtagQuery()
         }
     }
 
-    private fun onSearchHashtag() {
+    private fun onSearchHashtagQuery() {
         if(currentHashtagQuery.isEmpty()) return
 
         // Show failure message

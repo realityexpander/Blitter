@@ -1,5 +1,10 @@
 package com.realityexpander.blitter.util
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+
 data class User(
     val email: String? = "",
     val username: String? = "",
@@ -10,6 +15,7 @@ data class User(
     var updatedTimestamp: Long = 0
 )
 
+@Serializable
 data class Bleet(
     val bleetId: String? = "",
     val username: String? = "",
@@ -20,4 +26,9 @@ data class Bleet(
     val rebleetUserIds: ArrayList<String>? = arrayListOf(), // list of userIds who re-bleeted this tweet
     val likeUserIds: ArrayList<String>? = arrayListOf(),    // list of userIds who liked this tweet
     val timestamp: Long? = 0,
-)
+) {
+    fun deepCopy(): Bleet {
+        val string = Json.encodeToString(this)
+        return Json.decodeFromString<Bleet>(string)
+    }
+}

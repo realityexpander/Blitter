@@ -7,5 +7,4 @@ interface BleetListener {
     fun onLayoutClick(bleet: Bleet?)
     fun onLike(bleet: Bleet?)
     fun onRebleet(bleet: Bleet?)
-
 }

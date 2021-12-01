@@ -5,8 +5,8 @@ import com.realityexpander.blitter.fragments.BlitterFragment
 import com.realityexpander.blitter.fragments.SearchFragment
 import com.realityexpander.blitter.util.User
 
-// HomeContext shared with the fragments
-interface HomeContext {
+// HomeContextI shared with the fragments
+interface HomeContextI {
     val firebaseDB: FirebaseFirestore
     val currentUserId: String?
     var currentUser: User?

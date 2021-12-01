@@ -24,18 +24,19 @@ import com.realityexpander.blitter.fragments.BlitterFragment
 import com.realityexpander.blitter.fragments.HomeFragment
 import com.realityexpander.blitter.fragments.MyActivityFragment
 import com.realityexpander.blitter.fragments.SearchFragment
-import com.realityexpander.blitter.listeners.HomeContext
+import com.realityexpander.blitter.listeners.HomeContextI
 import com.realityexpander.blitter.util.DATA_USERS_COLLECTION
+import com.realityexpander.blitter.util.HOME_ACTIVITY_SELECTED_TAB_POSITION
 import com.realityexpander.blitter.util.User
 import com.realityexpander.blitter.util.loadUrl
 
 
-class HomeActivity : AppCompatActivity(), HomeContext {
+class HomeActivity : AppCompatActivity(), HomeContextI {
     private lateinit var bind: ActivityHomeBinding
 
     private val firebaseAuth = FirebaseAuth.getInstance()
 
-    // interface HomeContext vars
+    // interface HomeContextI vars
     override val firebaseDB = FirebaseFirestore.getInstance()
     override val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
     override var currentUser: User? = null
@@ -179,7 +180,7 @@ class HomeActivity : AppCompatActivity(), HomeContext {
         //println("onSaveInstanceState for HomeActivity")
 
         outState.apply {
-            putInt("selectedTabPosition", bind.tabLayout.selectedTabPosition)
+            putInt(HOME_ACTIVITY_SELECTED_TAB_POSITION, bind.tabLayout.selectedTabPosition)
         }
     }
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -187,7 +188,7 @@ class HomeActivity : AppCompatActivity(), HomeContext {
         // println("onRestoreInstanceState for HomeActivity")
 
         savedInstanceState.apply {
-            val selectedTabPosition = getInt("selectedTabPosition")
+            val selectedTabPosition = getInt(HOME_ACTIVITY_SELECTED_TAB_POSITION)
             sectionPageAdapter.selectTabItem(selectedTabPosition)
         }
 

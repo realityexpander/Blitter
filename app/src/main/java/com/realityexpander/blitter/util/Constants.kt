@@ -27,5 +27,11 @@ const val DATA_PROFILE_IMAGES_STORAGE = "DATA_PROFILE_IMAGES" // storage locatio
 const val DATA_BLEET_IMAGES_STORAGE = "DATA_BLEET_IMAGES" // storage location for bleet images
 
 
+// ===== SavedInstanceState ====
+const val HOME_ACTIVITY_SELECTED_TAB_POSITION = "homeActivity_selectedTabPosition"
+const val SEARCH_FRAGMENT_SHOW_SEARCH_RESULTS = "searchFragment_showSearchResults"
+const val SEARCH_FRAGMENT_CURRENT_HASHTAG_QUERY = "searchFragment_currentHashtagQuery"
+
+
 // Deprecated way of getting image picker
 val REQUEST_CODE_PHOTO = 1001

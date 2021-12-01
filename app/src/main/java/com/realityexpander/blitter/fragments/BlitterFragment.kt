@@ -4,13 +4,13 @@ import android.content.Context
 import androidx.fragment.app.Fragment
 import com.realityexpander.blitter.adapters.BleetListAdapter
 import com.realityexpander.blitter.listeners.BleetListener
-import com.realityexpander.blitter.listeners.HomeContext
+import com.realityexpander.blitter.listeners.HomeContextI
 
 abstract class BlitterFragment: Fragment() {
 
     protected var bleetListAdapter: BleetListAdapter? = null
     protected var bleetListener: BleetListener? = null
-    protected var homeContext: HomeContext? = null
+    protected var homeContext: HomeContextI? = null
 
     abstract fun updateUI()
 
@@ -18,7 +18,7 @@ abstract class BlitterFragment: Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        if(context is HomeContext) {
+        if(context is HomeContextI) {
             homeContext = context
         } else {
             throw RuntimeException("$context must implement HomeCallBack")
