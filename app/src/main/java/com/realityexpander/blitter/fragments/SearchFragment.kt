@@ -29,14 +29,14 @@ class SearchFragment : BlitterFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? {
+    ): View {
 
         println("onCreateView SearchFragment=$this, savedInstanceState=$savedInstanceState")
 
         bind = FragmentSearchBinding.inflate(inflater, container, false)
         println("  onCreateView bind=$bind")
 
-        return bind.root;
+        return bind.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -45,12 +45,12 @@ class SearchFragment : BlitterFragment() {
 
         // After process death, pass this fragment (that the system created) - correct way to do this? SEEMS CLUNKY
         if (savedInstanceState != null) {
-            homeCallback?.onSearchFragmentCreated(this)
+            homeContext?.onSearchFragmentCreated(this)
         }
 
         // Setup the RV listAdapter
-        bleetListAdapter = BleetListAdapter(currentUserId!!, arrayListOf())
-        bleetListener = BlitterListenerImpl(bind.bleetListRv, currentUser, homeCallback)
+        bleetListAdapter = BleetListAdapter(homeContext!!.currentUserId!!, arrayListOf())
+        bleetListener = BlitterListenerImpl(bind.bleetListRv, homeContext)
         bleetListAdapter?.setListener(bleetListener)
         bind.bleetListRv.apply {
             layoutManager = LinearLayoutManager(context)
@@ -67,7 +67,7 @@ class SearchFragment : BlitterFragment() {
         // Setup followHashtag button
         bind.followHashtagIv.setOnClickListener {
             bind.followHashtagIv.isClickable = false
-            val followHashtags = currentUser?.followHashtags ?: arrayListOf()
+            val followHashtags = homeContext!!.currentUser?.followHashtags ?: arrayListOf()
 
             // Toggle followed hashtag for the current "search" query
             if(followHashtags.contains(currentHashtagQuery)) {
@@ -88,11 +88,11 @@ class SearchFragment : BlitterFragment() {
             }
 
             // Save the updated list of hashtags for the user in the firebaseDB
-            firebaseDB.collection(DATA_USERS_COLLECTION)
-                .document(currentUserId)
+            homeContext!!.firebaseDB.collection(DATA_USERS_COLLECTION)
+                .document(homeContext?.currentUserId!!)
                 .update(DATA_USERS_FOLLOW_HASHTAGS, followHashtags)
                 .addOnSuccessListener {
-                    homeCallback?.updateFragmentsWithUpdatedUser(currentUser?.copy()) // check if this a ref and always updated
+//                    homeContext?.updateCurrentUser(currentUser?.copy()) // check if this a ref and always updated
 
                     bind.followHashtagIv.isClickable = true
                 }
@@ -122,7 +122,7 @@ class SearchFragment : BlitterFragment() {
 
     // Show if the current query hashtag is followed by the user
     private fun updateFollowHashtagButton() {
-        val followHashtags = currentUser?.followHashtags
+        val followHashtags = homeContext!!.currentUser?.followHashtags
 
         if(followHashtags?.contains(currentHashtagQuery) == true) {
             bind.followHashtagIv.setImageDrawable(
@@ -136,7 +136,7 @@ class SearchFragment : BlitterFragment() {
     }
 
     override fun updateList() {
-        if(currentHashtagQuery.toString().isEmpty()) return
+        if(currentHashtagQuery.isEmpty()) return
 
         // Show failure message
         fun onSearchBleetHashtagsFailure(e: Exception) {
@@ -150,7 +150,7 @@ class SearchFragment : BlitterFragment() {
         bind.swipeRefresh.isRefreshing = true
 
         // Get bleets from firebaseDB that match the search hashtag & sort desc by timeStamp
-        firebaseDB.collection(DATA_BLEETS_COLLECTION)
+        homeContext!!.firebaseDB.collection(DATA_BLEETS_COLLECTION)
             .whereArrayContains(DATA_BLEETS_HASHTAGS, currentHashtagQuery)
             .get()
             .addOnSuccessListener { list ->

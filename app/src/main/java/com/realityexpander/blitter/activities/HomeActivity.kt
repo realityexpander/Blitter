@@ -23,19 +23,21 @@ import com.realityexpander.blitter.fragments.BlitterFragment
 import com.realityexpander.blitter.fragments.HomeFragment
 import com.realityexpander.blitter.fragments.MyActivityFragment
 import com.realityexpander.blitter.fragments.SearchFragment
-import com.realityexpander.blitter.listeners.HomeCallback
+import com.realityexpander.blitter.listeners.HomeContext
 import com.realityexpander.blitter.util.DATA_USERS_COLLECTION
 import com.realityexpander.blitter.util.User
 import com.realityexpander.blitter.util.loadUrl
 
 
-class HomeActivity : AppCompatActivity(), HomeCallback {
+class HomeActivity : AppCompatActivity(), HomeContext {
     private lateinit var bind: ActivityHomeBinding
 
     private val firebaseAuth = FirebaseAuth.getInstance()
-    private val firebaseDB = FirebaseFirestore.getInstance()
-    private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
-    private var currentUser: User? = null
+
+    // interface HomeContext vars
+    override val firebaseDB = FirebaseFirestore.getInstance()
+    override val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
+    override var currentUser: User? = null
 
     // ViewPager / TabLayout
     private lateinit var onTabSelectedListener: TabLayout.OnTabSelectedListener
@@ -112,7 +114,7 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
                 currentUser?.imageUrl.let { profileImageUrl ->
                     bind.profileImageIv.loadUrl(profileImageUrl, R.drawable.default_user)
                 }
-                updateFragmentsWithUpdatedUser(currentUser)
+                updateCurrentUser(currentUser)
                 bind.homeProgressLayout.visibility = View.GONE
             }
             .addOnFailureListener { e ->
@@ -160,12 +162,12 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
         //println("onSaveInstanceState for HomeActivity")
 
         outState.putInt("selectedTabPosition", bind.tabLayout.selectedTabPosition)
         // println("  selectedTabPosition=${outState.getInt("selectedTabPosition")}")
 
-        super.onSaveInstanceState(outState)
     }
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
@@ -196,20 +198,17 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
         currentFragment?.updateList()
     }
 
-    fun updateFragmentsWithCurrentUser() {
-        homeFragment?.setUser(currentUser)
-        searchFragment?.setUser(currentUser)
-        myActivityFragment?.setUser(currentUser)
-    }
-    override fun updateFragmentsWithUpdatedUser(updatedUser: User?) {
+    override fun updateCurrentUser(updatedUser: User?) {
         currentUser = updatedUser
 
-        homeFragment?.setUser(updatedUser)
-        searchFragment?.setUser(updatedUser)
-        myActivityFragment?.setUser(updatedUser)
-
+//        updateFragmentsWithCurrentUser()
 //        currentFragment?.updateList() // necessary?
     }
+//    fun updateFragmentsWithCurrentUser() {
+//        homeFragment?.setUser(currentUser)
+//        searchFragment?.setUser(currentUser)
+//        myActivityFragment?.setUser(currentUser)
+//    }
 
     private fun setupViewPagerAdapter() {
         println("  setupViewPagerAdapter")
@@ -263,7 +262,7 @@ class HomeActivity : AppCompatActivity(), HomeCallback {
             }
             if(currentFragment == null) currentFragment = newFragment
             println("  currentFragment=$currentFragment")
-            updateFragmentsWithCurrentUser()
+//            updateFragmentsWithCurrentUser() // share the User with the fragment
             return newFragment
         }
 
