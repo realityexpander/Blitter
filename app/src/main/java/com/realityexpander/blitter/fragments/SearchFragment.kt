@@ -44,7 +44,7 @@ class SearchFragment : BlitterFragment() {
             // After process death, pass this System-created fragment to HomeContext - (correct way to do this? SEEMS CLUNKY!)
             homeContext?.onBlitterFragmentCreated(this@SearchFragment)
 
-            // Show the search results?
+            // Restore query search state
             showSearchResults = getBoolean("search_showSearchResults", false)
             currentHashtagQuery = getString("search_currentHashtagQuery", "")
         }
@@ -62,7 +62,7 @@ class SearchFragment : BlitterFragment() {
         // Setup swipe-to-refresh
         bind.swipeRefresh.setOnRefreshListener {
             bind.swipeRefresh.isRefreshing = true
-            updateList()
+            updateUI()
         }
 
         // Setup followHashtag button
@@ -118,8 +118,8 @@ class SearchFragment : BlitterFragment() {
         onSearchHashtag()
     }
 
-    // Update the hashtag follow button based on the query term for every keypress
-    fun onHashtagQueryTermKeyPress(term: String) {
+    // Update the "follow this hashtag" button icon based on the query term for every keypress
+    fun onHashtagQueryKeyPress(term: String) {
         //println("onHashtagSearchTermKeyPress SearchFragment=$this")
         currentHashtagQuery = term
         bind.followHashtagIv.visibility = View.VISIBLE
@@ -127,7 +127,7 @@ class SearchFragment : BlitterFragment() {
         updateFollowHashtagButton()
     }
 
-    // Show if the current query hashtag is followed by the user
+    // Indicate if the current query hashtag is followed by the user by changing the icon
     private fun updateFollowHashtagButton() {
         val followHashtags = homeContext!!.currentUser?.followHashtags
 
@@ -142,7 +142,7 @@ class SearchFragment : BlitterFragment() {
         }
     }
 
-    override fun updateList() {
+    override fun updateUI() {
         updateFollowHashtagButton()
 
         if (showSearchResults) {

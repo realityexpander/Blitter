@@ -11,8 +11,9 @@ interface HomeContext {
     val currentUserId: String?
     var currentUser: User?
 
-    fun onRefreshListForCurrentFragment()
+    // Refresh the UI for the current fragment
+    fun onRefreshUIForCurrentFragment()
 
-    // Pass back the fragment to the home activity when fragment is created after process death
+    // Pass back the system-created fragment to the home Activity after process death restoration
     fun onBlitterFragmentCreated(newBlitterFragment: BlitterFragment)
 }

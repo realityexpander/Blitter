@@ -32,7 +32,7 @@ class BlitterListenerImpl(
                 .document(bleet.bleetId!!)
                 .update(DATA_BLEETS_LIKE_USER_IDS, likeUserIds)
                 .addOnSuccessListener {
-                    homeContext.onRefreshListForCurrentFragment()
+                    homeContext.onRefreshUIForCurrentFragment()
                     bleetListRv.isClickable = true
                 }
                 .addOnFailureListener { e->

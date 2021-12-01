@@ -12,7 +12,7 @@ abstract class BlitterFragment: Fragment() {
     protected var bleetListener: BleetListener? = null
     protected var homeContext: HomeContext? = null
 
-    abstract fun updateList()
+    abstract fun updateUI()
 
     // Get the HomeActivity context
     override fun onAttach(context: Context) {
@@ -25,9 +25,4 @@ abstract class BlitterFragment: Fragment() {
         }
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//
-//        updateList() // forces all fragment lists to update after onResume
-//    }
 }

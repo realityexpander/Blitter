@@ -166,7 +166,6 @@ class HomeActivity : AppCompatActivity(), HomeContext {
                     bind.profileImageIv.loadUrl(profileImageUrl, R.drawable.default_user)
                 }
                 updateCurrentUser(currentUser)
-                onRefreshListForCurrentFragment()
                 bind.homeProgressLayout.visibility = View.GONE
             }
             .addOnFailureListener { e ->
@@ -216,12 +215,12 @@ class HomeActivity : AppCompatActivity(), HomeContext {
         // println("onBlitterFragmentCreated currentFragment=$currentFragment")
     }
 
-    override fun onRefreshListForCurrentFragment() {
-        currentFragment?.updateList()
-    }
-
     private fun updateCurrentUser(updatedUser: User?) {
         currentUser = updatedUser
+        onRefreshUIForCurrentFragment()
+    }
+    override fun onRefreshUIForCurrentFragment() {
+        currentFragment?.updateUI()
     }
 
     private fun setupViewPagerAdapter() {
@@ -362,7 +361,7 @@ class HomeActivity : AppCompatActivity(), HomeContext {
             override fun afterTextChanged(editable: Editable?) {
                 val term = editable.toString()
                 // println("  textChangedListener SearchFragment=$searchFragment")
-                searchFragment?.onHashtagQueryTermKeyPress(term)
+                searchFragment?.onHashtagQueryKeyPress(term)
             }
         }
         bind.search.addTextChangedListener(textChangedListener)
