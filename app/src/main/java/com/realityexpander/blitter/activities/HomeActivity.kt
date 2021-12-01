@@ -221,7 +221,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
         onRefreshUIForCurrentFragment()
     }
     override fun onRefreshUIForCurrentFragment() {
-        currentFragment?.updateUI()
+        currentFragment?.onUpdateUI()
     }
 
     private fun setupViewPagerAdapter() {

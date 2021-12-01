@@ -42,7 +42,7 @@ class SearchFragment : BlitterFragment() {
 
         savedInstanceState?.apply {
             // After process death, pass this System-created fragment to HomeContextI - (correct way to do this? SEEMS CLUNKY!)
-            homeContext?.onBlitterFragmentCreated(this@SearchFragment)
+            homeContextI?.onBlitterFragmentCreated(this@SearchFragment)
 
             // Restore query search state
             showSearchResults = getBoolean("search_showSearchResults", false)
@@ -50,8 +50,8 @@ class SearchFragment : BlitterFragment() {
         }
 
         // Setup the RV listAdapter
-        bleetListAdapter = BleetListAdapter(homeContext!!.currentUserId!!, arrayListOf())
-        bleetListener = BlitterListenerImpl(bind.bleetListRv, homeContext)
+        bleetListAdapter = BleetListAdapter(homeContextI!!.currentUserId!!, arrayListOf())
+        bleetListener = BlitterListenerImpl(bind.bleetListRv, homeContextI)
         bleetListAdapter?.setListener(bleetListener)
         bind.bleetListRv.apply {
             layoutManager = LinearLayoutManager(context)
@@ -62,13 +62,13 @@ class SearchFragment : BlitterFragment() {
         // Setup swipe-to-refresh
         bind.swipeRefresh.setOnRefreshListener {
             bind.swipeRefresh.isRefreshing = true
-            updateUI()
+            onUpdateUI()
         }
 
         // Setup followHashtag button
         bind.followHashtagIv.setOnClickListener {
             bind.followHashtagIv.isClickable = false
-            val followHashtags = homeContext!!.currentUser?.followHashtags ?: arrayListOf()
+            val followHashtags = homeContextI!!.currentUser?.followHashtags ?: arrayListOf()
 
             // Toggle "follow hashtag" for the current "search hashtag" query
             if(followHashtags.contains(currentHashtagQuery)) {
@@ -89,8 +89,8 @@ class SearchFragment : BlitterFragment() {
             }
 
             // Save the updated list of hashtags for the User in the firebaseDB
-            homeContext!!.firebaseDB.collection(DATA_USERS_COLLECTION)
-                .document(homeContext?.currentUserId!!)
+            homeContextI!!.firebaseDB.collection(DATA_USERS_COLLECTION)
+                .document(homeContextI?.currentUserId!!)
                 .update(DATA_USERS_FOLLOW_HASHTAGS, followHashtags)
                 .addOnSuccessListener {
                     bind.followHashtagIv.isClickable = true
@@ -98,6 +98,14 @@ class SearchFragment : BlitterFragment() {
                 .addOnFailureListener { e->
                     onUpdateFollowHashtagsFailure(e)
                 }
+        }
+    }
+
+    override fun onUpdateUI() {
+        updateFollowHashtagButton()
+
+        if (showSearchResults) {
+            onSearchHashtagQuery()
         }
     }
 
@@ -129,7 +137,7 @@ class SearchFragment : BlitterFragment() {
 
     // Indicate if the current query hashtag is followed by the user by changing the icon
     private fun updateFollowHashtagButton() {
-        val followHashtags = homeContext!!.currentUser?.followHashtags
+        val followHashtags = homeContextI!!.currentUser?.followHashtags
 
         if(followHashtags?.contains(currentHashtagQuery) == true) {
             bind.followHashtagIv.setImageDrawable(
@@ -139,14 +147,6 @@ class SearchFragment : BlitterFragment() {
             bind.followHashtagIv.setImageDrawable(
                 ContextCompat.getDrawable(bind.followHashtagIv.context,
                     R.drawable.follow_inactive))
-        }
-    }
-
-    override fun updateUI() {
-        updateFollowHashtagButton()
-
-        if (showSearchResults) {
-            onSearchHashtagQuery()
         }
     }
 
@@ -165,7 +165,7 @@ class SearchFragment : BlitterFragment() {
         bind.swipeRefresh.isRefreshing = true
 
         // Get bleets from firebaseDB that match the search hashtag & sort desc by timeStamp
-        homeContext!!.firebaseDB.collection(DATA_BLEETS_COLLECTION)
+        homeContextI!!.firebaseDB.collection(DATA_BLEETS_COLLECTION)
             .whereArrayContains(DATA_BLEETS_HASHTAGS, currentHashtagQuery)
             .get()
             .addOnSuccessListener { list ->

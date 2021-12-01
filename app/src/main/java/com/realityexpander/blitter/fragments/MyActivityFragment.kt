@@ -26,7 +26,7 @@ class MyActivityFragment : BlitterFragment() {
 
     }
 
-    override fun updateUI() {
+    override fun onUpdateUI() {
         //TODO("Not yet implemented")
     }
 

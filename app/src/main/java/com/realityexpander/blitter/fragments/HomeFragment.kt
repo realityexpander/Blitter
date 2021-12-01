@@ -29,7 +29,7 @@ class HomeFragment : BlitterFragment() {
         return bind.root;
     }
 
-    override fun updateUI() {
+    override fun onUpdateUI() {
         //TODO("Not yet implemented")
     }
 }
