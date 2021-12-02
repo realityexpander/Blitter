@@ -22,6 +22,10 @@ class HomeFragment : BlitterFragment() {
 
     private lateinit var bind: FragmentHomeBinding
 
+//    // Track the previous update values
+//    private var previousFollowUserIds: ArrayList<String>? = arrayListOf()
+//    private var previousFollowHashtags: ArrayList<String>? = arrayListOf()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -69,12 +73,26 @@ class HomeFragment : BlitterFragment() {
         // outState.putBoolean(SEARCH_FRAGMENT_SHOW_SEARCH_RESULTS, showSearchResults)
     }
 
+    override fun onResume() {
+        super.onResume()
+        onUpdateUI()
+    }
+
     override fun onUpdateUI() {
         refreshHomeNewsfeed()
     }
 
     private fun refreshHomeNewsfeed() {
+//        bind.swipeRefresh.isRefreshing = false
+//        // check if anything has changed since last refresh
+//        if( (homeContextI!!.currentUser?.followUserIds?.deepCompare(previousFollowUserIds) == true)
+//            && (homeContextI!!.currentUser?.followHashtags?.deepCompare(previousFollowHashtags) == true)
+//        ) return
+
         bind.swipeRefresh.isRefreshing = true
+
+//        previousFollowUserIds = homeContextI!!.currentUser?.followUserIds.deepCopy()
+//        previousFollowHashtags = homeContextI!!.currentUser?.followHashtags.deepCopy()
         val bleets = arrayListOf<Bleet>()
 
         fun sortBleetsByTimestampAndDisplayBleets() {
@@ -98,7 +116,14 @@ class HomeFragment : BlitterFragment() {
         }
 
         fun getBleetsForFollowHashtags() {
-            homeContextI!!.currentUser?.followHashtags?.let { hashtags ->
+            val followHashtags = homeContextI!!.currentUser?.followHashtags
+
+            if(followHashtags?.isEmpty() == true) {
+                sortBleetsByTimestampAndDisplayBleets()
+                return
+            }
+
+            followHashtags?.let { hashtags ->
                 var index = 0
 
                 for (hashtag in hashtags) {
@@ -126,14 +151,20 @@ class HomeFragment : BlitterFragment() {
             }
         }
 
-        fun getBleetsForFollowUserIdsAndHashtags() {
+        fun getBleetsForFollowUserIdsAndFollowHashtags() {
             // println("homeContext = $homeContextI")
             // println("currentUser = ${homeContextI!!.currentUser}")
             // println("currentUserId = ${homeContextI!!.currentUserId}")
             // println("followUserIds = ${homeContextI!!.currentUser?.followUserIds}")
             // println("followHashtags = ${homeContextI!!.currentUser?.followHashtags}")
+            val followUserIds = homeContextI!!.currentUser?.followUserIds
 
-            homeContextI!!.currentUser?.followUserIds?.let { followUserIds ->
+            if(followUserIds?.isEmpty() == true) {
+                getBleetsForFollowHashtags()
+                return
+            }
+
+            followUserIds?.let { followUserIds ->
                 for (followUserId in followUserIds) {
                     var index = 0
 
@@ -163,7 +194,7 @@ class HomeFragment : BlitterFragment() {
 
         // Get bleets that currentUser has: followingUserId, followHashtags
         //   & sort desc by timeStamp
-        getBleetsForFollowUserIdsAndHashtags()
+        getBleetsForFollowUserIdsAndFollowHashtags()
 
     }
 }

@@ -319,6 +319,8 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
                             bind.titleBar.text = "My Activity"
                         }
                     }
+
+                    currentFragment?.onResume() // force refresh when tab is changed
                     println("    setupBottomNavTabLayout, currentFragment=$currentFragment")
                 }
             }

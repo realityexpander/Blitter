@@ -6,18 +6,6 @@
         android:layout_height="match_parent"
         tools:context=".fragments.SearchFragment">
 
-    <ImageView
-            android:id="@+id/followHashtagIv"
-            android:layout_width="@dimen/standard_image"
-            android:layout_height="@dimen/standard_image"
-            android:layout_margin="@dimen/grid_2x"
-            android:elevation="1dp"
-            android:scaleType="centerInside"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/swipeRefresh"
-            app:srcCompat="@drawable/follow_inactive" />
-
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefresh"
             android:layout_width="match_parent"
@@ -32,6 +20,9 @@
                     android:id="@+id/followHashtagListTv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textAlignment="viewEnd"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/constraintLayout"
                     tools:text="[flap, map, pappy]" />
 
@@ -41,6 +32,19 @@
                     android:layout_height="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/followHashtagListTv" />
+
+            <ImageView
+                    android:id="@+id/followHashtagIv"
+                    android:layout_width="@dimen/standard_image"
+                    android:layout_height="@dimen/standard_image"
+                    android:layout_margin="@dimen/grid_1x"
+                    android:layout_marginEnd="@dimen/grid_2x"
+                    android:elevation="1dp"
+                    android:scaleType="centerInside"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/followHashtagListTv"
+                    app:srcCompat="@drawable/follow_inactive" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -8,6 +8,9 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.realityexpander.blitter.R
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -42,4 +45,18 @@ fun Long?.getDateString(): String {
     val resultDate = Date(dateLong!!)
 
     return sdf.format(resultDate).lowercase(Locale.US)
+}
+
+fun ArrayList<String>?.deepCompare(other: ArrayList<String>?): Boolean {
+    if(this==null && other==null) return true
+    if (Json.encodeToString(this) == Json.encodeToString(other)) return true
+
+    return false
+}
+
+fun Array<*>.deepEquals(other: Array<*>) = this.contentDeepEquals(other)
+
+fun ArrayList<String>?.deepCopy(): ArrayList<String>? {
+    if (this==null) return null
+    return Json.decodeFromString<ArrayList<String>>(Json.encodeToString(this))
 }
