@@ -14,7 +14,7 @@ abstract class BlitterFragment: Fragment() {
 
     abstract fun onUpdateUI()
 
-    // Get the HomeActivity context
+    // Get the Host Activity context when fragment attaches
     override fun onAttach(context: Context) {
         super.onAttach(context)
 

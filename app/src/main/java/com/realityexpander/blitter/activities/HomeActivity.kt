@@ -319,7 +319,6 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
                             bind.titleBar.text = "My Activity"
                         }
                     }
-
                     println("    setupBottomNavTabLayout, currentFragment=$currentFragment")
                 }
             }

@@ -25,6 +25,7 @@ class SearchFragment : BlitterFragment() {
     private lateinit var bind: FragmentSearchBinding
 
     private var currentHashtagQuery = ""
+    private var prevHashtagQuery = ""
     private var showSearchResults: Boolean = false
 
     override fun onCreateView(
@@ -102,6 +103,11 @@ class SearchFragment : BlitterFragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        onUpdateUI()
+    }
+
     override fun onUpdateUI() {
         updateFollowHashtagButton()
 
@@ -125,33 +131,10 @@ class SearchFragment : BlitterFragment() {
 
         onSearchHashtag()
     }
-
-    // Update the "follow this hashtag" button icon based on the query term for every keypress
-    fun onHashtagQueryKeyPress(term: String) {
-        //println("onHashtagSearchTermKeyPress SearchFragment=$this")
-        currentHashtagQuery = term
-        bind.followHashtagIv.visibility = View.VISIBLE
-
-        updateFollowHashtagButton()
-    }
-
-    // Indicate if the current query hashtag is followed by the user by changing the icon
-    private fun updateFollowHashtagButton() {
-        val followHashtags = homeContextI!!.currentUser?.followHashtags
-
-        if(followHashtags?.contains(currentHashtagQuery) == true) {
-            bind.followHashtagIv.setImageDrawable(
-                ContextCompat.getDrawable(bind.followHashtagIv.context,
-                R.drawable.follow))
-        } else {
-            bind.followHashtagIv.setImageDrawable(
-                ContextCompat.getDrawable(bind.followHashtagIv.context,
-                    R.drawable.follow_inactive))
-        }
-    }
-
     private fun onSearchHashtag() {
+        bind.swipeRefresh.isRefreshing = false
         if(currentHashtagQuery.isEmpty()) return
+        if(currentHashtagQuery == prevHashtagQuery) return
 
         // Show failure message
         fun onSearchBleetHashtagsFailure(e: Exception) {
@@ -186,6 +169,7 @@ class SearchFragment : BlitterFragment() {
 
                 bleetListAdapter?.updateBleets(sortedBleets)
                 updateFollowHashtagButton()
+                prevHashtagQuery = currentHashtagQuery
                 bind.swipeRefresh.isRefreshing = false
 
             }
@@ -207,6 +191,35 @@ class SearchFragment : BlitterFragment() {
 //                      bleets.add(it)
 //                  }
 //            }
+    }
+
+    // Update the "follow this hashtag" button icon based on the query term for every keypress
+    fun onHashtagQueryKeyPress(term: String) {
+        //println("onHashtagSearchTermKeyPress SearchFragment=$this")
+        currentHashtagQuery = term
+        bind.followHashtagIv.visibility = View.VISIBLE
+
+        updateFollowHashtagButton()
+    }
+
+    // Indicate if the current query hashtag is followed by the user by changing the icon
+    private fun updateFollowHashtagButton() {
+        val followHashtags = homeContextI!!.currentUser?.followHashtags
+
+        if(followHashtags?.contains(currentHashtagQuery) == true) {
+            bind.followHashtagIv.setImageDrawable(
+                ContextCompat.getDrawable(bind.followHashtagIv.context,
+                R.drawable.follow))
+        } else {
+            bind.followHashtagIv.setImageDrawable(
+                ContextCompat.getDrawable(bind.followHashtagIv.context,
+                    R.drawable.follow_inactive))
+        }
+
+        updateFollowHashtagList()
+    }
+    private fun updateFollowHashtagList() {
+        bind.followHashtagListTv.text = homeContextI!!.currentUser!!.followHashtags.toString()
     }
 
 }

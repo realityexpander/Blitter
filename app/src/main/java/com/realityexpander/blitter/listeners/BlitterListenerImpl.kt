@@ -12,11 +12,10 @@ import com.realityexpander.blitter.util.*
 class BlitterListenerImpl(
     private val bleetListRv: RecyclerView,
     private val homeContextI: HomeContextI?,
-    private val fragment: Fragment
+    private val hostFragment: Fragment
 ) : BleetListener {
 
     override fun onLayoutClick(bleet: Bleet?) {
-
         val currentUserId = homeContextI!!.currentUserId!!
         val currentUser = homeContextI.currentUser!!
         val followUserIds = currentUser.followUserIds
@@ -78,7 +77,7 @@ class BlitterListenerImpl(
 
         val dialog = BottomSheetDialog(homeContextI as Context)
         val bindDialog = DialogConfirmLayoutBinding.inflate(
-            fragment.layoutInflater,
+            hostFragment.layoutInflater,
             null,
             false
         )
