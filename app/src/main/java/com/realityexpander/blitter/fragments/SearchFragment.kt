@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.realityexpander.blitter.R
 import com.realityexpander.blitter.adapters.BleetListAdapter
-import com.realityexpander.blitter.databinding.DialogFollowLayoutBinding
 import com.realityexpander.blitter.databinding.FragmentSearchBinding
 import com.realityexpander.blitter.listeners.BlitterListenerImpl
 import com.realityexpander.blitter.util.*
@@ -107,7 +106,7 @@ class SearchFragment : BlitterFragment() {
         updateFollowHashtagButton()
 
         if (showSearchResults) {
-            onSearchHashtagQuery()
+            onSearchHashtag()
         }
     }
 
@@ -119,13 +118,12 @@ class SearchFragment : BlitterFragment() {
     }
 
     // Search for a new hashtag
-    fun onHashtagQueryActionSearch(term: String) {
-        //println("onHashtagSearchActionSearch SearchFragment=$this, term=$term")
-        currentHashtagQuery = term
+    fun onHashtagQueryActionSearch(queryTerm: String) {
+        currentHashtagQuery = queryTerm
         showSearchResults = true
         bind.followHashtagIv.visibility = View.VISIBLE
 
-        onSearchHashtagQuery()
+        onSearchHashtag()
     }
 
     // Update the "follow this hashtag" button icon based on the query term for every keypress
@@ -152,7 +150,7 @@ class SearchFragment : BlitterFragment() {
         }
     }
 
-    private fun onSearchHashtagQuery() {
+    private fun onSearchHashtag() {
         if(currentHashtagQuery.isEmpty()) return
 
         // Show failure message
