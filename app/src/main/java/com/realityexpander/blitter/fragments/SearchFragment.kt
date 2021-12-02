@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.realityexpander.blitter.R
 import com.realityexpander.blitter.adapters.BleetListAdapter
+import com.realityexpander.blitter.databinding.DialogFollowLayoutBinding
 import com.realityexpander.blitter.databinding.FragmentSearchBinding
 import com.realityexpander.blitter.listeners.BlitterListenerImpl
 import com.realityexpander.blitter.util.*
@@ -28,7 +29,8 @@ class SearchFragment : BlitterFragment() {
     private var showSearchResults: Boolean = false
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View {
         // println("onCreateView SearchFragment=$this, savedInstanceState=$savedInstanceState")
@@ -51,7 +53,7 @@ class SearchFragment : BlitterFragment() {
 
         // Setup the RV listAdapter
         bleetListAdapter = BleetListAdapter(homeContextI!!.currentUserId!!, arrayListOf())
-        bleetListener = BlitterListenerImpl(bind.bleetListRv, homeContextI)
+        bleetListener = BlitterListenerImpl(bind.bleetListRv, homeContextI, this)
         bleetListAdapter?.setListener(bleetListener)
         bind.bleetListRv.apply {
             layoutManager = LinearLayoutManager(context)

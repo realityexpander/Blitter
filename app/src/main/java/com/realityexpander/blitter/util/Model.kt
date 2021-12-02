@@ -28,7 +28,6 @@ data class Bleet(
     val timestamp: Long? = 0,
 ) {
     fun deepCopy(): Bleet {
-        val string = Json.encodeToString(this)
-        return Json.decodeFromString<Bleet>(string)
+        return Json.decodeFromString<Bleet>(Json.encodeToString(this))
     }
 }

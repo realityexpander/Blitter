@@ -1,21 +1,61 @@
 package com.realityexpander.blitter.listeners
 
 import android.content.Context
+import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.realityexpander.blitter.databinding.DialogFollowLayoutBinding
 import com.realityexpander.blitter.util.*
 
 class BlitterListenerImpl(
     private val bleetListRv: RecyclerView,
     private val homeContextI: HomeContextI?,
+    private val fragment: Fragment,
 ) : BleetListener {
 
     override fun onLayoutClick(bleet: Bleet?) {
-//        TODO("Not yet implemented")
+
+        val dialog = BottomSheetDialog(homeContextI as Context)
+        val bindDialog = DialogFollowLayoutBinding.inflate(fragment.layoutInflater,
+            null,
+            false)
+        dialog.setCancelable(true)
+        bindDialog.closeIv.setOnClickListener {
+            dialog.dismiss()
+            (bindDialog.root.parent as ViewGroup).removeView(bindDialog.root)
+        }
+        bindDialog.yesTv.setOnClickListener {
+            Toast.makeText(homeContextI as Context,
+                "Clicked Yes!",
+                Toast.LENGTH_LONG).show()
+            dialog.dismiss()
+            (bindDialog.root.parent as ViewGroup).removeView(bindDialog.root)
+        }
+        bindDialog.noTv.setOnClickListener {
+            Toast.makeText(homeContextI as Context,
+                "Clicked No!",
+                Toast.LENGTH_LONG).show()
+            dialog.dismiss()
+            (bindDialog.root.parent as ViewGroup).removeView(bindDialog.root)
+        }
+        dialog.setContentView(bindDialog.root)
+        dialog.show()
+
     }
 
     override fun onLike(bleet: Bleet?) {
         val currentUserId = homeContextI!!.currentUserId!!
+
+        // Show failure message
+        fun onLikeFailure(e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(homeContextI as Context,
+                "Like failed, please try again. ${e.localizedMessage}",
+                Toast.LENGTH_LONG).show()
+            bleetListRv.isClickable = true
+        }
 
         bleet?.let {
             bleetListRv.isClickable = false
@@ -36,8 +76,7 @@ class BlitterListenerImpl(
                     bleetListRv.isClickable = true
                 }
                 .addOnFailureListener { e ->
-                    println(e.localizedMessage)
-                    bleetListRv.isClickable = true
+                    onLikeFailure(e)
                 }
 
         }
@@ -47,6 +86,7 @@ class BlitterListenerImpl(
         REMOVE_REBLEET, // Remove the rebleet from the firebaseDB
         ADD_REBLEET     // Add the rebleet to the firebaseDB
     }
+
     override fun onRebleet(bleet: Bleet?) {
         val currentUserId = homeContextI!!.currentUserId!!
 
@@ -72,7 +112,8 @@ class BlitterListenerImpl(
                     bleetId = originalBleet.bleetId,
                     username = homeContextI.currentUser?.username,
                     likeUserIds = arrayListOf(),      // when reBleeting, only show likes for this rebleet.
-                    rebleetUserIds = arrayListOf(currentUserId, originalBleet.rebleetUserIds!![0]), // when reBleeting, only include this and original author
+                    rebleetUserIds = arrayListOf(currentUserId,
+                        originalBleet.rebleetUserIds!![0]), // when reBleeting, only include this and original author
                     timestamp = System.currentTimeMillis()
                 )
             reBleetDocument.set(reBleet)
@@ -90,19 +131,21 @@ class BlitterListenerImpl(
             // find the bleet from this user that matches the original bleet's id
             homeContextI.firebaseDB
                 .collection(DATA_BLEETS_COLLECTION)
-                .whereEqualTo(DATA_BLEETS_BLEET_ID, originalBleet.bleetId) // matches original bleetId
-                .whereArrayContains(DATA_BLEETS_REBLEET_USER_IDS, currentUserId) // and contains this users' reBleet
+                .whereEqualTo(DATA_BLEETS_BLEET_ID,
+                    originalBleet.bleetId) // matches original bleetId
+                .whereArrayContains(DATA_BLEETS_REBLEET_USER_IDS,
+                    currentUserId) // and contains this users' reBleet
                 .get()
                 .addOnSuccessListener {
                     // Delete this reBleet only if rebleetsUserId element 0 is the currentUserId
                     //   (element 0 is the author of this bleet)
-                    val documentToDelete = it.documents.filter { bleetDocument->
+                    val documentToDelete = it.documents.filter { bleetDocument ->
                         val bleetElement = bleetDocument.toObject(Bleet::class.java)
                         bleetElement?.rebleetUserIds?.getOrNull(0) == currentUserId
                     } // Should only be one!
 
                     // If no records are found, the database is corrupted
-                    if(documentToDelete.isEmpty()) {
+                    if (documentToDelete.isEmpty()) {
                         onRebleetFailure(java.lang.Exception("Record not found"))
                     }
 
@@ -132,7 +175,7 @@ class BlitterListenerImpl(
             var reBleetAction: ReBleetAction? = null
 
             if (rebleetUserIds?.contains(currentUserId) == true) {
-                if(rebleetUserIds[0] == currentUserId) { // is this the currentUsers' bleet?
+                if (rebleetUserIds[0] == currentUserId) { // is this the currentUsers' bleet?
                     return // cant rebleet your own original bleet
                 }
                 rebleetUserIds.remove(currentUserId)
@@ -147,7 +190,7 @@ class BlitterListenerImpl(
                 .document(originalBleet.bleetId!!)
                 .update(DATA_BLEETS_REBLEET_USER_IDS, rebleetUserIds)
                 .addOnSuccessListener {
-                    when(reBleetAction) {
+                    when (reBleetAction) {
                         ReBleetAction.ADD_REBLEET -> reBleetThisBleet(originalBleet)
                         ReBleetAction.REMOVE_REBLEET -> removeTheReBleetOfThisBleet(originalBleet)
                     }
