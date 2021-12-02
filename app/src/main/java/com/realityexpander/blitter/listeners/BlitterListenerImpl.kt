@@ -17,33 +17,90 @@ class BlitterListenerImpl(
 
     override fun onLayoutClick(bleet: Bleet?) {
 
+        val currentUserId = homeContextI!!.currentUserId!!
+        val currentUser = homeContextI.currentUser!!
+        val followUserIds = currentUser.followUserIds
+        val bleetUserId = bleet?.rebleetUserIds!![0]
+
+        // Show failure message
+        fun onSaveFollowUserFailure(e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(homeContextI as Context,
+                "Follow User failed, please try again. ${e.localizedMessage}",
+                Toast.LENGTH_LONG).show()
+            bleetListRv.isClickable = true
+        }
+
+        fun saveFollowUserIdsForCurrentUser() {
+            // Save updated followUserIds to firebase database
+            homeContextI.firebaseDB.collection(DATA_USERS_COLLECTION)
+                .document(currentUserId)
+                .update(DATA_USERS_FOLLOW_USER_IDS, followUserIds)
+                .addOnSuccessListener {
+                    homeContextI.onRefreshUIForCurrentFragment()
+                    bleetListRv.isClickable = true
+                }
+                .addOnFailureListener { e ->
+                    onSaveFollowUserFailure(e)
+                }
+        }
+
+        val followUserId: (userId: String) -> Unit = {
+            followUserIds.add(bleetUserId)
+            saveFollowUserIdsForCurrentUser()
+        }
+
+        val unfollowUserId: (userId: String) -> Unit = {
+            followUserIds.remove(bleetUserId)
+            saveFollowUserIdsForCurrentUser()
+        }
+
+        bleet.let {
+            bleetListRv.isClickable = false
+
+            if (bleetUserId == currentUserId) return // cant follow yourself
+
+            if (followUserIds.contains(bleetUserId)) {
+                confirmFollowDialog("Unfollow ${bleet.username}?",
+                    bleetUserId,
+                    unfollowUserId  )
+            } else {
+                confirmFollowDialog("Follow ${bleet.username}?",
+                    bleetUserId,
+                    followUserId )
+            }
+        }
+    }
+
+    private fun confirmFollowDialog(dialogMessageText: String,
+                                    userIdToFollow: String,
+                                    positiveAction: (bleetUserId: String) -> Unit ) {
         val dialog = BottomSheetDialog(homeContextI as Context)
         val bindDialog = DialogFollowLayoutBinding.inflate(fragment.layoutInflater,
             null,
             false)
+
+        bindDialog.dialogMessageTv.text = dialogMessageText
         dialog.setCancelable(true)
+
         bindDialog.closeIv.setOnClickListener {
             dialog.dismiss()
             (bindDialog.root.parent as ViewGroup).removeView(bindDialog.root)
         }
-        bindDialog.yesTv.setOnClickListener {
-            Toast.makeText(homeContextI as Context,
-                "Clicked Yes!",
-                Toast.LENGTH_LONG).show()
+        bindDialog.positiveActionTv.setOnClickListener {
+            dialog.dismiss()
+            (bindDialog.root.parent as ViewGroup).removeView(bindDialog.root)
+            positiveAction(userIdToFollow)
+        }
+        bindDialog.negativeActionTv.setOnClickListener {
             dialog.dismiss()
             (bindDialog.root.parent as ViewGroup).removeView(bindDialog.root)
         }
-        bindDialog.noTv.setOnClickListener {
-            Toast.makeText(homeContextI as Context,
-                "Clicked No!",
-                Toast.LENGTH_LONG).show()
-            dialog.dismiss()
-            (bindDialog.root.parent as ViewGroup).removeView(bindDialog.root)
-        }
+
         dialog.setContentView(bindDialog.root)
         dialog.show()
-
     }
+
 
     override fun onLike(bleet: Bleet?) {
         val currentUserId = homeContextI!!.currentUserId!!
@@ -86,7 +143,6 @@ class BlitterListenerImpl(
         REMOVE_REBLEET, // Remove the rebleet from the firebaseDB
         ADD_REBLEET     // Add the rebleet to the firebaseDB
     }
-
     override fun onRebleet(bleet: Bleet?) {
         val currentUserId = homeContextI!!.currentUserId!!
 
