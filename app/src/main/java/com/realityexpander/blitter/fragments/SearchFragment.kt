@@ -68,6 +68,8 @@ class SearchFragment : BlitterFragment() {
 
         // Setup followHashtag button
         bind.followHashtagIv.setOnClickListener {
+            if(currentHashtagQuery.isEmpty()) return
+
             bind.followHashtagIv.isClickable = false
             val followHashtags = homeContextI!!.currentUser?.followHashtags ?: arrayListOf()
 

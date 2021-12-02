@@ -41,6 +41,7 @@
                     android:layout_marginEnd="@dimen/grid_2x"
                     android:elevation="1dp"
                     android:scaleType="centerInside"
+                    app:tint="@color/colorAccent"
                     android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/followHashtagListTv"
