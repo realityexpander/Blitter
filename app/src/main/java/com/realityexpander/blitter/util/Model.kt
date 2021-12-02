@@ -18,13 +18,14 @@ data class User(
 @Serializable
 data class Bleet(
     val bleetId: String? = "",
+    val originalBleetId: String? = "", // original BleetId of a reBleeted bleet
     val username: String? = "",
     val text: String? = "",
     val textWords: ArrayList<String>? = arrayListOf(),
     val imageUrl: String? = "",
     val hashtags: ArrayList<String>? = arrayListOf(),
-    val rebleetUserIds: ArrayList<String>? = arrayListOf(), // list of userIds who re-bleeted this tweet
-    val likeUserIds: ArrayList<String>? = arrayListOf(),    // list of userIds who liked this tweet
+    val rebleetUserIds: ArrayList<String>? = arrayListOf(), // list of userIds who re-bleeted this Bleet
+    val likeUserIds: ArrayList<String>? = arrayListOf(),    // list of userIds who liked this Bleet
     val timestamp: Long? = 0,
 ) {
     fun deepCopy(): Bleet {

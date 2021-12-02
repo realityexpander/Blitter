@@ -113,9 +113,10 @@ class BleetActivity : AppCompatActivity() {
 
         // Create new Bleet object
         val bleet = Bleet(
-            bleetDocument.id,
-            userName,
-            bleetText,
+            bleetId = bleetDocument.id,
+            originalBleetId = bleetDocument.id,
+            username = userName,
+            text = bleetText,
             textWords = toWordsArray(bleetText),
             imageUrl = "",  // no image set yet
             hashTags,

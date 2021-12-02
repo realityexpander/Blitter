@@ -12,6 +12,7 @@ const val DATA_USERS_UPDATED_TIMESTAMP = "updatedTimestamp"
 
 const val DATA_BLEETS_COLLECTION         = "DATA_BLEETS"  // name of the collection
 const val DATA_BLEETS_BLEET_ID           = "bleetId"      // must match the object field names exactly
+const val DATA_BLEETS_ORIGINAL_BLEET_ID  = "originalBleetId"
 const val DATA_BLEETS_USERNAME           = "username"
 const val DATA_BLEETS_TEXT               = "text"
 const val DATA_BLEETS_TEXT_WORDS         = "textWords"    // for basic text searching in firebase

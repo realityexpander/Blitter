@@ -109,11 +109,11 @@ class BlitterListenerImpl(
             // Create a copy of the bleet that will be rebleeted
             val reBleet = originalBleet.deepCopy()
                 .copy(
-                    bleetId = originalBleet.bleetId,
+                    bleetId = reBleetDocument.id,
+                    originalBleetId = originalBleet.bleetId,
                     username = homeContextI.currentUser?.username,
                     likeUserIds = arrayListOf(),      // when reBleeting, only show likes for this rebleet.
-                    rebleetUserIds = arrayListOf(currentUserId,
-                        originalBleet.rebleetUserIds!![0]), // when reBleeting, only include this and original author
+                    rebleetUserIds = arrayListOf(currentUserId), // when reBleeting, only include this and original author
                     timestamp = System.currentTimeMillis()
                 )
             reBleetDocument.set(reBleet)
@@ -128,25 +128,23 @@ class BlitterListenerImpl(
 
         // Remove the rebleet
         fun removeTheReBleetOfThisBleet(originalBleet: Bleet) {
-            // find the bleet from this user that matches the original bleet's id
+            // find the bleet from this user that matches the original bleetId
             homeContextI.firebaseDB
                 .collection(DATA_BLEETS_COLLECTION)
-                .whereEqualTo(DATA_BLEETS_BLEET_ID,
-                    originalBleet.bleetId) // matches original bleetId
-                .whereArrayContains(DATA_BLEETS_REBLEET_USER_IDS,
-                    currentUserId) // and contains this users' reBleet
+                .whereEqualTo(DATA_BLEETS_ORIGINAL_BLEET_ID, originalBleet.bleetId) // matches original bleetId
+                .whereArrayContains(DATA_BLEETS_REBLEET_USER_IDS, currentUserId) // and contains this users' reBleet
                 .get()
                 .addOnSuccessListener {
-                    // Delete this reBleet only if rebleetsUserId element 0 is the currentUserId
+                    // Delete this reBleet only if reBleetsUserId element 0 is the currentUserId
                     //   (element 0 is the author of this bleet)
                     val documentToDelete = it.documents.filter { bleetDocument ->
                         val bleetElement = bleetDocument.toObject(Bleet::class.java)
                         bleetElement?.rebleetUserIds?.getOrNull(0) == currentUserId
-                    } // Should only be one!
+                    } // Should only be one! (because each user can only rebleet each bleet one time)
 
-                    // If no records are found, the database is corrupted
+                    // If no records are found, Bleet must have been deleted already
                     if (documentToDelete.isEmpty()) {
-                        onRebleetFailure(java.lang.Exception("Record not found"))
+                        onRebleetFailure(java.lang.Exception("Bleet not found"))
                     }
 
                     homeContextI.firebaseDB.collection(DATA_BLEETS_COLLECTION)
