@@ -171,6 +171,7 @@ class HomeFragment : BlitterFragment() {
 
 //                             println("Finished followUserId ${index+1} of ${followUserIds.size}")
                             if (++index == userIds.size) // are we done yet?
+
                                 getBleetsForFollowHashtags()
                         }
                         .addOnFailureListener { e ->
