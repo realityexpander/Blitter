@@ -22,10 +22,6 @@ class HomeFragment : BlitterFragment() {
 
     private lateinit var bind: FragmentHomeBinding
 
-//    // Track the previous update values
-//    private var previousFollowUserIds: ArrayList<String>? = arrayListOf()
-//    private var previousFollowHashtags: ArrayList<String>? = arrayListOf()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -83,16 +79,7 @@ class HomeFragment : BlitterFragment() {
     }
 
     private fun refreshHomeNewsfeed() {
-//        bind.swipeRefresh.isRefreshing = false
-//        // check if anything has changed since last refresh
-//        if( (homeContextI!!.currentUser?.followUserIds?.deepCompare(previousFollowUserIds) == true)
-//            && (homeContextI!!.currentUser?.followHashtags?.deepCompare(previousFollowHashtags) == true)
-//        ) return
-
         bind.swipeRefresh.isRefreshing = true
-
-//        previousFollowUserIds = homeContextI!!.currentUser?.followUserIds.deepCopy()
-//        previousFollowHashtags = homeContextI!!.currentUser?.followHashtags.deepCopy()
         val bleets = arrayListOf<Bleet>()
 
         fun sortBleetsByTimestampAndDisplayBleets() {

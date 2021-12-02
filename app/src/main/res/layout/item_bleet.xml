@@ -61,6 +61,7 @@
                     android:layout_height="@dimen/small_image"
                     android:background="@null"
                     android:padding="@dimen/grid_1x"
+                    app:tint="@color/colorAccent"
                     android:scaleType="centerInside"
                     app:srcCompat="@drawable/like_inactive" />
 
@@ -88,6 +89,7 @@
                     android:layout_height="@dimen/small_image"
                     android:background="@null"
                     android:padding="@dimen/grid_1x"
+                    app:tint="@color/colorAccent"
                     android:scaleType="centerInside"
                     app:srcCompat="@drawable/retweet_inactive" />
 

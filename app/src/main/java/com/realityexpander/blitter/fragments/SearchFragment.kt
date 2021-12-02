@@ -25,7 +25,6 @@ class SearchFragment : BlitterFragment() {
     private lateinit var bind: FragmentSearchBinding
 
     private var currentHashtagQuery = ""
-    private var prevHashtagQuery = ""
     private var showSearchResults: Boolean = false
 
     override fun onCreateView(
@@ -134,7 +133,6 @@ class SearchFragment : BlitterFragment() {
     private fun onSearchHashtag() {
         bind.swipeRefresh.isRefreshing = false
         if(currentHashtagQuery.isEmpty()) return
-        if(currentHashtagQuery == prevHashtagQuery) return
 
         // Show failure message
         fun onSearchBleetHashtagsFailure(e: Exception) {
@@ -169,7 +167,6 @@ class SearchFragment : BlitterFragment() {
 
                 bleetListAdapter?.updateBleets(sortedBleets)
                 updateFollowHashtagButton()
-                prevHashtagQuery = currentHashtagQuery
                 bind.swipeRefresh.isRefreshing = false
 
             }
