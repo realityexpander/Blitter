@@ -139,11 +139,12 @@ class HomeFragment : BlitterFragment() {
         }
 
         fun getBleetsForFollowUserIdsAndFollowHashtags() {
-            // println("homeContext = $homeContextI")
-            // println("currentUser = ${homeContextI!!.currentUser}")
-            // println("currentUserId = ${homeContextI!!.currentUserId}")
-            // println("followUserIds = ${homeContextI!!.currentUser?.followUserIds}")
-            // println("followHashtags = ${homeContextI!!.currentUser?.followHashtags}")
+//             println("homeContext = $homeContextI")
+//             println("currentUser = ${homeContextI!!.currentUser}")
+//             println("currentUserId = ${homeContextI!!.currentUserId}")
+//             println("followUserIds = ${homeContextI!!.currentUser?.followUserIds}")
+//             println("followHashtags = ${homeContextI!!.currentUser?.followHashtags}")
+
             val followUserIds = homeContextI!!.currentUser?.followUserIds
 
             if(followUserIds?.isEmpty() == true) {
@@ -151,10 +152,10 @@ class HomeFragment : BlitterFragment() {
                 return
             }
 
-            followUserIds?.let { followUserIds ->
-                for (followUserId in followUserIds) {
-                    var index = 0
+            followUserIds?.let { userIds ->
+                var index = 0
 
+                for (followUserId in userIds) {
                     homeContextI!!.firebaseDB.collection(DATA_BLEETS_COLLECTION)
                         .whereArrayContains(DATA_BLEETS_REBLEET_USER_IDS, followUserId)
                         .get()
@@ -168,8 +169,8 @@ class HomeFragment : BlitterFragment() {
                                 }
                             }
 
-                            // println("Finished followUserId ${index+1} of ${followUserIds.size}")
-                            if (++index == followUserIds.size) // are we done yet?
+//                             println("Finished followUserId ${index+1} of ${followUserIds.size}")
+                            if (++index == userIds.size) // are we done yet?
                                 getBleetsForFollowHashtags()
                         }
                         .addOnFailureListener { e ->
