@@ -6,13 +6,13 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.realityexpander.blitter.databinding.DialogFollowLayoutBinding
+import com.realityexpander.blitter.databinding.DialogConfirmLayoutBinding
 import com.realityexpander.blitter.util.*
 
 class BlitterListenerImpl(
     private val bleetListRv: RecyclerView,
     private val homeContextI: HomeContextI?,
-    private val fragment: Fragment,
+    private val fragment: Fragment
 ) : BleetListener {
 
     override fun onLayoutClick(bleet: Bleet?) {
@@ -45,44 +45,47 @@ class BlitterListenerImpl(
                 }
         }
 
-        val followUserId: (userId: String) -> Unit = {
-            followUserIds.add(bleetUserId)
+        val followUserIdAction: (userIdToFollow: String) -> Unit = { userIdToFollow->
+            followUserIds.add(userIdToFollow)
             saveFollowUserIdsForCurrentUser()
         }
 
-        val unfollowUserId: (userId: String) -> Unit = {
-            followUserIds.remove(bleetUserId)
+        val unfollowUserIdAction: (userIdToUnFollow: String) -> Unit = { userIdToUnFollow ->
+            followUserIds.remove(userIdToUnFollow)
             saveFollowUserIdsForCurrentUser()
         }
 
         bleet.let {
             bleetListRv.isClickable = false
 
-            if (bleetUserId == currentUserId) return // cant follow yourself
+            if (bleetUserId == currentUserId) return // cant follow yourself (you already are)
 
             if (followUserIds.contains(bleetUserId)) {
-                confirmFollowDialog("Unfollow ${bleet.username}?",
+                confirmDialog("Unfollow ${bleet.username}?",
                     bleetUserId,
-                    unfollowUserId  )
+                    unfollowUserIdAction )
             } else {
-                confirmFollowDialog("Follow ${bleet.username}?",
+                confirmDialog("Follow ${bleet.username}?",
                     bleetUserId,
-                    followUserId )
+                    followUserIdAction )
             }
         }
     }
 
-    private fun confirmFollowDialog(dialogMessageText: String,
-                                    userIdToFollow: String,
-                                    positiveAction: (bleetUserId: String) -> Unit ) {
+    private fun confirmDialog(dialogMessage: String,
+                              userId: String,
+                              positiveAction: (userId: String) -> Unit ) {
+
         val dialog = BottomSheetDialog(homeContextI as Context)
-        val bindDialog = DialogFollowLayoutBinding.inflate(fragment.layoutInflater,
+        val bindDialog = DialogConfirmLayoutBinding.inflate(
+            fragment.layoutInflater,
             null,
-            false)
+            false
+        )
 
-        bindDialog.dialogMessageTv.text = dialogMessageText
+        bindDialog.dialogMessageTv.text = dialogMessage
+
         dialog.setCancelable(true)
-
         bindDialog.closeIv.setOnClickListener {
             dialog.dismiss()
             (bindDialog.root.parent as ViewGroup).removeView(bindDialog.root)
@@ -90,7 +93,8 @@ class BlitterListenerImpl(
         bindDialog.positiveActionTv.setOnClickListener {
             dialog.dismiss()
             (bindDialog.root.parent as ViewGroup).removeView(bindDialog.root)
-            positiveAction(userIdToFollow)
+
+            positiveAction(userId)
         }
         bindDialog.negativeActionTv.setOnClickListener {
             dialog.dismiss()
