@@ -41,7 +41,6 @@
 <!--                            android:text="flap"-->
 <!--                            app:closeIconVisible="true"-->
 <!--                            tools:text="flap" />-->
-
                 </com.google.android.material.chip.ChipGroup>
 
             </LinearLayout>
@@ -63,7 +62,7 @@
                     android:scaleType="centerInside"
                     android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/swipeRefresh"
+                    app:layout_constraintTop_toTopOf="@id/chipLayout"
                     app:srcCompat="@drawable/follow_inactive"
                     app:tint="@color/colorAccent" />
 

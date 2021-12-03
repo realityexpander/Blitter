@@ -1,7 +1,6 @@
 package com.realityexpander.blitter.fragments
 
 import android.os.Bundle
-import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -121,7 +120,7 @@ class SearchFragment : BlitterFragment() {
         updateFollowHashtagButton()
 
         if (showSearchResults) {
-            onSearchHashtag()
+            onSearchHashtagInDatabase()
         }
     }
 
@@ -138,10 +137,10 @@ class SearchFragment : BlitterFragment() {
         showSearchResults = true
         bind.followHashtagIv.visibility = View.VISIBLE
 
-        onSearchHashtag()
+        onSearchHashtagInDatabase()
     }
 
-    private fun onSearchHashtag() {
+    private fun onSearchHashtagInDatabase() {
         bind.swipeRefresh.isRefreshing = false
         if (currentHashtagQuery.isEmpty()) return
 
@@ -234,12 +233,13 @@ class SearchFragment : BlitterFragment() {
         // Create the chipGroup chips for the hashtags
         val chipGroup = bind.chipGroup
         chipGroup.removeAllViews() // remove the old chips
-        followHashtags.forEachIndexed { index, hashTag ->
-            // val chip = Chip(bind.chipGroup.context) // this is ok if chip does not need to be clickable bc no ID is assigned
+        followHashtags.forEach { hashTag ->
+            // val chip = Chip(bind.chipGroup.context) // this is ok if chip does not need to be
+            //   clickable bc no resource ID is assigned. The closeIcon is still clickable tho.
             val chip = this.layoutInflater.inflate(R.layout.chip_hashtag, bind.chipGroup, false) as Chip // assigns an ID
             chip.text = hashTag
             chip.isCloseIconVisible = true
-            chip.isClickable = true
+//            chip.isClickable = true
             chipGroup.addView(chip)
         }
         setupHashtagChipGroupClickListeners()
