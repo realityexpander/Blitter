@@ -21,7 +21,7 @@ fun ImageView.loadUrl(url: String?, errorDrawable: Int = R.drawable.empty) {
             .placeholder(progressDrawable(context))
             .fallback(progressDrawable(context))
             .error(errorDrawable)
-            .override(1000)
+            .override(1200)
 
         Glide.with(context.applicationContext)
             .load(url)
@@ -48,7 +48,8 @@ fun Long?.getDateString(): String {
 }
 
 fun ArrayList<String>?.deepCompare(other: ArrayList<String>?): Boolean {
-    if(this==null && other==null) return true
+    if(this == null && other == null) return true
+
     if (Json.encodeToString(this) == Json.encodeToString(other)) return true
 
     return false
@@ -58,6 +59,8 @@ fun Array<*>.deepEquals(other: Array<*>) = this.contentDeepEquals(other)
 
 // example: previousFollowUserIds = homeContextI!!.currentUser?.followUserIds.deepCopy()
 fun ArrayList<String>?.deepCopy(): ArrayList<String>? {
-    if (this==null) return null
+    if (this == null) return null
+    this ?: return null
+
     return Json.decodeFromString<ArrayList<String>>(Json.encodeToString(this))
 }

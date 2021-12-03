@@ -22,10 +22,6 @@ class HomeFragment : BlitterFragment() {
 
     private lateinit var bind: FragmentHomeBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -63,6 +59,7 @@ class HomeFragment : BlitterFragment() {
         }
     }
 
+    // not needed yet.
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
@@ -145,9 +142,12 @@ class HomeFragment : BlitterFragment() {
 //             println("followUserIds = ${homeContextI!!.currentUser?.followUserIds}")
 //             println("followHashtags = ${homeContextI!!.currentUser?.followHashtags}")
 
-            val followUserIds = homeContextI!!.currentUser?.followUserIds
+            val followUserIds = homeContextI!!.currentUser?.followUserIds ?: arrayListOf()
 
-            if(followUserIds?.isEmpty() == true) {
+            // Add the currentUserId to show the user their own bleets as well as others
+            followUserIds.add(homeContextI!!.currentUserId!!)
+
+            if(followUserIds.isEmpty()) {
                 getBleetsForFollowHashtags()
                 return
             }
@@ -171,7 +171,6 @@ class HomeFragment : BlitterFragment() {
 
 //                             println("Finished followUserId ${index+1} of ${followUserIds.size}")
                             if (++index == userIds.size) // are we done yet?
-
                                 getBleetsForFollowHashtags()
                         }
                         .addOnFailureListener { e ->
