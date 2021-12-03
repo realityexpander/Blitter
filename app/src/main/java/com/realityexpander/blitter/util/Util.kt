@@ -60,7 +60,6 @@ fun Array<*>.deepEquals(other: Array<*>) = this.contentDeepEquals(other)
 // example: previousFollowUserIds = homeContextI!!.currentUser?.followUserIds.deepCopy()
 fun ArrayList<String>?.deepCopy(): ArrayList<String>? {
     if (this == null) return null
-    this ?: return null
 
     return Json.decodeFromString<ArrayList<String>>(Json.encodeToString(this))
 }

@@ -17,72 +17,51 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-
             <LinearLayout
-                    android:id="@+id/chip_group"
-                    android:layout_width="match_parent"
+                    android:id="@+id/chipLayout"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
+                    app:layout_constraintEnd_toStartOf="@id/followHashtagIv"
+                    app:layout_constraintStart_toStartOf="@id/constraintLayout"
                     app:layout_constraintTop_toTopOf="@id/constraintLayout">
 
-                <com.google.android.material.chip.Chip
-                        android:id="@+id/pillBtn"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="35sp"
-                        android:checkable="false"
-                        android:insetTop="3sp"
-                        android:text="[flap]"
-                        android:textSize="12sp"
-                        app:closeIconVisible="true"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/constraintLayout"
-                        tools:text="[flap]" />
+                <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroup"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:chipSpacingVertical="-5dp"
+                        app:singleSelection="true">
 
-                <com.google.android.material.chip.Chip
-                        android:id="@+id/pillBtn2"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="35sp"
-                        android:insetTop="3sp"
-                        android:text="[map]"
-                        android:textSize="11sp"
-                        app:closeIconVisible="true"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/constraintLayout"
-                        tools:text="[map]" />
+<!--                    <com.google.android.material.chip.Chip-->
+<!--                            android:id="@+id/pillBtn"-->
+<!--                            style="@style/Widget.MaterialComponents.Chip.Choice"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="35sp"-->
+<!--                            android:text="flap"-->
+<!--                            app:closeIconVisible="true"-->
+<!--                            tools:text="flap" />-->
 
-                <com.google.android.material.chip.Chip
-                        android:id="@+id/pillBtn3"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:layout_width="wrap_content"
-                        android:layout_height="35sp"
-                        android:insetTop="3sp"
-                        android:text="[tree]"
-                        android:textSize="11sp"
-                        app:closeIconVisible="true"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@id/constraintLayout"
-                        tools:text="[tree]" />
+                </com.google.android.material.chip.ChipGroup>
 
             </LinearLayout>
 
-            <TextView
-                    android:id="@+id/followHashtagListTv"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="viewEnd"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/chip_group"
-                    tools:text="[flap, map, pappy]" />
+            <!--            <TextView-->
+            <!--                    android:id="@+id/followHashtagListTv"-->
+            <!--                    android:layout_width="match_parent"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:textAlignment="viewEnd"-->
+            <!--                    app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                    app:layout_constraintStart_toStartOf="parent"-->
+            <!--                    app:layout_constraintTop_toTopOf="@id/chipLayout"-->
+            <!--                    tools:text="[flap, map, pappy]" />-->
 
             <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/bleet_list_rv"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/chip_group" />
+                    app:layout_constraintTop_toBottomOf="@id/chipLayout" />
 
             <ImageView
                     android:id="@+id/followHashtagIv"
@@ -94,7 +73,7 @@
                     android:scaleType="centerInside"
                     android:visibility="visible"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/followHashtagListTv"
+                    app:layout_constraintTop_toBottomOf="@id/swipeRefresh"
                     app:srcCompat="@drawable/follow_inactive"
                     app:tint="@color/colorAccent" />
 

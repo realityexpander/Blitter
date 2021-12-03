@@ -57,7 +57,7 @@
                 app:cardCornerRadius="@dimen/standard_corner_radius">
 
             <EditText
-                    android:id="@+id/search"
+                    android:id="@+id/search_hashtag_ev"
                     android:layout_width="@dimen/standard_width"
                     android:layout_height="@dimen/search_height"
                     android:background="@color/material_on_primary_disabled"

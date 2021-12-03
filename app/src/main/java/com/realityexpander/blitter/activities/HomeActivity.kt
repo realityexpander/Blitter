@@ -91,12 +91,12 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
         // // example to Rename the tabs
         // bind.tabLayout.getTabAt(TabLayoutItem.HOME.ordinal)!!.text = "Home"
 
-        // Nav to profile activity
+        // Nav to profile activity button
         bind.profileImageIv.setOnClickListener { _ ->
             startActivity(ProfileActivity.newIntent(this))
         }
 
-        // Create a new Bleet
+        // Create a new Bleet FAB
         bind.fab.setOnClickListener {
             startActivity(BleetActivity.newIntent(this, currentUserId, currentUser?.username))
         }
@@ -112,7 +112,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
         super.onResume()
          println("onResume for HomeActivity")
 
-        setupHashtagQueryListeners()
+        setupHashtagSearchQueryListeners()
 
         // Check if user if logged out
         if (firebaseAuth.currentUser?.uid == null) {
@@ -209,7 +209,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
         // setup the fragment
         when(currentFragment) {
             is HomeFragment -> {}
-            is SearchFragment -> setupHashtagQueryListeners()
+            is SearchFragment -> setupHashtagSearchQueryListeners()
             is MyActivityFragment -> {}
         }
 
@@ -222,6 +222,10 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
     }
     override fun onRefreshUIForCurrentFragment() {
         currentFragment?.onUpdateUI()
+    }
+
+    override fun onUpdateHashtagSearchQueryTermEv(queryTerm: String) {
+        bind.searchHashtagEv.setText(queryTerm)
     }
 
     private fun setupViewPagerAdapter() {
@@ -266,7 +270,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
                 TabLayoutItem.SEARCH -> {
                     searchFragment = SearchFragment()
                     teardownHashtagQueryListeners()
-                    setupHashtagQueryListeners()
+                    setupHashtagSearchQueryListeners()
                     searchFragment!!
                 }
                 TabLayoutItem.MYACTIVITY -> {
@@ -335,7 +339,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
     }
 
     // Setup "Search hashtag..." editText View
-    private fun setupHashtagQueryListeners() {
+    private fun setupHashtagSearchQueryListeners() {
          println("  setupHashtagQueryListeners searchFragment=$searchFragment")
          println("                             currentFragment=$currentFragment")
 
@@ -354,7 +358,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
                 }
             }
         }
-        bind.search.setOnEditorActionListener(onEditorActionListener)
+        bind.searchHashtagEv.setOnEditorActionListener(onEditorActionListener)
 
         // Setup single key-press to update the "Currently following" Star Icon
         textChangedListener = object : TextWatcher {
@@ -366,13 +370,13 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
                 searchFragment?.onHashtagQueryKeyPress(term)
             }
         }
-        bind.search.addTextChangedListener(textChangedListener)
+        bind.searchHashtagEv.addTextChangedListener(textChangedListener)
     }
     private fun teardownHashtagQueryListeners() {
          println("  teardownHashtagQueryListeners, initialized=${::textChangedListener.isInitialized}")
         if(::textChangedListener.isInitialized)
-            bind.search.removeTextChangedListener(textChangedListener)
-        bind.search.setOnEditorActionListener(null)
+            bind.searchHashtagEv.removeTextChangedListener(textChangedListener)
+        bind.searchHashtagEv.setOnEditorActionListener(null)
     }
 
 }

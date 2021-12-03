@@ -16,4 +16,7 @@ interface HomeContextI {
 
     // Pass back the system-created fragment to the home Activity after process death restoration
     fun onBlitterFragmentCreated(newBlitterFragment: BlitterFragment)
+
+    // Update the hashtag search query term from the fragment
+    fun onUpdateHashtagSearchQueryTermEv(queryTerm: String)
 }

@@ -28,9 +28,8 @@ class MyActivityFragment : BlitterFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
     ): View? {
-        bind = FragmentMyActivityBinding.inflate(inflater, container, false);
-        return bind.root;
-
+        bind = FragmentMyActivityBinding.inflate(inflater, container, false)
+        return bind.root
     }
 
     override fun onViewCreated(
@@ -62,6 +61,7 @@ class MyActivityFragment : BlitterFragment() {
             bind.swipeRefresh.isRefreshing = true
             onUpdateUI()
         }
+
     }
 
     // not needed yet.

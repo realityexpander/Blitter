@@ -1,14 +1,17 @@
 package com.realityexpander.blitter.fragments
 
 import android.os.Bundle
+import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.chip.Chip
 import com.realityexpander.blitter.R
 import com.realityexpander.blitter.adapters.BleetListAdapter
 import com.realityexpander.blitter.databinding.FragmentSearchBinding
@@ -68,40 +71,45 @@ class SearchFragment : BlitterFragment() {
 
         // Setup followHashtag button
         bind.followHashtagIv.setOnClickListener {
-            if(currentHashtagQuery.isEmpty()) return@setOnClickListener
+            if (currentHashtagQuery.isEmpty()) return@setOnClickListener
 
             bind.followHashtagIv.isClickable = false
             val followHashtags = homeContextI!!.currentUser?.followHashtags ?: arrayListOf()
 
             // Toggle "follow hashtag" for the current "search hashtag" query
-            if(followHashtags.contains(currentHashtagQuery)) {
+            if (followHashtags.contains(currentHashtagQuery)) {
                 followHashtags.remove(currentHashtagQuery)
             } else {
                 followHashtags.add(currentHashtagQuery)
             }
 
-            updateFollowHashtagButton()
-
-            // Show failure message
-            fun onUpdateFollowHashtagsFailure(e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(bind.root.context,
-                    "Adding hashtag failed, please try again. ${e.localizedMessage}",
-                    Toast.LENGTH_LONG).show()
-                bind.followHashtagIv.isClickable = true
-            }
-
-            // Save the updated list of hashtags for the User in the firebaseDB
-            homeContextI!!.firebaseDB.collection(DATA_USERS_COLLECTION)
-                .document(homeContextI?.currentUserId!!)
-                .update(DATA_USERS_FOLLOW_HASHTAGS, followHashtags)
-                .addOnSuccessListener {
-                    bind.followHashtagIv.isClickable = true
-                }
-                .addOnFailureListener { e->
-                    onUpdateFollowHashtagsFailure(e)
-                }
+            onUpdateFollowHashtagsToDatabase(followHashtags)
         }
+    }
+
+    private fun onUpdateFollowHashtagsToDatabase(followHashtags: ArrayList<String>) {
+        updateFollowHashtagButton() // optimistically update the button for fast user response
+
+        // Show failure message
+        fun onUpdateFollowHashtagsFailure(e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(bind.root.context,
+                "Adding hashtag failed, please try again. ${e.localizedMessage}",
+                Toast.LENGTH_LONG).show()
+            bind.followHashtagIv.isClickable = true
+        }
+
+        // Save the updated list of hashtags for the User in the firebaseDB
+        homeContextI!!.firebaseDB.collection(DATA_USERS_COLLECTION)
+            .document(homeContextI?.currentUserId!!)
+            .update(DATA_USERS_FOLLOW_HASHTAGS, followHashtags)
+            .addOnSuccessListener {
+                bind.followHashtagIv.isClickable = true
+                updateFollowHashtagChipGroupView()
+            }
+            .addOnFailureListener { e ->
+                onUpdateFollowHashtagsFailure(e)
+            }
     }
 
     override fun onResume() {
@@ -132,9 +140,10 @@ class SearchFragment : BlitterFragment() {
 
         onSearchHashtag()
     }
+
     private fun onSearchHashtag() {
         bind.swipeRefresh.isRefreshing = false
-        if(currentHashtagQuery.isEmpty()) return
+        if (currentHashtagQuery.isEmpty()) return
 
         // Show failure message
         fun onSearchBleetHashtagsFailure(e: Exception) {
@@ -155,10 +164,10 @@ class SearchFragment : BlitterFragment() {
                 val bleets = arrayListOf<Bleet>()
 
                 // Convert firebaseDB Bleet documents to Bleet POKOs
-                for(bleetDocument in list.documents) {
+                for (bleetDocument in list.documents) {
                     val bleet = (bleetDocument.toObject(Bleet::class.java))
                     bleet?.let {
-                        if(bleet.text?.contains(currentHashtagQuery) == true) {
+                        if (bleet.text?.contains(currentHashtagQuery) == true) {
                             bleets.add(it)
                         }
                     }
@@ -172,7 +181,7 @@ class SearchFragment : BlitterFragment() {
                 bind.swipeRefresh.isRefreshing = false
 
             }
-            .addOnFailureListener { e->
+            .addOnFailureListener { e ->
                 onSearchBleetHashtagsFailure(e)
             }
 
@@ -205,20 +214,65 @@ class SearchFragment : BlitterFragment() {
     private fun updateFollowHashtagButton() {
         val followHashtags = homeContextI!!.currentUser?.followHashtags
 
-        if(followHashtags?.contains(currentHashtagQuery) == true) {
+        if (followHashtags?.contains(currentHashtagQuery) == true) {
             bind.followHashtagIv.setImageDrawable(
                 ContextCompat.getDrawable(bind.followHashtagIv.context,
-                R.drawable.follow))
+                    R.drawable.follow))
         } else {
             bind.followHashtagIv.setImageDrawable(
                 ContextCompat.getDrawable(bind.followHashtagIv.context,
                     R.drawable.follow_inactive))
         }
 
-        updateFollowHashtagList()
+        updateFollowHashtagChipGroupView()
     }
-    private fun updateFollowHashtagList() {
-        bind.followHashtagListTv.text = homeContextI!!.currentUser!!.followHashtags.toString()
+
+    private fun updateFollowHashtagChipGroupView() {
+        val followHashtags = homeContextI!!.currentUser!!.followHashtags
+//        bind.followHashtagListTv.text = followHashtags.toString()
+        if (followHashtags.isNullOrEmpty()) return
+
+        // Create the chipGroup chips
+        val chipGroup = bind.chipGroup
+        chipGroup.removeAllViews() // remove the old chips
+        followHashtags.forEachIndexed { index, hashTag ->
+            // val chip = Chip(bind.chipGroup.context) // this is ok if chip does not need to be clickable bc no ID is assigned
+            val chip = this.layoutInflater.inflate(R.layout.chip_hashtag, bind.chipGroup, false) as Chip
+            chip.text = hashTag
+            chip.isCloseIconVisible = true
+            chip.isClickable = true
+            chipGroup.addView(chip)
+        }
+        setupHashtagChipGroupClickListeners()
+    }
+
+    private fun setupHashtagChipGroupClickListeners() {
+        // Setup ChipGroup for followHashtag chips
+        bind.chipGroup.setOnCheckedChangeListener { chipGroup, item ->
+            // Set new search term to the tapped Chip
+            val chipText = chipGroup.findViewById<Chip>(item).text.toString()
+            println("chipGroup=$chipGroup, item=$item, text=$chipText")
+
+            homeContextI!!.onUpdateHashtagSearchQueryTermEv(chipText)
+            onHashtagQueryActionSearch(chipText)
+
+            onUpdateUI()
+        }
+        bind.chipGroup.forEach { v ->
+            // Remove the hashtag from the set of followHashtags
+            (v as Chip).setOnCloseIconClickListener { chip ->
+                val chipText = (chip as Chip).text.toString()
+                bind.chipGroup.removeView(chip)
+
+                val followHashtags = homeContextI!!.currentUser?.followHashtags
+                if (followHashtags?.contains(chipText) == true) { // just to safe we check if user is following the hashtag
+                    followHashtags.remove(chipText)
+                    onUpdateFollowHashtagsToDatabase(followHashtags)
+                }
+
+                onUpdateUI()
+            }
+        }
     }
 
 }
