@@ -1,24 +1,28 @@
 package com.realityexpander.blitter.fragments
 
+import android.content.Context
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.content.getSystemService
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.chip.Chip
-import com.google.android.material.chip.ChipGroup
 import com.realityexpander.blitter.R
 import com.realityexpander.blitter.adapters.BleetListAdapter
 import com.realityexpander.blitter.databinding.FragmentSearchBinding
 import com.realityexpander.blitter.listeners.BlitterListenerImpl
 import com.realityexpander.blitter.util.*
 import java.util.*
+
 
 /**
  * A simple [Fragment] subclass.
@@ -189,6 +193,13 @@ class SearchFragment : BlitterFragment() {
                 bleetListAdapter?.updateBleets(sortedBleets)
                 updateFollowHashtagButton()
                 bind.swipeRefresh.isRefreshing = false
+
+                if(bleets.size > 0) {
+                    bind.root.let { v ->
+                        val imm = bind.root.context.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                        imm?.hideSoftInputFromWindow(v.windowToken, 0)
+                    }
+                }
 
             }
             .addOnFailureListener { e ->
