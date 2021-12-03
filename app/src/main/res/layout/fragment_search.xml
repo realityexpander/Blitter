@@ -47,6 +47,7 @@
                             app:chipIconVisible="false"
                             app:closeIconVisible="true"
                             tools:text="flap" />
+
                 </com.google.android.material.chip.ChipGroup>
 
             </LinearLayout>

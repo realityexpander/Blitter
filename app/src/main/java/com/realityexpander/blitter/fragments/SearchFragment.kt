@@ -49,9 +49,7 @@ class SearchFragment : BlitterFragment() {
             // After process death, pass this System-created fragment to HomeContextI - (correct way to do this? SEEMS CLUNKY!)
             homeContextI?.onBlitterFragmentCreated(this@SearchFragment)
 
-            // Restore query search state
-            showSearchResults = getBoolean("search_showSearchResults", false)
-            currentHashtagQuery = getString("search_currentHashtagQuery", "")
+            onViewStateRestored(savedInstanceState)
         }
 
         // Setup the RV listAdapter
@@ -126,12 +124,24 @@ class SearchFragment : BlitterFragment() {
         }
     }
 
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
         outState.putBoolean(SEARCH_FRAGMENT_SHOW_SEARCH_RESULTS, showSearchResults)
         outState.putString(SEARCH_FRAGMENT_CURRENT_HASHTAG_QUERY, currentHashtagQuery)
     }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        // Restore query search state
+        savedInstanceState?.apply {
+            showSearchResults = getBoolean(SEARCH_FRAGMENT_SHOW_SEARCH_RESULTS, false)
+            currentHashtagQuery = getString(SEARCH_FRAGMENT_CURRENT_HASHTAG_QUERY, "")
+        }
+    }
+
 
     // Search for a new hashtag
     fun onHashtagQueryActionSearch(queryTerm: String) {
@@ -238,22 +248,56 @@ class SearchFragment : BlitterFragment() {
         followHashtags.forEach { hashTag ->
             // val chip = Chip(bind.chipGroup.context) // this is ok if chip does not need to be
             //   clickable bc no resource ID is assigned. The closeIcon is still clickable tho.
-            val chip = this.layoutInflater.inflate(R.layout.chip_hashtag, bind.chipGroup, false) as Chip // assigns an ID
+            val chip = this.layoutInflater.inflate(R.layout.chip_hashtag,
+                bind.chipGroup,
+                false) as Chip // assigns an ID
             chip.text = hashTag
             chip.isCloseIconVisible = true
             chip.isCheckedIconVisible = true
             chipGroup.addView(chip)
 
             // Set checkmark if the search is for this hashtag
-            if(chip.text == currentHashtagQuery) chip.isChecked = true
+            if (chip.text == currentHashtagQuery) chip.isChecked = true
         }
         setupHashtagChipGroupClickListeners()
     }
 
     private fun setupHashtagChipGroupClickListeners() {
 
-//        // Setup ChipGroup for followHashtag
-//        //   - singleSelection=true mode, does not allow showing checked chip
+        // Setup ChipGroup for hashtags
+        bind.chipGroup.forEach { chipView ->
+
+            // Tap "X" will remove the hashtag from the set of followHashtags
+            (chipView as Chip).setOnCloseIconClickListener { chip ->
+                val chipText = (chip as Chip).text.toString()
+                bind.chipGroup.removeView(chip)
+
+                val followHashtags = homeContextI!!.currentUser?.followHashtags
+                if (followHashtags?.contains(chipText) == true) { // just to safe we check if user is following the hashtag
+                    followHashtags.remove(chipText)
+                    onUpdateFollowHashtagsToDatabase(followHashtags)
+                }
+
+                onUpdateUI()
+            }
+
+            // Tap on chip name initiates a new hashtag search, selects the chip
+            (chipView as Chip).setOnCheckedChangeListener { buttonView, _ ->
+                val chip = buttonView as Chip
+                val chipText = chip.text.toString()
+
+                // set the checkmark to the tapped hashtag chip
+                bind.chipGroup.clearCheck()
+                chip.isChecked = true
+
+                // update the search query in the home activity
+                homeContextI!!.onUpdateHashtagSearchQueryTermEv(chipText)
+
+                onHashtagQueryActionSearch(chipText)
+            }
+        }
+
+//        // Setup tap chip searches for that hashtag
 //        bind.chipGroup.setOnCheckedChangeListener{ chipGroup, item ->
 //            // Set new search term to the tapped Chip
 //            val chip = chipGroup.findViewById<Chip>(item)
@@ -263,12 +307,14 @@ class SearchFragment : BlitterFragment() {
 //            homeContextI!!.onUpdateHashtagSearchQueryTermEv(chipText)
 //            onHashtagQueryActionSearch(chipText)
 //
-//            bind.chipGroup.clearCheck()
-//            bind.chipGroup.check(item) // i think this performs a click in SingleSelection=true mode
+//            // Cannot set check mark easily in singleSelection=true mode.
+//            // This mode is good for just clicking on the on the chip.
+//            // bind.chipGroup.clearCheck()
+//            // bind.chipGroup.check(item) // i think this performs a click in SingleSelection=true mode
 //            onUpdateUI() // endless loop here
 //        }
-//        // Setup listeners for chip selection. Tap initiates a new hashtag search
-//        //   - singleSelectionMode=true mode, does not allow showing checked chip
+//
+//        // Setup tap to remove hashtag
 //        bind.chipGroup.forEach { chipView ->
 //            // Remove the hashtag from the set of followHashtags
 //            (chipView as Chip).setOnCloseIconClickListener { chip ->
@@ -285,38 +331,6 @@ class SearchFragment : BlitterFragment() {
 //            }
 //        }
 
-        // Setup ChipGroup to display followHashtags
-        bind.chipGroup.forEach { chipView ->
-
-            // Remove the hashtag from the set of followHashtags
-            (chipView as Chip).setOnCloseIconClickListener { chip ->
-                val chipText = (chip as Chip).text.toString()
-                bind.chipGroup.removeView(chip)
-
-                val followHashtags = homeContextI!!.currentUser?.followHashtags
-                if (followHashtags?.contains(chipText) == true) { // just to safe we check if user is following the hashtag
-                    followHashtags.remove(chipText)
-                    onUpdateFollowHashtagsToDatabase(followHashtags)
-                }
-
-                onUpdateUI()
-            }
-
-            // Tap on chip initiates a new hashtag search
-            (chipView as Chip).setOnCheckedChangeListener { buttonView, _ ->
-                val chip = buttonView as Chip
-                val chipText = chip.text.toString()
-
-                // set the checkmark to the tapped hashtag chip
-                bind.chipGroup.clearCheck()
-                chip.isChecked = true
-
-                // update the search query in the home activity
-                homeContextI!!.onUpdateHashtagSearchQueryTermEv(chipText)
-
-                onHashtagQueryActionSearch(chipText)
-            }
-        }
     }
 
 }
