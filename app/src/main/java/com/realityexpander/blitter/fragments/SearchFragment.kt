@@ -228,16 +228,15 @@ class SearchFragment : BlitterFragment() {
     }
 
     private fun updateFollowHashtagChipGroupView() {
-        val followHashtags = homeContextI!!.currentUser!!.followHashtags
-//        bind.followHashtagListTv.text = followHashtags.toString()
+        val followHashtags = homeContextI!!.currentUser?.followHashtags
         if (followHashtags.isNullOrEmpty()) return
 
-        // Create the chipGroup chips
+        // Create the chipGroup chips for the hashtags
         val chipGroup = bind.chipGroup
         chipGroup.removeAllViews() // remove the old chips
         followHashtags.forEachIndexed { index, hashTag ->
             // val chip = Chip(bind.chipGroup.context) // this is ok if chip does not need to be clickable bc no ID is assigned
-            val chip = this.layoutInflater.inflate(R.layout.chip_hashtag, bind.chipGroup, false) as Chip
+            val chip = this.layoutInflater.inflate(R.layout.chip_hashtag, bind.chipGroup, false) as Chip // assigns an ID
             chip.text = hashTag
             chip.isCloseIconVisible = true
             chip.isClickable = true

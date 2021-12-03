@@ -46,16 +46,6 @@
 
             </LinearLayout>
 
-            <!--            <TextView-->
-            <!--                    android:id="@+id/followHashtagListTv"-->
-            <!--                    android:layout_width="match_parent"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:textAlignment="viewEnd"-->
-            <!--                    app:layout_constraintEnd_toEndOf="parent"-->
-            <!--                    app:layout_constraintStart_toStartOf="parent"-->
-            <!--                    app:layout_constraintTop_toTopOf="@id/chipLayout"-->
-            <!--                    tools:text="[flap, map, pappy]" />-->
-
             <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/bleet_list_rv"
                     android:layout_width="match_parent"
