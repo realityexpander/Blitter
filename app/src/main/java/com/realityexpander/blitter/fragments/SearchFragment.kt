@@ -131,7 +131,6 @@ class SearchFragment : BlitterFragment() {
         outState.putBoolean(SEARCH_FRAGMENT_SHOW_SEARCH_RESULTS, showSearchResults)
         outState.putString(SEARCH_FRAGMENT_CURRENT_HASHTAG_QUERY, currentHashtagQuery)
     }
-
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
