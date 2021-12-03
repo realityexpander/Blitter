@@ -30,7 +30,7 @@ class BlitterListenerImpl(
             bleetListRv.isClickable = true
         }
 
-        fun saveFollowUserIdsForCurrentUser() {
+        fun saveFollowUserIdsForCurrentUserToDatabase() {
             // Save updated followUserIds to firebase database
             homeContextI.firebaseDB.collection(DATA_USERS_COLLECTION)
                 .document(currentUserId)
@@ -46,12 +46,12 @@ class BlitterListenerImpl(
 
         val followUserIdAction: (userIdToFollow: String) -> Unit = { userIdToFollow->
             followUserIds.add(userIdToFollow)
-            saveFollowUserIdsForCurrentUser()
+            saveFollowUserIdsForCurrentUserToDatabase()
         }
 
         val unfollowUserIdAction: (userIdToUnFollow: String) -> Unit = { userIdToUnFollow ->
             followUserIds.remove(userIdToUnFollow)
-            saveFollowUserIdsForCurrentUser()
+            saveFollowUserIdsForCurrentUserToDatabase()
         }
 
         bleet.let {

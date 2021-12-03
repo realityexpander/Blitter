@@ -30,17 +30,23 @@
                         android:id="@+id/chipGroup"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        app:checkedChip="@id/pillBtn"
+                        app:checkedIconEnabled="true"
                         app:chipSpacingVertical="-5dp"
-                        app:singleSelection="true">
+                        app:singleLine="false"
+                        app:singleSelection="false">
 
-<!--                    <com.google.android.material.chip.Chip-->
-<!--                            android:id="@+id/pillBtn"-->
-<!--                            style="@style/Widget.MaterialComponents.Chip.Choice"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="35sp"-->
-<!--                            android:text="flap"-->
-<!--                            app:closeIconVisible="true"-->
-<!--                            tools:text="flap" />-->
+                    <com.google.android.material.chip.Chip
+                            android:id="@+id/pillBtn"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"
+                            android:layout_width="wrap_content"
+                            android:layout_height="35sp"
+                            android:text="flap"
+                            app:checkedIconEnabled="true"
+                            app:checkedIconVisible="true"
+                            app:chipIconVisible="false"
+                            app:closeIconVisible="true"
+                            tools:text="flap" />
                 </com.google.android.material.chip.ChipGroup>
 
             </LinearLayout>

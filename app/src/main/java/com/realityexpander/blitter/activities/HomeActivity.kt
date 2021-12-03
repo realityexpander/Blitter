@@ -56,7 +56,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
     private var myActivityFragment: MyActivityFragment? = null
     private var currentFragment: BlitterFragment? = null
 
-    // Tabs for fragments
+    // TabsLayoutItems for the fragments
     private enum class TabLayoutItem {
         HOME,
         SEARCH,
@@ -106,11 +106,11 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
     }
     override fun onStart() {
         super.onStart()
-         println("onStart for HomeActivity")
+//         println("onStart for HomeActivity")
     }
     override fun onResume() {
         super.onResume()
-         println("onResume for HomeActivity")
+//         println("onResume for HomeActivity")
 
         setupHashtagSearchQueryListeners()
 
@@ -120,18 +120,18 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
             finish()
         } else {
             // If we have a user, populate the latest user info
-            populate()
+            updateUI()
         }
     }
     override fun onPause() {
         super.onPause()
-         println("onPause for HomeActivity")
+//         println("onPause for HomeActivity")
 
-        teardownHashtagQueryListeners()
+        teardownHashtagSearchQueryListeners()
     }
     override fun onStop() {
         super.onStop()
-         println("onStop for HomeActivity")
+//         println("onStop for HomeActivity")
 
 //        teardownBottomNavTabLayoutListeners()
     }
@@ -143,7 +143,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
         teardownBottomNavTabLayoutListeners()
     }
 
-    private fun populate() {
+    private fun updateUI() {
         bind.homeProgressLayout.visibility = View.VISIBLE
 
         // Show failure message
@@ -155,7 +155,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
             bind.homeProgressLayout.visibility = View.GONE
         }
 
-        // Load the current user data from firebaseDB
+        // Load the current user data from database
         firebaseDB.collection(DATA_USERS_COLLECTION)
             .document(currentUserId!!)
             .get()
@@ -189,7 +189,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
 
         savedInstanceState.apply {
             val selectedTabPosition = getInt(HOME_ACTIVITY_SELECTED_TAB_POSITION)
-            sectionPageAdapter.selectTabItem(selectedTabPosition)
+            sectionPageAdapter.selectTabLayoutItem(selectedTabPosition)
         }
 
     }
@@ -225,11 +225,12 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
     }
 
     override fun onUpdateHashtagSearchQueryTermEv(queryTerm: String) {
-        bind.searchHashtagEv.setText(queryTerm)
+        bind.searchHashtagQueryEv.setText(queryTerm)
+        bind.searchHashtagQueryEv.selectAll()
     }
 
     private fun setupViewPagerAdapter() {
-         println("  setupViewPagerAdapter")
+//         println("  setupViewPagerAdapter")
 
         // Setup the Section ViewPager adapter
         sectionPageAdapter = SectionPageAdapter(this)
@@ -245,7 +246,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
 
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                sectionPageAdapter.selectTabItem(position) // set the selected tab for the swiped-to fragment
+                sectionPageAdapter.selectTabLayoutItem(position) // set the selected tab for the swiped-to fragment
             }
 
             override fun onPageScrollStateChanged(state: Int) {
@@ -260,7 +261,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
         override fun getItemCount(): Int = TabLayoutItem.values().size
 
         override fun createFragment(position: Int): Fragment {
-             println("  SectionPageAdapter createFragment, position=$position")
+//             println("  SectionPageAdapter createFragment, position=$position")
 
             val newFragment = when (TabLayoutItem.values()[position]) {
                 TabLayoutItem.HOME -> {
@@ -269,7 +270,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
                 }
                 TabLayoutItem.SEARCH -> {
                     searchFragment = SearchFragment()
-                    teardownHashtagQueryListeners()
+                    teardownHashtagSearchQueryListeners()
                     setupHashtagSearchQueryListeners()
                     searchFragment!!
                 }
@@ -279,13 +280,13 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
                 }
             }
             if(currentFragment == null) currentFragment = newFragment
-             println("    currentFragment=$currentFragment")
+//             println("    currentFragment=$currentFragment")
 
             return newFragment
         }
 
         // Utility to Select the tab at "position" in tabLayout
-        fun selectTabItem(position: Int) {
+        fun selectTabLayoutItem(position: Int) {
             bind.tabLayout.selectTab(bind.tabLayout.getTabAt(position), true)
         }
     }
@@ -297,7 +298,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
     }
 
     private fun setupBottomNavTabLayoutListeners() {
-         println("  setupBottomNavTabLayoutListeners")
+//         println("  setupBottomNavTabLayoutListeners")
 
         // Nav to new page when bottom tab item is selected
         onTabSelectedListener = object : TabLayout.OnTabSelectedListener {
@@ -334,14 +335,14 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
         bind.tabLayout.addOnTabSelectedListener(onTabSelectedListener)
     }
     private fun teardownBottomNavTabLayoutListeners() {
-         println("  teardownBottomNavTabLayoutListeners")
+//         println("  teardownBottomNavTabLayoutListeners")
         bind.tabLayout.removeOnTabSelectedListener(onTabSelectedListener)
     }
 
     // Setup "Search hashtag..." editText View
     private fun setupHashtagSearchQueryListeners() {
-         println("  setupHashtagQueryListeners searchFragment=$searchFragment")
-         println("                             currentFragment=$currentFragment")
+//         println("  setupHashtagQueryListeners searchFragment=$searchFragment")
+//         println("                             currentFragment=$currentFragment")
 
         // Setup "Enter" & "Search" IME actions
         onEditorActionListener = TextView.OnEditorActionListener { v, actionId, event ->
@@ -358,7 +359,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
                 }
             }
         }
-        bind.searchHashtagEv.setOnEditorActionListener(onEditorActionListener)
+        bind.searchHashtagQueryEv.setOnEditorActionListener(onEditorActionListener)
 
         // Setup single key-press to update the "Currently following" Star Icon
         textChangedListener = object : TextWatcher {
@@ -370,13 +371,13 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
                 searchFragment?.onHashtagQueryKeyPress(term)
             }
         }
-        bind.searchHashtagEv.addTextChangedListener(textChangedListener)
+        bind.searchHashtagQueryEv.addTextChangedListener(textChangedListener)
     }
-    private fun teardownHashtagQueryListeners() {
-         println("  teardownHashtagQueryListeners, initialized=${::textChangedListener.isInitialized}")
+    private fun teardownHashtagSearchQueryListeners() {
+//         println("  teardownHashtagQueryListeners, initialized=${::textChangedListener.isInitialized}")
         if(::textChangedListener.isInitialized)
-            bind.searchHashtagEv.removeTextChangedListener(textChangedListener)
-        bind.searchHashtagEv.setOnEditorActionListener(null)
+            bind.searchHashtagQueryEv.removeTextChangedListener(textChangedListener)
+        bind.searchHashtagQueryEv.setOnEditorActionListener(null)
     }
 
 }
