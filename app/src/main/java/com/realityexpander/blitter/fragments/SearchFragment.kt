@@ -121,7 +121,7 @@ class SearchFragment : BlitterFragment() {
     }
 
     // Search for a new hashtag
-    fun onSearchHashtagQueryAction(queryTerm: String) {
+    fun onSearchHashtagQueryActionSearch(queryTerm: String) {
         currentHashtagQuery = queryTerm
         isSearchResultsDisplayed = true
         bind.followHashtagIv.visibility = View.VISIBLE
@@ -303,7 +303,7 @@ class SearchFragment : BlitterFragment() {
                 // update the search query in the home activity
                 homeContextI!!.onUpdateHashtagSearchQueryTermEv(chipText)
 
-                onSearchHashtagQueryAction(chipText)
+                onSearchHashtagQueryActionSearch(chipText)
             }
         }
 

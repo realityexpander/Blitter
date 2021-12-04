@@ -336,7 +336,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
                 -> {
                     // println("onEditorActionListener SearchFragment=$searchFragment")
                     (fragments[FragmentItem.SEARCH.ordinal] as SearchFragment)
-                        .onSearchHashtagQueryAction(v?.text.toString())
+                        .onSearchHashtagQueryActionSearch(v?.text.toString())
                     true
                 }
                 else -> {
