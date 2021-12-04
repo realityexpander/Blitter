@@ -163,7 +163,7 @@ class HomeFragment : BlitterFragment() {
                 return
             }
 
-            followUserIds?.let { userIds ->
+            followUserIds.let { userIds ->
                 var index = 0
 
                 for (followUserId in userIds) {
