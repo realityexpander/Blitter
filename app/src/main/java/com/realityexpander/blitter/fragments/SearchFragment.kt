@@ -1,7 +1,6 @@
 package com.realityexpander.blitter.fragments
 
 import android.content.Context
-import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,8 +8,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.content.getSystemService
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -33,7 +30,7 @@ class SearchFragment : BlitterFragment() {
     private lateinit var bind: FragmentSearchBinding
 
     private var currentHashtagQuery = ""
-    private var showSearchResults: Boolean = false
+    private var isSearchResultsDisplayed: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -96,7 +93,7 @@ class SearchFragment : BlitterFragment() {
     override fun onUpdateUI() {
         updateHashTagUiElements()
 
-        if (showSearchResults) {
+        if (isSearchResultsDisplayed) {
             onSearchHashtagsInDatabase()
         }
     }
@@ -105,23 +102,25 @@ class SearchFragment : BlitterFragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
 
-        outState.putBoolean(SEARCH_FRAGMENT_SHOW_SEARCH_RESULTS, showSearchResults)
-        outState.putString(SEARCH_FRAGMENT_CURRENT_HASHTAG_QUERY, currentHashtagQuery)
+        outState.apply {
+            putBoolean(SEARCH_FRAGMENT_SHOW_SEARCH_RESULTS, isSearchResultsDisplayed)
+            putString(SEARCH_FRAGMENT_CURRENT_HASHTAG_QUERY, currentHashtagQuery)
+        }
     }
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
 
         // Restore query search state
         savedInstanceState?.apply {
-            showSearchResults = getBoolean(SEARCH_FRAGMENT_SHOW_SEARCH_RESULTS, false)
+            isSearchResultsDisplayed = getBoolean(SEARCH_FRAGMENT_SHOW_SEARCH_RESULTS, false)
             currentHashtagQuery = getString(SEARCH_FRAGMENT_CURRENT_HASHTAG_QUERY, "")
         }
     }
 
     // Search for a new hashtag
-    fun onHashtagQueryActionSearch(queryTerm: String) {
+    fun onSearchHashtagQueryAction(queryTerm: String) {
         currentHashtagQuery = queryTerm
-        showSearchResults = true
+        isSearchResultsDisplayed = true
         bind.followHashtagIv.visibility = View.VISIBLE
 
         onSearchHashtagsInDatabase()
@@ -194,7 +193,7 @@ class SearchFragment : BlitterFragment() {
     }
 
     // Update the "follow this hashtag" button icon & chips based on the query term for every keypress
-    fun onHashtagQueryKeyPress(term: String) {
+    fun onSearchHashtagQueryKeyPress(term: String) {
         //println("onHashtagSearchTermKeyPress SearchFragment=$this")
         currentHashtagQuery = term
         bind.followHashtagIv.visibility = View.VISIBLE
@@ -301,7 +300,7 @@ class SearchFragment : BlitterFragment() {
                 // update the search query in the home activity
                 homeContextI!!.onUpdateHashtagSearchQueryTermEv(chipText)
 
-                onHashtagQueryActionSearch(chipText)
+                onSearchHashtagQueryAction(chipText)
             }
         }
 

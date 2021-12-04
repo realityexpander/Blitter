@@ -351,7 +351,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
                 EditorInfo.IME_ACTION_SEARCH,
                 -> {
                     // println("onEditorActionListener SearchFragment=$searchFragment")
-                    searchFragment?.onHashtagQueryActionSearch(v?.text.toString())
+                    searchFragment?.onSearchHashtagQueryAction(v?.text.toString())
                     true
                 }
                 else -> {
@@ -368,7 +368,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
             override fun afterTextChanged(editable: Editable?) {
                 val term = editable.toString()
                 // println("  textChangedListener SearchFragment=$searchFragment")
-                searchFragment?.onHashtagQueryKeyPress(term)
+                searchFragment?.onSearchHashtagQueryKeyPress(term)
             }
         }
         bind.searchHashtagQueryEv.addTextChangedListener(textChangedListener)

@@ -30,7 +30,7 @@ const val DATA_BLEET_IMAGES_STORAGE = "DATA_BLEET_IMAGES" // storage location fo
 
 // ===== SavedInstanceState ====
 const val HOME_ACTIVITY_SELECTED_TAB_POSITION = "homeActivity_selectedTabPosition"
-const val SEARCH_FRAGMENT_SHOW_SEARCH_RESULTS = "searchFragment_showSearchResults"
+const val SEARCH_FRAGMENT_SHOW_SEARCH_RESULTS = "searchFragment_isSearchResultsDisplayed"
 const val SEARCH_FRAGMENT_CURRENT_HASHTAG_QUERY = "searchFragment_currentHashtagQuery"
 
 
