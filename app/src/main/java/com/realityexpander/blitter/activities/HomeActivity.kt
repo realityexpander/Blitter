@@ -54,8 +54,8 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
     // Fragment Identifiers
     private enum class FragmentItem {
         HOME,
-        MYACTIVITY,
         SEARCH,
+        MY_ACTIVITY,
     }
     // Fragments
     private var fragments: Array<BlitterFragment?> = Array(FragmentItem.values().size) { null }
@@ -203,7 +203,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
                 setupHashtagSearchQueryListeners()
             }
             is MyActivityFragment ->
-                fragments[FragmentItem.MYACTIVITY.ordinal] = androidCreatedBlitterFragment
+                fragments[FragmentItem.MY_ACTIVITY.ordinal] = androidCreatedBlitterFragment
         }
 
         currentFragment = androidCreatedBlitterFragment
@@ -258,9 +258,9 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
                     setupHashtagSearchQueryListeners()
                     fragments[FragmentItem.SEARCH.ordinal]!!
                 }
-                FragmentItem.MYACTIVITY -> {
-                    fragments[FragmentItem.MYACTIVITY.ordinal] = MyActivityFragment()
-                    fragments[FragmentItem.MYACTIVITY.ordinal]!!
+                FragmentItem.MY_ACTIVITY -> {
+                    fragments[FragmentItem.MY_ACTIVITY.ordinal] = MyActivityFragment()
+                    fragments[FragmentItem.MY_ACTIVITY.ordinal]!!
                 }
             }
             if(currentFragment == null) currentFragment = newFragment
@@ -302,8 +302,8 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
                             currentFragment = fragments[FragmentItem.SEARCH.ordinal]
                             bind.searchBar.visibility = View.VISIBLE
                         }
-                        FragmentItem.MYACTIVITY -> {
-                            currentFragment = fragments[FragmentItem.MYACTIVITY.ordinal]
+                        FragmentItem.MY_ACTIVITY -> {
+                            currentFragment = fragments[FragmentItem.MY_ACTIVITY.ordinal]
                             bind.searchBar.visibility = View.INVISIBLE
                             bind.titleBar.text = getString(R.string.fragment_title_label_my_activity)
                         }

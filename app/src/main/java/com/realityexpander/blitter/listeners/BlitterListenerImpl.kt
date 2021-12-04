@@ -159,7 +159,7 @@ class BlitterListenerImpl(
         }
 
         // Add the rebleet
-        fun reBleetThisBleet(originalBleet: Bleet) {
+        fun addReBleetOfThisBleet(originalBleet: Bleet) {
             // Create a new bleet document as a copy of this bleet, this will be the reBleet
             val reBleetDocument = homeContextI.firebaseDB
                 .collection(DATA_BLEETS_COLLECTION)
@@ -248,7 +248,7 @@ class BlitterListenerImpl(
                 .update(DATA_BLEETS_REBLEET_USER_IDS, rebleetUserIds)
                 .addOnSuccessListener {
                     when (reBleetAction) {
-                        ReBleetAction.ADD_REBLEET -> reBleetThisBleet(originalBleet)
+                        ReBleetAction.ADD_REBLEET -> addReBleetOfThisBleet(originalBleet)
                         ReBleetAction.REMOVE_REBLEET -> removeTheReBleetOfThisBleet(originalBleet)
                     }
                 }
