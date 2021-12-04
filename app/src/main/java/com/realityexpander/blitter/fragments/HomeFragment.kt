@@ -76,6 +76,7 @@ class HomeFragment : BlitterFragment() {
 
     override fun onResume() {
         super.onResume()
+
         onUpdateUI()
     }
 

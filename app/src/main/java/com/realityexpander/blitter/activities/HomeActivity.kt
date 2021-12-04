@@ -196,12 +196,14 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
 
         // note: newBlitterFragment type is created in the fragment upon process death recovery
         when(androidCreatedBlitterFragment) {
-            is HomeFragment -> fragments[FragItem.HOME.ordinal] = androidCreatedBlitterFragment
+            is HomeFragment ->
+                fragments[FragItem.HOME.ordinal] = androidCreatedBlitterFragment
             is SearchFragment -> {
                 fragments[FragItem.SEARCH.ordinal] = androidCreatedBlitterFragment
                 setupHashtagSearchQueryListeners()
             }
-            is MyActivityFragment -> fragments[FragItem.MYACTIVITY.ordinal] = androidCreatedBlitterFragment
+            is MyActivityFragment ->
+                fragments[FragItem.MYACTIVITY.ordinal] = androidCreatedBlitterFragment
         }
 
         currentFragment = androidCreatedBlitterFragment

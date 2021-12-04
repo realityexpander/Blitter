@@ -82,7 +82,7 @@ class SearchFragment : BlitterFragment() {
                 followHashtags.add(currentHashtagQuery)
             }
 
-            onUpdateFollowHashtagsToDatabase(followHashtags)
+            onSaveFollowHashtagsToDatabase(followHashtags)
         }
     }
     override fun onResume() {
@@ -205,7 +205,7 @@ class SearchFragment : BlitterFragment() {
     }
 
     // Save the current followHashtags to the DB
-    private fun onUpdateFollowHashtagsToDatabase(followHashtags: ArrayList<String>) {
+    private fun onSaveFollowHashtagsToDatabase(followHashtags: ArrayList<String>) {
         updateFollowHashtagButton() // optimistically update the button for fast user response
 
         // Show failure message
@@ -235,7 +235,7 @@ class SearchFragment : BlitterFragment() {
         updateFollowHashtagButton()
         updateFollowHashtagChipGroupView()
     }
-    // Indicate if the current query hashtag is followed by the user by changing the icon
+    // Indicate current query hashtag is followed by the user
     private fun updateFollowHashtagButton() {
         val followHashtags = homeContextI!!.currentUser?.followHashtags
 
@@ -253,9 +253,9 @@ class SearchFragment : BlitterFragment() {
         val followHashtags = homeContextI!!.currentUser?.followHashtags
         if (followHashtags.isNullOrEmpty()) return
 
-        // Create the chipGroup chips for the hashtags
+        // Create the chipGroup chips for the followHashtags
         val chipGroup = bind.chipGroup
-        chipGroup.removeAllViews() // remove the old chips
+        chipGroup.removeAllViews()
         followHashtags.forEach { hashTag ->
             // val chip = Chip(bind.chipGroup.context) // this is ok if chip does not need to be
             //   clickable bc no resource ID is assigned. The closeIcon is still clickable tho.
@@ -285,7 +285,7 @@ class SearchFragment : BlitterFragment() {
                 val followHashtags = homeContextI!!.currentUser?.followHashtags
                 if (followHashtags?.contains(chipText) == true) { // just to safe we check if user is following the hashtag
                     followHashtags.remove(chipText)
-                    onUpdateFollowHashtagsToDatabase(followHashtags)
+                    onSaveFollowHashtagsToDatabase(followHashtags)
                 }
 
                 onUpdateUI()

@@ -73,6 +73,7 @@ class MyActivityFragment : BlitterFragment() {
 
     override fun onResume() {
         super.onResume()
+
         onUpdateUI()
     }
 
