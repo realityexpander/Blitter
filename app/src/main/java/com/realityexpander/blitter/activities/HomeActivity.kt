@@ -52,13 +52,13 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
     private lateinit var onEditorActionListener : TextView.OnEditorActionListener
 
     // Fragment Identifiers
-    private enum class FragItem {
+    private enum class FragmentItem {
         HOME,
+        MYACTIVITY,
         SEARCH,
-        MYACTIVITY
     }
     // Fragments
-    private var fragments: Array<BlitterFragment?> = Array(FragItem.values().size) { null }
+    private var fragments: Array<BlitterFragment?> = Array(FragmentItem.values().size) { null }
     private var currentFragment: BlitterFragment? = null
 
     companion object {
@@ -87,7 +87,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
         }
 
         // // example to Rename the tabs
-        // bind.tabLayout.getTabAt(FragItem.HOME.ordinal)!!.text = "Home"
+        // bind.tabLayout.getTabAt(FragmentItem.HOME.ordinal)!!.text = "Home"
 
         // Nav to profile activity button
         bind.profileImageIv.setOnClickListener {
@@ -197,13 +197,13 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
         // note: newBlitterFragment type is created in the fragment upon process death recovery
         when(androidCreatedBlitterFragment) {
             is HomeFragment ->
-                fragments[FragItem.HOME.ordinal] = androidCreatedBlitterFragment
+                fragments[FragmentItem.HOME.ordinal] = androidCreatedBlitterFragment
             is SearchFragment -> {
-                fragments[FragItem.SEARCH.ordinal] = androidCreatedBlitterFragment
+                fragments[FragmentItem.SEARCH.ordinal] = androidCreatedBlitterFragment
                 setupHashtagSearchQueryListeners()
             }
             is MyActivityFragment ->
-                fragments[FragItem.MYACTIVITY.ordinal] = androidCreatedBlitterFragment
+                fragments[FragmentItem.MYACTIVITY.ordinal] = androidCreatedBlitterFragment
         }
 
         currentFragment = androidCreatedBlitterFragment
@@ -242,25 +242,25 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
         bind.viewPager.setPageTransformer(ZoomOutPageTransformer())
     }
     inner class SectionPageAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
-        override fun getItemCount(): Int = FragItem.values().size
+        override fun getItemCount(): Int = FragmentItem.values().size
 
         override fun createFragment(position: Int): Fragment {
 //             println("  SectionPageAdapter createFragment, position=$position")
 
-            val newFragment = when (FragItem.values()[position]) {
-                FragItem.HOME -> {
-                    fragments[FragItem.HOME.ordinal] = HomeFragment()
-                    fragments[FragItem.HOME.ordinal]!!
+            val newFragment = when (FragmentItem.values()[position]) {
+                FragmentItem.HOME -> {
+                    fragments[FragmentItem.HOME.ordinal] = HomeFragment()
+                    fragments[FragmentItem.HOME.ordinal]!!
                 }
-                FragItem.SEARCH -> {
-                    fragments[FragItem.SEARCH.ordinal] = SearchFragment()
+                FragmentItem.SEARCH -> {
+                    fragments[FragmentItem.SEARCH.ordinal] = SearchFragment()
                     teardownHashtagSearchQueryListeners()
                     setupHashtagSearchQueryListeners()
-                    fragments[FragItem.SEARCH.ordinal]!!
+                    fragments[FragmentItem.SEARCH.ordinal]!!
                 }
-                FragItem.MYACTIVITY -> {
-                    fragments[FragItem.MYACTIVITY.ordinal] = MyActivityFragment()
-                    fragments[FragItem.MYACTIVITY.ordinal]!!
+                FragmentItem.MYACTIVITY -> {
+                    fragments[FragmentItem.MYACTIVITY.ordinal] = MyActivityFragment()
+                    fragments[FragmentItem.MYACTIVITY.ordinal]!!
                 }
             }
             if(currentFragment == null) currentFragment = newFragment
@@ -292,18 +292,18 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
                 tab?.position?.let { position ->
                     bind.viewPager.setCurrentItem(position, true)
 
-                    when (FragItem.values()[position]) {
-                        FragItem.HOME -> {
-                            currentFragment = fragments[FragItem.HOME.ordinal]
+                    when (FragmentItem.values()[position]) {
+                        FragmentItem.HOME -> {
+                            currentFragment = fragments[FragmentItem.HOME.ordinal]
                             bind.searchBar.visibility = View.INVISIBLE
                             bind.titleBar.text = getString(R.string.fragment_title_label_home)
                         }
-                        FragItem.SEARCH -> {
-                            currentFragment = fragments[FragItem.SEARCH.ordinal]
+                        FragmentItem.SEARCH -> {
+                            currentFragment = fragments[FragmentItem.SEARCH.ordinal]
                             bind.searchBar.visibility = View.VISIBLE
                         }
-                        FragItem.MYACTIVITY -> {
-                            currentFragment = fragments[FragItem.MYACTIVITY.ordinal]
+                        FragmentItem.MYACTIVITY -> {
+                            currentFragment = fragments[FragmentItem.MYACTIVITY.ordinal]
                             bind.searchBar.visibility = View.INVISIBLE
                             bind.titleBar.text = getString(R.string.fragment_title_label_my_activity)
                         }
@@ -335,7 +335,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
                 EditorInfo.IME_ACTION_SEARCH,
                 -> {
                     // println("onEditorActionListener SearchFragment=$searchFragment")
-                    (fragments[FragItem.SEARCH.ordinal] as SearchFragment)
+                    (fragments[FragmentItem.SEARCH.ordinal] as SearchFragment)
                         .onSearchHashtagQueryAction(v?.text.toString())
                     true
                 }
@@ -353,7 +353,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
             override fun afterTextChanged(editable: Editable?) {
                 val term = editable.toString()
                 // println("  textChangedListener SearchFragment=$searchFragment")
-                (fragments[FragItem.SEARCH.ordinal] as SearchFragment)
+                (fragments[FragmentItem.SEARCH.ordinal] as SearchFragment)
                     .onSearchHashtagQueryKeyPress(term)
             }
         }
