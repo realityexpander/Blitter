@@ -36,7 +36,7 @@ class BlitterListenerImpl(
                 .document(currentUserId)
                 .update(DATA_USERS_FOLLOW_USER_IDS, followUserIds)
                 .addOnSuccessListener {
-                    homeContextI.onRefreshUIForCurrentFragment()
+                    homeContextI.onUpdateUIForCurrentFragment()
                     bleetListRv.isClickable = true
                 }
                 .addOnFailureListener { e ->
@@ -132,7 +132,7 @@ class BlitterListenerImpl(
                 .document(bleet.bleetId!!)
                 .update(DATA_BLEETS_LIKE_USER_IDS, likeUserIds)
                 .addOnSuccessListener {
-                    homeContextI.onRefreshUIForCurrentFragment()
+                    homeContextI.onUpdateUIForCurrentFragment()
                     bleetListRv.isClickable = true
                 }
                 .addOnFailureListener { e ->
@@ -177,7 +177,7 @@ class BlitterListenerImpl(
                 )
             reBleetDocument.set(reBleet)
                 .addOnSuccessListener {
-                    homeContextI.onRefreshUIForCurrentFragment()
+                    homeContextI.onUpdateUIForCurrentFragment()
                     bleetListRv.isClickable = true
                 }
                 .addOnFailureListener { e ->
@@ -210,14 +210,14 @@ class BlitterListenerImpl(
                         .document(documentToDelete[0].id)  // Should only be one rebleet from this userId
                         .delete()
                         .addOnSuccessListener {
-                            homeContextI.onRefreshUIForCurrentFragment()
+                            homeContextI.onUpdateUIForCurrentFragment()
                             bleetListRv.isClickable = true
                         }
                         .addOnFailureListener { e ->
                             onRebleetFailure(e)
                         }
 
-                    homeContextI.onRefreshUIForCurrentFragment()
+                    homeContextI.onUpdateUIForCurrentFragment()
                     bleetListRv.isClickable = true
                 }
                 .addOnFailureListener { e ->

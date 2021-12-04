@@ -17,6 +17,8 @@
 
     <string name="home_screen_title_text">Home</string>
     <string name="content_description_write_blit">Write Blit</string>
+    <string name="fragment_title_label_home">Home</string>
+    <string name="fragment_title_label_my_activity">My Activity</string>
 
 
 </resources>

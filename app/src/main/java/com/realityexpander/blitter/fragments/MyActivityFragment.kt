@@ -77,6 +77,8 @@ class MyActivityFragment : BlitterFragment() {
     }
 
     override fun onUpdateUI() {
+        if (!this.isResumed) return
+
         refreshHomeMyActivityFeed()
     }
 

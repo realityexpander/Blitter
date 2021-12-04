@@ -38,8 +38,8 @@ class HomeFragment : BlitterFragment() {
             // After process death, pass this System-created fragment to HomeContextI - (correct way to do this? SEEMS CLUNKY!)
             homeContextI?.onBlitterFragmentCreated(this@HomeFragment)
 
-            // Restore query search state
-            // showSearchResults = getBoolean("search_showSearchResults", false)
+            // not needed yet
+            // onViewStateRestored(savedInstanceState)
         }
 
         // Setup the RV listAdapter
@@ -65,6 +65,14 @@ class HomeFragment : BlitterFragment() {
 
         // outState.putBoolean(SEARCH_FRAGMENT_SHOW_SEARCH_RESULTS, showSearchResults)
     }
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        // Not Needed Yet
+        // savedInstanceState?.apply {
+        //    currentHashtagQuery = getString(SEARCH_FRAGMENT_CURRENT_HASHTAG_QUERY, "")
+        //}
+    }
 
     override fun onResume() {
         super.onResume()
@@ -72,6 +80,8 @@ class HomeFragment : BlitterFragment() {
     }
 
     override fun onUpdateUI() {
+        if (!this.isResumed) return
+
         refreshHomeNewsfeed()
     }
 

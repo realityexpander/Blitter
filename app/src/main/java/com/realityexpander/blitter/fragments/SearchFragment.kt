@@ -87,10 +87,13 @@ class SearchFragment : BlitterFragment() {
     }
     override fun onResume() {
         super.onResume()
+
         onUpdateUI()
     }
 
     override fun onUpdateUI() {
+        if (!this.isResumed) return
+
         updateHashTagUiElements()
 
         if (isSearchResultsDisplayed) {

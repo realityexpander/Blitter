@@ -12,10 +12,10 @@ interface HomeContextI {
     var currentUser: User?
 
     // Refresh the UI for the current fragment
-    fun onRefreshUIForCurrentFragment()
+    fun onUpdateUIForCurrentFragment()
 
     // Pass back the system-created fragment to the home Activity after process death restoration
-    fun onBlitterFragmentCreated(newBlitterFragment: BlitterFragment)
+    fun onBlitterFragmentCreated(androidCreatedBlitterFragment: BlitterFragment)
 
     // Update the hashtag search query term from the fragment
     fun onUpdateHashtagSearchQueryTermEv(queryTerm: String)

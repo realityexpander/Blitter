@@ -29,6 +29,7 @@ import com.realityexpander.blitter.util.DATA_USERS_COLLECTION
 import com.realityexpander.blitter.util.HOME_ACTIVITY_SELECTED_TAB_POSITION
 import com.realityexpander.blitter.util.User
 import com.realityexpander.blitter.util.loadUrl
+import kotlin.math.abs
 
 
 class HomeActivity : AppCompatActivity(), HomeContextI {
@@ -50,18 +51,15 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
     private lateinit var textChangedListener: TextWatcher
     private lateinit var onEditorActionListener : TextView.OnEditorActionListener
 
-    // Fragments
-    private var homeFragment: HomeFragment? = null
-    private var searchFragment: SearchFragment? = null
-    private var myActivityFragment: MyActivityFragment? = null
-    private var currentFragment: BlitterFragment? = null
-
-    // TabsLayoutItems for the fragments
-    private enum class TabLayoutItem {
+    // Fragment Identifiers
+    private enum class FragItem {
         HOME,
         SEARCH,
         MYACTIVITY
     }
+    // Fragments
+    private var fragments: Array<BlitterFragment?> = Array(FragItem.values().size) { null }
+    private var currentFragment: BlitterFragment? = null
 
     companion object {
         // navigate to home activity
@@ -75,7 +73,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
         setContentView(bind.root)
 
          println("onCreate for HomeActivity")
-         println("savedInstanceState = $savedInstanceState")
+         println("  savedInstanceState = $savedInstanceState")
 
         // User not logged in?
         if (currentUserId == null) {
@@ -89,10 +87,10 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
         }
 
         // // example to Rename the tabs
-        // bind.tabLayout.getTabAt(TabLayoutItem.HOME.ordinal)!!.text = "Home"
+        // bind.tabLayout.getTabAt(FragItem.HOME.ordinal)!!.text = "Home"
 
         // Nav to profile activity button
-        bind.profileImageIv.setOnClickListener { _ ->
+        bind.profileImageIv.setOnClickListener {
             startActivity(ProfileActivity.newIntent(this))
         }
 
@@ -103,6 +101,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
 
         setupViewPagerAdapter()
         setupBottomNavTabLayoutListeners()
+
     }
     override fun onStart() {
         super.onStart()
@@ -132,8 +131,6 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
     override fun onStop() {
         super.onStop()
 //         println("onStop for HomeActivity")
-
-//        teardownBottomNavTabLayoutListeners()
     }
     override fun onDestroy() {
         super.onDestroy()
@@ -185,7 +182,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
     }
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        // println("onRestoreInstanceState for HomeActivity")
+         println("onRestoreInstanceState for HomeActivity")
 
         savedInstanceState.apply {
             val selectedTabPosition = getInt(HOME_ACTIVITY_SELECTED_TAB_POSITION)
@@ -194,33 +191,29 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
 
     }
 
-    // After process death fragment creation, update the fragment vars
-    override fun onBlitterFragmentCreated(newBlitterFragment: BlitterFragment) {
-        when(newBlitterFragment) {
-            is HomeFragment -> homeFragment = newBlitterFragment
-            is SearchFragment -> searchFragment = newBlitterFragment
-            is MyActivityFragment -> myActivityFragment = newBlitterFragment
+    // After process death recovery fragment creation, update the fragment vars
+    override fun onBlitterFragmentCreated(androidCreatedBlitterFragment: BlitterFragment) {
+
+        // note: newBlitterFragment type is created in the fragment upon process death recovery
+        when(androidCreatedBlitterFragment) {
+            is HomeFragment -> fragments[FragItem.HOME.ordinal] = androidCreatedBlitterFragment
+            is SearchFragment -> {
+                fragments[FragItem.SEARCH.ordinal] = androidCreatedBlitterFragment
+                setupHashtagSearchQueryListeners()
+            }
+            is MyActivityFragment -> fragments[FragItem.MYACTIVITY.ordinal] = androidCreatedBlitterFragment
         }
 
-        if(currentFragment == null) {
-            currentFragment = newBlitterFragment
-        }
-
-        // setup the fragment
-        when(currentFragment) {
-            is HomeFragment -> {}
-            is SearchFragment -> setupHashtagSearchQueryListeners()
-            is MyActivityFragment -> {}
-        }
+        currentFragment = androidCreatedBlitterFragment
 
         // println("onBlitterFragmentCreated currentFragment=$currentFragment")
     }
 
     private fun updateCurrentUser(updatedUser: User?) {
         currentUser = updatedUser
-        onRefreshUIForCurrentFragment()
+        onUpdateUIForCurrentFragment()
     }
-    override fun onRefreshUIForCurrentFragment() {
+    override fun onUpdateUIForCurrentFragment() {
         currentFragment?.onUpdateUI()
     }
 
@@ -236,21 +229,10 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
         sectionPageAdapter = SectionPageAdapter(this)
         bind.viewPager.adapter = sectionPageAdapter
         onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageScrolled(
-                position: Int,
-                positionOffset: Float,
-                positionOffsetPixels: Int,
-            ) {
-                super.onPageScrolled(position, positionOffset, positionOffsetPixels)
-            }
 
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 sectionPageAdapter.selectTabLayoutItem(position) // set the selected tab for the swiped-to fragment
-            }
-
-            override fun onPageScrollStateChanged(state: Int) {
-                super.onPageScrollStateChanged(state)
             }
         }
         bind.viewPager.registerOnPageChangeCallback(onPageChangeCallback)
@@ -258,25 +240,25 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
         bind.viewPager.setPageTransformer(ZoomOutPageTransformer())
     }
     inner class SectionPageAdapter(fa: FragmentActivity) : FragmentStateAdapter(fa) {
-        override fun getItemCount(): Int = TabLayoutItem.values().size
+        override fun getItemCount(): Int = FragItem.values().size
 
         override fun createFragment(position: Int): Fragment {
 //             println("  SectionPageAdapter createFragment, position=$position")
 
-            val newFragment = when (TabLayoutItem.values()[position]) {
-                TabLayoutItem.HOME -> {
-                    homeFragment = HomeFragment()
-                    homeFragment!!
+            val newFragment = when (FragItem.values()[position]) {
+                FragItem.HOME -> {
+                    fragments[FragItem.HOME.ordinal] = HomeFragment()
+                    fragments[FragItem.HOME.ordinal]!!
                 }
-                TabLayoutItem.SEARCH -> {
-                    searchFragment = SearchFragment()
+                FragItem.SEARCH -> {
+                    fragments[FragItem.SEARCH.ordinal] = SearchFragment()
                     teardownHashtagSearchQueryListeners()
                     setupHashtagSearchQueryListeners()
-                    searchFragment!!
+                    fragments[FragItem.SEARCH.ordinal]!!
                 }
-                TabLayoutItem.MYACTIVITY -> {
-                    myActivityFragment = MyActivityFragment()
-                    myActivityFragment!!
+                FragItem.MYACTIVITY -> {
+                    fragments[FragItem.MYACTIVITY.ordinal] = MyActivityFragment()
+                    fragments[FragItem.MYACTIVITY.ordinal]!!
                 }
             }
             if(currentFragment == null) currentFragment = newFragment
@@ -308,24 +290,24 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
                 tab?.position?.let { position ->
                     bind.viewPager.setCurrentItem(position, true)
 
-                    when (TabLayoutItem.values()[position]) {
-                        TabLayoutItem.HOME -> {
-                            currentFragment = homeFragment
+                    when (FragItem.values()[position]) {
+                        FragItem.HOME -> {
+                            currentFragment = fragments[FragItem.HOME.ordinal]
                             bind.searchBar.visibility = View.INVISIBLE
-                            bind.titleBar.text = "Home"
+                            bind.titleBar.text = getString(R.string.fragment_title_label_home)
                         }
-                        TabLayoutItem.SEARCH -> {
-                            currentFragment = searchFragment
+                        FragItem.SEARCH -> {
+                            currentFragment = fragments[FragItem.SEARCH.ordinal]
                             bind.searchBar.visibility = View.VISIBLE
                         }
-                        TabLayoutItem.MYACTIVITY -> {
-                            currentFragment = myActivityFragment
+                        FragItem.MYACTIVITY -> {
+                            currentFragment = fragments[FragItem.MYACTIVITY.ordinal]
                             bind.searchBar.visibility = View.INVISIBLE
-                            bind.titleBar.text = "My Activity"
+                            bind.titleBar.text = getString(R.string.fragment_title_label_my_activity)
                         }
                     }
 
-                    currentFragment?.onResume() // force refresh when tab is changed
+                    currentFragment?.onUpdateUI() // force refresh when tab is changed
                     println("    setupBottomNavTabLayout, currentFragment=$currentFragment")
                 }
             }
@@ -345,13 +327,14 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
 //         println("                             currentFragment=$currentFragment")
 
         // Setup "Enter" & "Search" IME actions
-        onEditorActionListener = TextView.OnEditorActionListener { v, actionId, event ->
+        onEditorActionListener = TextView.OnEditorActionListener { v, actionId, _ ->
             when (actionId) {
                 EditorInfo.IME_ACTION_DONE,
                 EditorInfo.IME_ACTION_SEARCH,
                 -> {
                     // println("onEditorActionListener SearchFragment=$searchFragment")
-                    searchFragment?.onSearchHashtagQueryAction(v?.text.toString())
+                    (fragments[FragItem.SEARCH.ordinal] as SearchFragment)
+                        .onSearchHashtagQueryAction(v?.text.toString())
                     true
                 }
                 else -> {
@@ -368,7 +351,8 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
             override fun afterTextChanged(editable: Editable?) {
                 val term = editable.toString()
                 // println("  textChangedListener SearchFragment=$searchFragment")
-                searchFragment?.onSearchHashtagQueryKeyPress(term)
+                (fragments[FragItem.SEARCH.ordinal] as SearchFragment)
+                    .onSearchHashtagQueryKeyPress(term)
             }
         }
         bind.searchHashtagQueryEv.addTextChangedListener(textChangedListener)
@@ -397,7 +381,7 @@ class ZoomOutPageTransformer : ViewPager2.PageTransformer {
                 }
                 position <= 1 -> { // [-1,1]
                     // Modify the default slide transition to shrink the page as well
-                    val scaleFactor = Math.max(MIN_SCALE, 1 - Math.abs(position))
+                    val scaleFactor = MIN_SCALE.coerceAtLeast(1 - abs(position))
                     val vertMargin = pageHeight * (1 - scaleFactor) / 2
                     val horzMargin = pageWidth * (1 - scaleFactor) / 2
                     translationX = if (position < 0) {
