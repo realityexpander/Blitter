@@ -21,7 +21,7 @@ fun ImageView.loadUrl(url: String?, errorDrawable: Int = R.drawable.empty) {
             .placeholder(progressDrawable(context))
             .fallback(progressDrawable(context))
             .error(errorDrawable)
-            .override(1200)
+            .override(1800)
 
         Glide.with(context.applicationContext)
             .load(url)
