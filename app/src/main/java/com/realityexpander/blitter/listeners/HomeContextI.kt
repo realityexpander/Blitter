@@ -11,12 +11,12 @@ interface HomeContextI {
     val currentUserId: String?
     var currentUser: User?
 
-    // Refresh the UI for the current fragment
+    // Pass back a Refresh the UI for the current fragment
     fun onUpdateUIForCurrentFragment()
 
     // Pass back the system-created fragment to the home Activity after process death restoration
     fun onBlitterFragmentCreated(androidCreatedBlitterFragment: BlitterFragment)
 
-    // Update the hashtag search query term from the fragment
+    // Pass back an update the hashtag search query term from the fragment
     fun onUpdateHashtagSearchQueryTermEv(queryTerm: String)
 }

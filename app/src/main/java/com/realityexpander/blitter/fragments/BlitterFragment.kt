@@ -12,16 +12,17 @@ abstract class BlitterFragment: Fragment() {
     protected var bleetListener: BleetListener? = null
     protected var homeContextI: HomeContextI? = null
 
+    // Update the UI for the fragment
     abstract fun onUpdateUI()
 
     // Get the Host Activity context when fragment attaches
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        if(context is HomeContextI) {
-            homeContextI = context
+        if (this.host is HomeContextI) {
+            homeContextI = this.host as HomeContextI
         } else {
-            throw RuntimeException("$context must implement HomeCallBack")
+            throw RuntimeException("${this.host} must implement HomeContextI")
         }
     }
 
