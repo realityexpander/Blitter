@@ -2,7 +2,6 @@ package com.realityexpander.blitter.util
 
 import android.content.Context
 import android.widget.ImageView
-import androidx.core.view.children
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import androidx.viewpager2.widget.ViewPager2
@@ -10,11 +9,14 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.realityexpander.blitter.R
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlinx.coroutines.launch
 
 fun ImageView.loadUrl(url: String?, errorDrawable: Int = R.drawable.empty) {
     if(url.isNullOrEmpty()) return
@@ -28,11 +30,13 @@ fun ImageView.loadUrl(url: String?, errorDrawable: Int = R.drawable.empty) {
             .override(1000,750)
             .fitCenter()
 
-        Glide.with(context.applicationContext)
-            .load(url)
-            .thumbnail(0.5f)
-            .apply(options)
-            .into(this)
+        CoroutineScope(Dispatchers.Main).launch {
+            Glide.with(context.applicationContext)
+                .load(url)
+                .thumbnail(0.5f)
+                .apply(options)
+                .into(this@loadUrl)
+        }
     }
 }
 
