@@ -63,7 +63,7 @@ class BleetListAdapter(val userId: String, val bleets: ArrayList<Bleet>) :
             text.text = bleet.text
 
             if (bleet.imageUrl.isNullOrEmpty()) {
-                image.visibility = View.INVISIBLE
+                image.visibility = View.GONE
             } else {
                 image.visibility = View.VISIBLE
                 image.loadUrl(bleet.imageUrl)

@@ -25,10 +25,7 @@ import com.realityexpander.blitter.fragments.HomeFragment
 import com.realityexpander.blitter.fragments.MyActivityFragment
 import com.realityexpander.blitter.fragments.SearchFragment
 import com.realityexpander.blitter.listeners.HomeContextI
-import com.realityexpander.blitter.util.DATA_USERS_COLLECTION
-import com.realityexpander.blitter.util.HOME_ACTIVITY_SELECTED_TAB_POSITION
-import com.realityexpander.blitter.util.User
-import com.realityexpander.blitter.util.loadUrl
+import com.realityexpander.blitter.util.*
 import kotlin.math.abs
 
 
@@ -230,6 +227,7 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
         // Setup the Section ViewPager adapter
         sectionPageAdapter = SectionPageAdapter(this)
         bind.viewPager.adapter = sectionPageAdapter
+        bind.viewPager.reduceDragSensitivity(3)
         onPageChangeCallback = object : ViewPager2.OnPageChangeCallback() {
 
             override fun onPageSelected(position: Int) {

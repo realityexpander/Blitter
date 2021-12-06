@@ -1,30 +1,36 @@
 package com.realityexpander.blitter.util
 
 import android.content.Context
-import android.graphics.drawable.AdaptiveIconDrawable
-import android.net.Uri
 import android.widget.ImageView
+import androidx.core.view.children
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
+import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.realityexpander.blitter.R
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
 fun ImageView.loadUrl(url: String?, errorDrawable: Int = R.drawable.empty) {
+    if(url.isNullOrEmpty()) return
+
     context?.let {
         val options = RequestOptions()
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
             .placeholder(progressDrawable(context))
             .fallback(progressDrawable(context))
             .error(errorDrawable)
-            .override(1800)
+            .override(1000,750)
+            .fitCenter()
 
         Glide.with(context.applicationContext)
             .load(url)
+            .thumbnail(0.5f)
             .apply(options)
             .into(this)
     }
@@ -62,4 +68,17 @@ fun ArrayList<String>?.deepCopy(): ArrayList<String>? {
     if (this == null) return null
 
     return Json.decodeFromString<ArrayList<String>>(Json.encodeToString(this))
+}
+
+
+fun ViewPager2.reduceDragSensitivity(touchSlopFactor: Int = 4) {
+    val recyclerViewField = ViewPager2::class.java.getDeclaredField("mRecyclerView")
+    recyclerViewField.isAccessible = true
+    val recyclerView = recyclerViewField.get(this) as RecyclerView
+
+    val touchSlopField = RecyclerView::class.java.getDeclaredField("mTouchSlop")
+    touchSlopField.isAccessible = true
+    val touchSlop = touchSlopField.get(recyclerView) as Int
+
+    touchSlopField.set(recyclerView, touchSlop*touchSlopFactor)
 }
