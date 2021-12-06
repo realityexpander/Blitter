@@ -20,13 +20,16 @@ import com.realityexpander.blitter.util.*
  */
 class HomeFragment : BlitterFragment() {
 
-    private lateinit var bind: FragmentHomeBinding
+//    private lateinit var bind: FragmentHomeBinding // alternate way
+    private var _bind: FragmentHomeBinding? = null
+    private val bind: FragmentHomeBinding
+        get() = _bind!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        bind = FragmentHomeBinding.inflate(inflater, container, false)
+        _bind = FragmentHomeBinding.inflate(inflater, container, false)
         return bind.root
     }
 
@@ -78,6 +81,11 @@ class HomeFragment : BlitterFragment() {
         super.onResume()
 
         onUpdateUI()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _bind = null
     }
 
     override fun onUpdateUI() {
