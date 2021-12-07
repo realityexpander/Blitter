@@ -49,6 +49,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.databinding:baseLibrary:3.2.0-alpha11' // for @BindingAdapter
 
     // For ViewPager2
     implementation("com.google.android.material:material:1.5.0-beta01")

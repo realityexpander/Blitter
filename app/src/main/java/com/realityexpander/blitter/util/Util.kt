@@ -1,7 +1,11 @@
 package com.realityexpander.blitter.util
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.widget.ImageView
+import androidx.core.content.ContextCompat.getColor
+import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import androidx.viewpager2.widget.ViewPager2
@@ -23,7 +27,7 @@ fun ImageView.loadUrl(url: String?, errorDrawable: Int = R.drawable.empty) {
 
     context?.let {
         val options = RequestOptions()
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .diskCacheStrategy(DiskCacheStrategy.NONE)
             .placeholder(progressDrawable(context))
             .fallback(progressDrawable(context))
             .error(errorDrawable)
@@ -44,8 +48,15 @@ fun progressDrawable(context: Context) : CircularProgressDrawable {
     return CircularProgressDrawable(context).apply {
         strokeWidth = 5f
         centerRadius = 30f
+        setColorSchemeColors(getColor(context, R.color.colorAccent))
         start()
     }
+}
+
+// Allows android:imageUrl to load URL images
+@BindingAdapter("android:imageUrl")
+fun loadImage(view: ImageView, url: String?) {
+    view.loadUrl(url)
 }
 
 fun Long?.getDateString(): String {
