@@ -27,7 +27,7 @@
     <ImageView
             android:id="@+id/bleetImage"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             tools:src="@drawable/default_user"
             app:layout_constraintTop_toBottomOf="@id/bleetText" />

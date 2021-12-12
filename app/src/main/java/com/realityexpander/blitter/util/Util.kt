@@ -27,7 +27,7 @@ fun ImageView.loadUrl(url: String?, errorDrawable: Int = R.drawable.empty) {
 
     context?.let {
         val options = RequestOptions()
-            .diskCacheStrategy(DiskCacheStrategy.NONE)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
             .placeholder(progressDrawable(context))
             .fallback(progressDrawable(context))
             .error(errorDrawable)
@@ -52,6 +52,7 @@ fun progressDrawable(context: Context) : CircularProgressDrawable {
         start()
     }
 }
+
 
 // Allows android:imageUrl to load URL images
 @BindingAdapter("android:imageUrl")
