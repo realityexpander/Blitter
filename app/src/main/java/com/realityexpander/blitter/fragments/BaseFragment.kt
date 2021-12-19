@@ -4,13 +4,13 @@ import android.content.Context
 import androidx.fragment.app.Fragment
 import com.realityexpander.blitter.adapters.BleetListAdapter
 import com.realityexpander.blitter.listeners.BleetListener
-import com.realityexpander.blitter.listeners.HomeContextI
+import com.realityexpander.blitter.listeners.HostContextI
 
-abstract class BlitterFragment: Fragment() {
+abstract class BaseFragment: Fragment() {
 
     protected var bleetListAdapter: BleetListAdapter? = null
     protected var bleetListener: BleetListener? = null
-    protected var homeContextI: HomeContextI? = null
+    protected var hostContextI: HostContextI? = null
 
     // Update the UI for the fragment
     abstract fun onUpdateUI()
@@ -19,10 +19,10 @@ abstract class BlitterFragment: Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
-        if (this.host is HomeContextI) {
-            homeContextI = this.host as HomeContextI
+        if (this.host is HostContextI) {
+            hostContextI = this.host as HostContextI
         } else {
-            throw RuntimeException("${this.host} must implement HomeContextI")
+            throw RuntimeException("${this.host} must implement HostContextI")
         }
     }
 

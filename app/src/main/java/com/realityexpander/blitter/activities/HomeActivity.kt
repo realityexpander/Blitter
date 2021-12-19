@@ -20,21 +20,21 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.realityexpander.blitter.R
 import com.realityexpander.blitter.databinding.ActivityHomeBinding
-import com.realityexpander.blitter.fragments.BlitterFragment
+import com.realityexpander.blitter.fragments.BaseFragment
 import com.realityexpander.blitter.fragments.HomeFragment
 import com.realityexpander.blitter.fragments.MyActivityFragment
 import com.realityexpander.blitter.fragments.SearchFragment
-import com.realityexpander.blitter.listeners.HomeContextI
+import com.realityexpander.blitter.listeners.HostContextI
 import com.realityexpander.blitter.util.*
 import kotlin.math.abs
 
 
-class HomeActivity : AppCompatActivity(), HomeContextI {
+class HomeActivity : AppCompatActivity(), HostContextI {
     private lateinit var bind: ActivityHomeBinding
 
     private val firebaseAuth = FirebaseAuth.getInstance()
 
-    // interface HomeContextI vars
+    // interface HostContextI vars
     override val firebaseDB = FirebaseFirestore.getInstance()
     override val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
     override var currentUser: User? = null
@@ -55,8 +55,8 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
         MY_ACTIVITY,
     }
     // Fragments
-    private var fragments: Array<BlitterFragment?> = Array(FragmentItem.values().size) { null }
-    private var currentFragment: BlitterFragment? = null
+    private var fragments: Array<BaseFragment?> = Array(FragmentItem.values().size) { null }
+    private var currentFragment: BaseFragment? = null
 
     companion object {
         // navigate to home activity
@@ -189,21 +189,21 @@ class HomeActivity : AppCompatActivity(), HomeContextI {
     }
 
     // After process death recovery fragment creation, update the fragment vars
-    override fun onBlitterFragmentCreated(androidCreatedBlitterFragment: BlitterFragment) {
+    override fun onAndroidFragmentCreated(androidCreatedBaseFragment: BaseFragment) {
 
         // note: newBlitterFragment type is created in the fragment upon process death recovery
-        when(androidCreatedBlitterFragment) {
+        when(androidCreatedBaseFragment) {
             is HomeFragment ->
-                fragments[FragmentItem.HOME.ordinal] = androidCreatedBlitterFragment
+                fragments[FragmentItem.HOME.ordinal] = androidCreatedBaseFragment
             is SearchFragment -> {
-                fragments[FragmentItem.SEARCH.ordinal] = androidCreatedBlitterFragment
+                fragments[FragmentItem.SEARCH.ordinal] = androidCreatedBaseFragment
                 setupHashtagSearchQueryListeners()
             }
             is MyActivityFragment ->
-                fragments[FragmentItem.MY_ACTIVITY.ordinal] = androidCreatedBlitterFragment
+                fragments[FragmentItem.MY_ACTIVITY.ordinal] = androidCreatedBaseFragment
         }
 
-        currentFragment = androidCreatedBlitterFragment
+        currentFragment = androidCreatedBaseFragment
 
         // println("onBlitterFragmentCreated currentFragment=$currentFragment")
     }

@@ -18,7 +18,7 @@ import com.realityexpander.blitter.util.*
  * Use the [HomeFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class HomeFragment : BlitterFragment() {
+class HomeFragment : BaseFragment() {
 
 //    private lateinit var bind: FragmentHomeBinding // alternate way
     private var _bind: FragmentHomeBinding? = null
@@ -38,16 +38,16 @@ class HomeFragment : BlitterFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         savedInstanceState?.apply {
-            // After process death, pass this System-created fragment to HomeContextI - (correct way to do this? SEEMS CLUNKY!)
-            homeContextI?.onBlitterFragmentCreated(this@HomeFragment)
+            // After process death, pass this System-created fragment to HostContextI - (correct way to do this? SEEMS CLUNKY!)
+            hostContextI?.onAndroidFragmentCreated(this@HomeFragment)
 
             // not needed yet
             // onViewStateRestored(savedInstanceState)
         }
 
         // Setup the RV listAdapter
-        bleetListAdapter = BleetListAdapter(homeContextI!!.currentUserId!!, arrayListOf())
-        bleetListener = BlitterListenerImpl(bind.bleetListRv, homeContextI, this)
+        bleetListAdapter = BleetListAdapter(hostContextI!!.currentUserId!!, arrayListOf())
+        bleetListener = BlitterListenerImpl(bind.bleetListRv, hostContextI, this)
         bleetListAdapter?.setListener(bleetListener)
         bind.bleetListRv.apply {
             layoutManager = LinearLayoutManager(context)
@@ -119,7 +119,7 @@ class HomeFragment : BlitterFragment() {
         }
 
         fun getBleetsForFollowHashtags() {
-            val followHashtags = homeContextI!!.currentUser?.followHashtags
+            val followHashtags = hostContextI!!.currentUser?.followHashtags
 
             if(followHashtags?.isEmpty() == true) {
                 sortBleetsByTimestampAndDisplayBleets()
@@ -130,7 +130,7 @@ class HomeFragment : BlitterFragment() {
                 var index = 0
 
                 for (hashtag in hashtags) {
-                    homeContextI!!.firebaseDB.collection(DATA_BLEETS_COLLECTION)
+                    hostContextI!!.firebaseDB.collection(DATA_BLEETS_COLLECTION)
                         .whereArrayContains(DATA_BLEETS_HASHTAGS, hashtag)
                         .get()
                         .addOnSuccessListener { list ->
@@ -155,16 +155,16 @@ class HomeFragment : BlitterFragment() {
         }
 
         fun getBleetsForFollowUserIdsAndFollowHashtags() {
-//             println("homeContext = $homeContextI")
-//             println("currentUser = ${homeContextI!!.currentUser}")
-//             println("currentUserId = ${homeContextI!!.currentUserId}")
-//             println("followUserIds = ${homeContextI!!.currentUser?.followUserIds}")
-//             println("followHashtags = ${homeContextI!!.currentUser?.followHashtags}")
+//             println("homeContext = $hostContextI")
+//             println("currentUser = ${hostContextI!!.currentUser}")
+//             println("currentUserId = ${hostContextI!!.currentUserId}")
+//             println("followUserIds = ${hostContextI!!.currentUser?.followUserIds}")
+//             println("followHashtags = ${hostContextI!!.currentUser?.followHashtags}")
 
-            val followUserIds = homeContextI!!.currentUser?.followUserIds ?: arrayListOf()
+            val followUserIds = hostContextI!!.currentUser?.followUserIds ?: arrayListOf()
 
             // Add the currentUserId to show the user their own bleets as well as others
-            followUserIds.add(homeContextI!!.currentUserId!!)
+            followUserIds.add(hostContextI!!.currentUserId!!)
 
             if(followUserIds.isEmpty()) {
                 getBleetsForFollowHashtags()
@@ -175,7 +175,7 @@ class HomeFragment : BlitterFragment() {
                 var index = 0
 
                 for (followUserId in userIds) {
-                    homeContextI!!.firebaseDB.collection(DATA_BLEETS_COLLECTION)
+                    hostContextI!!.firebaseDB.collection(DATA_BLEETS_COLLECTION)
                         .whereArrayContains(DATA_BLEETS_REBLEET_USER_IDS, followUserId)
                         .get()
                         .addOnSuccessListener { list ->

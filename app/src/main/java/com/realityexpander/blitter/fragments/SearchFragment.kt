@@ -26,7 +26,7 @@ import java.util.*
  * Use the [SearchFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class SearchFragment : BlitterFragment() {
+class SearchFragment : BaseFragment() {
     private lateinit var bind: FragmentSearchBinding
 
     private var currentHashtagQuery = ""
@@ -46,15 +46,15 @@ class SearchFragment : BlitterFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         savedInstanceState?.apply {
-            // After process death, pass this System-created fragment to HomeContextI - (correct way to do this? SEEMS CLUNKY!)
-            homeContextI?.onBlitterFragmentCreated(this@SearchFragment)
+            // After process death, pass this System-created fragment to HostContextI - (correct way to do this? SEEMS CLUNKY!)
+            hostContextI?.onAndroidFragmentCreated(this@SearchFragment)
 
             onViewStateRestored(savedInstanceState)
         }
 
         // Setup the RV listAdapter
-        bleetListAdapter = BleetListAdapter(homeContextI!!.currentUserId!!, arrayListOf())
-        bleetListener = BlitterListenerImpl(bind.bleetListRv, homeContextI, this)
+        bleetListAdapter = BleetListAdapter(hostContextI!!.currentUserId!!, arrayListOf())
+        bleetListener = BlitterListenerImpl(bind.bleetListRv, hostContextI, this)
         bleetListAdapter?.setListener(bleetListener)
         bind.bleetListRv.apply {
             layoutManager = LinearLayoutManager(context)
@@ -73,7 +73,7 @@ class SearchFragment : BlitterFragment() {
             if (currentHashtagQuery.isEmpty()) return@setOnClickListener
 
             bind.followHashtagIv.isClickable = false
-            val followHashtags = homeContextI!!.currentUser?.followHashtags ?: arrayListOf()
+            val followHashtags = hostContextI!!.currentUser?.followHashtags ?: arrayListOf()
 
             // Toggle "follow hashtag" for the current "search hashtag" query
             if (followHashtags.contains(currentHashtagQuery)) {
@@ -144,7 +144,7 @@ class SearchFragment : BlitterFragment() {
         bind.swipeRefresh.isRefreshing = true
 
         // Get bleets from firebaseDB that match the search hashtag & sort desc by timeStamp
-        homeContextI!!.firebaseDB.collection(DATA_BLEETS_COLLECTION)
+        hostContextI!!.firebaseDB.collection(DATA_BLEETS_COLLECTION)
             .whereArrayContains(DATA_BLEETS_HASHTAGS, currentHashtagQuery)
             .get()
             .addOnSuccessListener { list ->
@@ -218,8 +218,8 @@ class SearchFragment : BlitterFragment() {
         }
 
         // Save the updated list of hashtags for the User in the firebaseDB
-        homeContextI!!.firebaseDB.collection(DATA_USERS_COLLECTION)
-            .document(homeContextI?.currentUserId!!)
+        hostContextI!!.firebaseDB.collection(DATA_USERS_COLLECTION)
+            .document(hostContextI?.currentUserId!!)
             .update(DATA_USERS_FOLLOW_HASHTAGS, followHashtags)
             .addOnSuccessListener {
                 bind.followHashtagIv.isClickable = true
@@ -237,7 +237,7 @@ class SearchFragment : BlitterFragment() {
     }
     // Indicate current query hashtag is followed by the user
     private fun updateFollowHashtagButton() {
-        val followHashtags = homeContextI!!.currentUser?.followHashtags
+        val followHashtags = hostContextI!!.currentUser?.followHashtags
 
         if (followHashtags?.contains(currentHashtagQuery) == true) {
             bind.followHashtagIv.setImageDrawable(
@@ -250,7 +250,7 @@ class SearchFragment : BlitterFragment() {
         }
     }
     private fun updateFollowHashtagChipGroupView() {
-        val followHashtags = homeContextI!!.currentUser?.followHashtags
+        val followHashtags = hostContextI!!.currentUser?.followHashtags
         if (followHashtags.isNullOrEmpty()) return
 
         // Create the chipGroup chips for the followHashtags
@@ -282,7 +282,7 @@ class SearchFragment : BlitterFragment() {
                 val chipText = (chip as Chip).text.toString()
                 bind.chipGroup.removeView(chip)
 
-                val followHashtags = homeContextI!!.currentUser?.followHashtags
+                val followHashtags = hostContextI!!.currentUser?.followHashtags
                 if (followHashtags?.contains(chipText) == true) { // just to safe we check if user is following the hashtag
                     followHashtags.remove(chipText)
                     onSaveFollowHashtagsToDatabase(followHashtags)
@@ -301,7 +301,7 @@ class SearchFragment : BlitterFragment() {
                 chip.isChecked = true
 
                 // update the search query in the home activity
-                homeContextI!!.onUpdateHashtagSearchQueryTermEv(chipText)
+                hostContextI!!.onUpdateHashtagSearchQueryTermEv(chipText)
 
                 onSearchHashtagQueryActionSearch(chipText)
             }
@@ -314,7 +314,7 @@ class SearchFragment : BlitterFragment() {
 //            val chipText = chip.text.toString()
 //            // println("chipGroup=$chipGroup, item=$item, text=$chipText")
 //
-//            homeContextI!!.onUpdateHashtagSearchQueryTermEv(chipText)
+//            hostContextI!!.onUpdateHashtagSearchQueryTermEv(chipText)
 //            onHashtagQueryActionSearch(chipText)
 //
 //            // Cannot set check mark easily in singleSelection=true mode.
@@ -331,7 +331,7 @@ class SearchFragment : BlitterFragment() {
 //                val chipText = (chip as Chip).text.toString()
 //                bind.chipGroup.removeView(chip)
 //
-//                val followHashtags = homeContextI!!.currentUser?.followHashtags
+//                val followHashtags = hostContextI!!.currentUser?.followHashtags
 //                if (followHashtags?.contains(chipText) == true) { // just to be safe, we check if user is following the hashtag
 //                    followHashtags.remove(chipText)
 //                    onUpdateFollowHashtagsToDatabase(followHashtags)

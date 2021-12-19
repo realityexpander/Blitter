@@ -20,7 +20,7 @@ import com.realityexpander.blitter.util.DATA_BLEETS_REBLEET_USER_IDS
  * Use the [MyActivityFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class MyActivityFragment : BlitterFragment() {
+class MyActivityFragment : BaseFragment() {
 
     private lateinit var bind: FragmentMyActivityBinding
 
@@ -39,16 +39,16 @@ class MyActivityFragment : BlitterFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         savedInstanceState?.apply {
-            // After process death, pass this System-created fragment to HomeContextI - (correct way to do this? SEEMS CLUNKY!)
-            homeContextI?.onBlitterFragmentCreated(this@MyActivityFragment)
+            // After process death, pass this System-created fragment to HostContextI - (correct way to do this? SEEMS CLUNKY!)
+            hostContextI?.onAndroidFragmentCreated(this@MyActivityFragment)
 
             // Restore query search state
             // showSearchResults = getBoolean("search_showSearchResults", false)
         }
 
         // Setup the RV listAdapter
-        bleetListAdapter = BleetListAdapter(homeContextI!!.currentUserId!!, arrayListOf())
-        bleetListener = BlitterListenerImpl(bind.bleetListRv, homeContextI, this)
+        bleetListAdapter = BleetListAdapter(hostContextI!!.currentUserId!!, arrayListOf())
+        bleetListener = BlitterListenerImpl(bind.bleetListRv, hostContextI, this)
         bleetListAdapter?.setListener(bleetListener)
         bind.bleetListRv.apply {
             layoutManager = LinearLayoutManager(context)
@@ -109,16 +109,16 @@ class MyActivityFragment : BlitterFragment() {
         }
 
         fun getBleetsForCurrentUserId() {
-//             println("homeContext = $homeContextI")
-//             println("currentUser = ${homeContextI!!.currentUser}")
-//             println("currentUserId = ${homeContextI!!.currentUserId}")
-//             println("followUserIds = ${homeContextI!!.currentUser?.followUserIds}")
-//             println("followHashtags = ${homeContextI!!.currentUser?.followHashtags}")
+//             println("homeContext = $hostContextI")
+//             println("currentUser = ${hostContextI!!.currentUser}")
+//             println("currentUserId = ${hostContextI!!.currentUserId}")
+//             println("followUserIds = ${hostContextI!!.currentUser?.followUserIds}")
+//             println("followHashtags = ${hostContextI!!.currentUser?.followHashtags}")
 
-            val currentUserId = homeContextI!!.currentUserId
+            val currentUserId = hostContextI!!.currentUserId
 
             currentUserId?.let { userId ->
-                homeContextI!!.firebaseDB.collection(DATA_BLEETS_COLLECTION)
+                hostContextI!!.firebaseDB.collection(DATA_BLEETS_COLLECTION)
                     .whereArrayContains(DATA_BLEETS_REBLEET_USER_IDS, userId)
                     .get()
                     .addOnSuccessListener { list ->

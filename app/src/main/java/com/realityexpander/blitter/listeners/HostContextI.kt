@@ -1,12 +1,11 @@
 package com.realityexpander.blitter.listeners
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.realityexpander.blitter.fragments.BlitterFragment
-import com.realityexpander.blitter.fragments.SearchFragment
+import com.realityexpander.blitter.fragments.BaseFragment
 import com.realityexpander.blitter.util.User
 
-// HomeContextI shared with the fragments
-interface HomeContextI {
+// HostContextI shared with the fragments
+interface HostContextI {
     val firebaseDB: FirebaseFirestore
     val currentUserId: String?
     var currentUser: User?
@@ -15,7 +14,7 @@ interface HomeContextI {
     fun onUpdateUIForCurrentFragment()
 
     // Pass back the system-created fragment to the home Activity after process death restoration
-    fun onBlitterFragmentCreated(androidCreatedBlitterFragment: BlitterFragment)
+    fun onAndroidFragmentCreated(androidCreatedBaseFragment: BaseFragment)
 
     // Pass back an update the hashtag search query term from the fragment
     fun onUpdateHashtagSearchQueryTermEv(queryTerm: String)

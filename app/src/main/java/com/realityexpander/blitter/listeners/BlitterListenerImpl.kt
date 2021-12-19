@@ -11,20 +11,20 @@ import com.realityexpander.blitter.util.*
 
 class BlitterListenerImpl(
     private val bleetListRv: RecyclerView,
-    private val homeContextI: HomeContextI?,
+    private val hostContextI: HostContextI?,
     private val hostFragment: Fragment
 ) : BleetListener {
 
     override fun onLayoutClick(bleet: Bleet?) {
-        val currentUserId = homeContextI!!.currentUserId!!
-        val currentUser = homeContextI.currentUser!!
+        val currentUserId = hostContextI!!.currentUserId!!
+        val currentUser = hostContextI.currentUser!!
         val followUserIds = currentUser.followUserIds
         val bleetUserId = bleet?.rebleetUserIds!![0]
 
         // Show failure message
         fun onSaveFollowUserFailure(e: Exception) {
             e.printStackTrace()
-            Toast.makeText(homeContextI as Context,
+            Toast.makeText(hostContextI as Context,
                 "Follow User failed, please try again. ${e.localizedMessage}",
                 Toast.LENGTH_LONG).show()
             bleetListRv.isClickable = true
@@ -32,11 +32,11 @@ class BlitterListenerImpl(
 
         fun saveFollowUserIdsForCurrentUserToDatabase() {
             // Save updated followUserIds to firebase database
-            homeContextI.firebaseDB.collection(DATA_USERS_COLLECTION)
+            hostContextI.firebaseDB.collection(DATA_USERS_COLLECTION)
                 .document(currentUserId)
                 .update(DATA_USERS_FOLLOW_USER_IDS, followUserIds)
                 .addOnSuccessListener {
-                    homeContextI.onUpdateUIForCurrentFragment()
+                    hostContextI.onUpdateUIForCurrentFragment()
                     bleetListRv.isClickable = true
                 }
                 .addOnFailureListener { e ->
@@ -75,7 +75,7 @@ class BlitterListenerImpl(
                               userId: String,
                               positiveAction: (userId: String) -> Unit ) {
 
-        val dialog = BottomSheetDialog(homeContextI as Context)
+        val dialog = BottomSheetDialog(hostContextI as Context)
         val bindDialog = DialogConfirmLayoutBinding.inflate(
             hostFragment.layoutInflater,
             null,
@@ -106,12 +106,12 @@ class BlitterListenerImpl(
 
 
     override fun onLike(bleet: Bleet?) {
-        val currentUserId = homeContextI!!.currentUserId!!
+        val currentUserId = hostContextI!!.currentUserId!!
 
         // Show failure message
         fun onLikeFailure(e: Exception) {
             e.printStackTrace()
-            Toast.makeText(homeContextI as Context,
+            Toast.makeText(hostContextI as Context,
                 "Like failed, please try again. ${e.localizedMessage}",
                 Toast.LENGTH_LONG).show()
             bleetListRv.isClickable = true
@@ -128,11 +128,11 @@ class BlitterListenerImpl(
             }
 
             // Save like to firebase database
-            homeContextI.firebaseDB.collection(DATA_BLEETS_COLLECTION)
+            hostContextI.firebaseDB.collection(DATA_BLEETS_COLLECTION)
                 .document(bleet.bleetId!!)
                 .update(DATA_BLEETS_LIKE_USER_IDS, likeUserIds)
                 .addOnSuccessListener {
-                    homeContextI.onUpdateUIForCurrentFragment()
+                    hostContextI.onUpdateUIForCurrentFragment()
                     bleetListRv.isClickable = true
                 }
                 .addOnFailureListener { e ->
@@ -147,12 +147,12 @@ class BlitterListenerImpl(
         ADD_REBLEET     // Add the rebleet to the firebaseDB
     }
     override fun onRebleet(bleet: Bleet?) {
-        val currentUserId = homeContextI!!.currentUserId!!
+        val currentUserId = hostContextI!!.currentUserId!!
 
         // Show failure message
         fun onRebleetFailure(e: Exception) {
             e.printStackTrace()
-            Toast.makeText(homeContextI as Context,
+            Toast.makeText(hostContextI as Context,
                 "Rebleeting failed, please try again. ${e.localizedMessage}",
                 Toast.LENGTH_LONG).show()
             bleetListRv.isClickable = true
@@ -161,7 +161,7 @@ class BlitterListenerImpl(
         // Add the rebleet
         fun addReBleetOfThisBleet(originalBleet: Bleet) {
             // Create a new bleet document as a copy of this bleet, this will be the reBleet
-            val reBleetDocument = homeContextI.firebaseDB
+            val reBleetDocument = hostContextI.firebaseDB
                 .collection(DATA_BLEETS_COLLECTION)
                 .document()
 
@@ -170,14 +170,14 @@ class BlitterListenerImpl(
                 .copy(
                     bleetId = reBleetDocument.id,
                     originalBleetId = originalBleet.bleetId,
-                    username = homeContextI.currentUser?.username,
+                    username = hostContextI.currentUser?.username,
                     likeUserIds = arrayListOf(),      // when reBleeting, only show likes for this rebleet.
                     rebleetUserIds = arrayListOf(currentUserId), // when reBleeting, only include this and original author
                     timestamp = System.currentTimeMillis()
                 )
             reBleetDocument.set(reBleet)
                 .addOnSuccessListener {
-                    homeContextI.onUpdateUIForCurrentFragment()
+                    hostContextI.onUpdateUIForCurrentFragment()
                     bleetListRv.isClickable = true
                 }
                 .addOnFailureListener { e ->
@@ -188,7 +188,7 @@ class BlitterListenerImpl(
         // Remove the rebleet
         fun removeTheReBleetOfThisBleet(originalBleet: Bleet) {
             // find the bleet from this user that matches the original bleetId
-            homeContextI.firebaseDB
+            hostContextI.firebaseDB
                 .collection(DATA_BLEETS_COLLECTION)
                 .whereEqualTo(DATA_BLEETS_ORIGINAL_BLEET_ID, originalBleet.bleetId) // matches original bleetId
                 .whereArrayContains(DATA_BLEETS_REBLEET_USER_IDS, currentUserId) // and contains this users' reBleet
@@ -206,18 +206,18 @@ class BlitterListenerImpl(
                         onRebleetFailure(java.lang.Exception("Bleet not found"))
                     }
 
-                    homeContextI.firebaseDB.collection(DATA_BLEETS_COLLECTION)
+                    hostContextI.firebaseDB.collection(DATA_BLEETS_COLLECTION)
                         .document(documentToDelete[0].id)  // Should only be one rebleet from this userId
                         .delete()
                         .addOnSuccessListener {
-                            homeContextI.onUpdateUIForCurrentFragment()
+                            hostContextI.onUpdateUIForCurrentFragment()
                             bleetListRv.isClickable = true
                         }
                         .addOnFailureListener { e ->
                             onRebleetFailure(e)
                         }
 
-                    homeContextI.onUpdateUIForCurrentFragment()
+                    hostContextI.onUpdateUIForCurrentFragment()
                     bleetListRv.isClickable = true
                 }
                 .addOnFailureListener { e ->
@@ -243,7 +243,7 @@ class BlitterListenerImpl(
             }
 
             // Save updated list of rebleetUserIds for this bleet
-            homeContextI.firebaseDB.collection(DATA_BLEETS_COLLECTION)
+            hostContextI.firebaseDB.collection(DATA_BLEETS_COLLECTION)
                 .document(originalBleet.bleetId!!)
                 .update(DATA_BLEETS_REBLEET_USER_IDS, rebleetUserIds)
                 .addOnSuccessListener {
