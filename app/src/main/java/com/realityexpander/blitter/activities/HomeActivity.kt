@@ -29,6 +29,10 @@ import com.realityexpander.blitter.util.*
 import kotlin.math.abs
 
 
+// Firebase Console:
+// https://console.firebase.google.com/u/2/project/blitter-7f038/firestore/data/~2FDATA_USERS~2F80O8sVIGBpQ2DbSeiuLT3JFHpdq1
+
+
 class HomeActivity : AppCompatActivity(), HostContextI {
     private lateinit var bind: ActivityHomeBinding
 
