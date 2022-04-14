@@ -1,9 +1,9 @@
 # Blitter
 Twitter clone for Android
 
-[<img src="https://user-images.githubusercontent.com/5157474/147437376-24fee3a9-4e33-44ac-a4f2-6e5aff830bf1.png" width="200"/>]()
-[<img src="https://user-images.githubusercontent.com/5157474/147437402-783ddbdd-a4c7-4406-a5b4-74625bb0275e.png" width="200"/>]()
-[<img src="https://user-images.githubusercontent.com/5157474/147437431-98ae8ba4-aaa5-4d5f-8fdf-203c046742bd.png" width="200"/>]()
+[<img src="https://user-images.githubusercontent.com/5157474/147437376-24fee3a9-4e33-44ac-a4f2-6e5aff830bf1.png" width="200"/>](https://user-images.githubusercontent.com/5157474/147437376-24fee3a9-4e33-44ac-a4f2-6e5aff830bf1.png)
+[<img src="https://user-images.githubusercontent.com/5157474/147437402-783ddbdd-a4c7-4406-a5b4-74625bb0275e.png" width="200"/>](https://user-images.githubusercontent.com/5157474/147437402-783ddbdd-a4c7-4406-a5b4-74625bb0275e.png)
+[<img src="https://user-images.githubusercontent.com/5157474/147437431-98ae8ba4-aaa5-4d5f-8fdf-203c046742bd.png" width="200"/>](https://user-images.githubusercontent.com/5157474/147437431-98ae8ba4-aaa5-4d5f-8fdf-203c046742bd.png)
 
 - Allows users to save a profile with name, photo
 - Allows users to post with images and messages as "Bleets"
