@@ -15,6 +15,7 @@ Twitter clone for Android
 - Allows users to reset thier passwords
 
 ---- Tech used ----
+- MVVM Architecture, CLEAN & SOLID
 - Uses Firebase Realtime Database for storing data
 - Uses Firebase FireStore for storing images
 - Uses Firbase Authentication for registering users
